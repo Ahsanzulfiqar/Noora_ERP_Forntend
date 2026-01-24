@@ -150,10 +150,9 @@ const SaleAdd = () => {
           sku: item.sku,
           quantity: Number(item.quantity),
           salePrice: Number(item.salePrice),
-          batchNo: item.batchNo,
         })),
         taxAmount: Number(values.taxAmount) || 0,
-        courierId: values.courier,
+        // courierId: values.courier,
         notes: values.notes,
       };
 
@@ -262,7 +261,7 @@ const SaleAdd = () => {
                         placeholder="Enter Customer Phone"
                       />
                     </Col>
-                    <Col lg={4}>
+                    {/* <Col lg={4}>
                       <Field name="courier">
                         {({ field, form }) => (
                           <ChoicesSearchFormInput
@@ -277,7 +276,7 @@ const SaleAdd = () => {
                           />
                         )}
                       </Field>
-                    </Col>
+                    </Col> */}
 
                     <Col lg={12}>
                       <FormikTextArea
@@ -398,7 +397,7 @@ const SaleAdd = () => {
                                   />
                                 </div>
                               </Col>
-                              <Col md={3}>
+                              {/* <Col md={3}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Batch No</label>
                                   <input
@@ -409,7 +408,7 @@ const SaleAdd = () => {
                                     onChange={(e) => setNewItem({ ...newItem, batchNo: e.target.value })}
                                   />
                                 </div>
-                              </Col>
+                              </Col> */}
                               {/* <Col md={3}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Expiry Date</label>
@@ -458,7 +457,7 @@ const SaleAdd = () => {
                                 <th>SKU</th>
                                 <th>Qty</th>
                                 <th>Price</th>
-                                <th>Batch No</th>
+                                {/* <th>Batch No</th> */}
                                 {/* <th>Expiry date</th> */}
                                 <th style={{ width: '50px' }}>Action</th>
                               </tr>
@@ -472,7 +471,7 @@ const SaleAdd = () => {
                                     <td>{item.sku}</td>
                                     <td>{item.quantity}</td>
                                     <td>${item.salePrice?.toFixed(2)}</td>
-                                    <td>{item.batchNo || '-'}</td>
+                                    {/* <td>{item.batchNo || '-'}</td> */}
                                     {/* <td>{item.expiryDate || '-'}</td> */}
                                     <td className="text-center">
                                       <IconButton

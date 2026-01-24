@@ -30,10 +30,12 @@ const StatusAlert = ({
     // ERROR ALERT
     if (error) {
       // Extract error message from GraphQL error structure or fallback to standard error
-      const errorMessage =
-        error?.data?.errors?.[0]?.message ||
-        error?.message ||
-        "Something went wrong";
+      let errorMessage = "Something went wrong";
+      if (error?.data?.errors) {
+        errorMessage = error.data.errors.map((err) => err.message).join("\n");
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
 
       Swal.fire({
         icon: "error",
