@@ -119,6 +119,7 @@ const AddPurchase = () => {
               taxAmount: purchaseData?.taxAmount || 0,
               totalAmount: purchaseData?.totalAmount || 0,
               notes: purchaseData?.notes || '',
+              status: purchaseData?.status || 'confirmed',
             }}
             validationSchema={Yup.object({
               supplierName: Yup.string().required('Required'),
@@ -137,6 +138,7 @@ const AddPurchase = () => {
               subTotal: Yup.number(),
               taxAmount: Yup.number().required('Required'),
               totalAmount: Yup.number(),
+              status: Yup.string().oneOf(['confirmed', 'cancelled']),
             })}
             onSubmit={async (values, { resetForm }) => {
               try {
@@ -171,6 +173,7 @@ const AddPurchase = () => {
                   taxAmount: parseFloat(values.taxAmount) || 0,
                   notes: values.notes || "",
                   items: formattedItems,
+                  status: values.status,
                   // postedToStock and productId are removed as they are not defined in CreatePurchaseInput
                 };
 
@@ -222,7 +225,27 @@ const AddPurchase = () => {
                       <FormikDateField name="purchaseDate" label="Purchase Date" />
                     </Col>
 
-
+                    {purchaseId && (
+                      <Col lg={3}>
+                        <Field name="status">
+                          {({ field, form }) => (
+                            <ChoicesSearchFormInput
+                              label="Status"
+                              labelClassName="form-label fw-bold"
+                              className="form-control"
+                              id="status"
+                              {...field}
+                              options={[
+                                { label: 'Confirmed', value: 'confirmed' },
+                                { label: 'Cancel', value: 'cancelled' },
+                              ]}
+                              onChange={(val) => form.setFieldValue('status', val)}
+                              placeholder="Select Status"
+                            />
+                          )}
+                        </Field>
+                      </Col>
+                    )}
                   </Row>
 
                   {/* ----------------------- */}
@@ -432,16 +455,17 @@ const AddPurchase = () => {
 
                   <div className="p-3 bg-light mt-4 rounded">
                     <Row className="justify-content-end g-2">
-                      <Col lg={2}>
-                        <Button type="submit" className="btn btn-outline-secondary w-100" disabled={isCreating || isUpdating}>
-                          {isCreating || isUpdating ? 'Saving...' : 'Save'}
-                        </Button>
-                      </Col>
+        
 
                       <Col lg={2}>
                         <Link to="/purchases/purchase-list" className="btn btn-primary w-100">
                           Cancel
                         </Link>
+                      </Col>
+                         <Col lg={2}>
+                        <Button type="submit" className="btn btn-outline-secondary w-100" disabled={isCreating || isUpdating}>
+                          {isCreating || isUpdating ? 'Saving...' : 'Save'}
+                        </Button>
                       </Col>
                     </Row>
                   </div>
