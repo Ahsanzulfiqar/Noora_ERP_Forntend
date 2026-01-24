@@ -1,14 +1,16 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
+import { Button, Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
   if (isLoadingPurchase) {
     return (
       <Col lg={12}>
         <Card>
           <CardBody>
-            <GlobalSpinner show={isLoadingPurchase}  />
+            <GlobalSpinner show={isLoadingPurchase} />
           </CardBody>
         </Card>
       </Col>
@@ -29,8 +31,26 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
   return (
     <Col lg={12}>
       <Card>
-        <CardHeader>
+        {/* <CardHeader>
           <CardTitle as={'h4'}>Purchase Details</CardTitle>
+        </CardHeader> */}
+        <CardHeader >
+          <CardTitle >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+              <Typography variant='h6'>Purchase Details</Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Link to={`/purchases/purchase-edit/${purchaseData?._id}`} className="btn btn-sm btn-primary">
+                  Edit Purchase
+                </Link>
+                {status === 'confirmed' &&
+                  <Button variant='success' className='btn btn-sm btn-success'>
+                    Post To Stock
+                  </Button>
+                }
+              </Box>
+            </Box>
+          </CardTitle>
+
         </CardHeader>
         <CardBody>
           <div className='d-flex flex-row  gap-5'>
@@ -52,7 +72,7 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                 {warehouse}
               </li>
             </ul>
-               <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
+            <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
 
               <li>
                 <span className="fw-medium text-dark fw-bold">Status:&nbsp;</span>

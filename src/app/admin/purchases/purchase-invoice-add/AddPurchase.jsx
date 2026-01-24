@@ -222,7 +222,7 @@ const AddPurchase = () => {
                       <FormikDateField name="purchaseDate" label="Purchase Date" />
                     </Col>
 
-           
+
                   </Row>
 
                   {/* ----------------------- */}
@@ -424,7 +424,6 @@ const AddPurchase = () => {
 
                     <Col lg={12}>
                       <FormikTextArea name="notes" label="Notes" placeholder="Write Notes ..." />
-
                     </Col>
 
 
