@@ -1,0 +1,242 @@
+import PageTItle from '@/components/PageTItle'
+import IconifyIcon from '@/components/wrappers/IconifyIcon'
+import { useGetAllPurchasesQuery, useDeletePurchaseMutation, usePostToStockMutation } from '@/services/endpoints/purchases'
+import { Card, CardBody, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Button } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
+import StatusAlert from '@/components/StatusAlert'
+import { useState } from 'react'
+import DeleteConfirmModal from '../../../../components/DeleteConfirmModal'
+import { formatDate } from '../../../../helpers/format'
+
+const PurchaseListPage = () => {
+
+  const { data: purchases, isLoading, isError } = useGetAllPurchasesQuery()
+  const [deletePurchase, { isLoading: isDeleting, isSuccess: isDeleteSuccess, error: deleteError }] = useDeletePurchaseMutation()
+  const [postToStock, { isLoading: isPosting, isSuccess: isPostSuccess, error: postError }] = usePostToStockMutation()
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [showPostConfirm, setShowPostConfirm] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)
+
+  // const handleDelete = async (id) => {
+  //   if (window.confirm("Are you sure you want to delete this purchase?")) {
+  //     await deletePurchase(id)
+  //   }
+  // }
+  const handleDeleteClick = (id) => {
+    setSelectedId(id)
+    setShowConfirm(true)
+  }
+  const handleConfirmDelete = async () => {
+    await deletePurchase(selectedId)
+    setShowConfirm(false)
+    setSelectedId(null)
+  }
+
+  const handleCancelDelete = () => {
+    setShowConfirm(false)
+    setSelectedId(null)
+  }
+
+  const handlePostToStockClick = (id) => {
+    setSelectedId(id)
+    setShowPostConfirm(true)
+  }
+
+  const handleConfirmPostToStock = async () => {
+    try {
+      await postToStock(selectedId).unwrap()
+      setShowPostConfirm(false)
+      setSelectedId(null)
+    } catch (err) {
+      console.error('Failed to post to stock:', err)
+    }
+  }
+
+  const handleCancelPostToStock = () => {
+    setShowPostConfirm(false)
+    setSelectedId(null)
+  }
+
+
+  return (
+    <>
+      <DeleteConfirmModal
+        show={showConfirm}
+        title="Delete Purchase"
+        message="Are you sure you want to delete this purchase?"
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        confirmVariant="danger"
+        loading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
+
+      <DeleteConfirmModal
+        show={showPostConfirm}
+        title="Post to Stock"
+        message="Are you sure you want to post this purchase to stock?"
+        confirmText="Yes, Post"
+        cancelText="Cancel"
+        confirmVariant="primary"
+        loading={isPosting}
+        onConfirm={handleConfirmPostToStock}
+        onCancel={handleCancelPostToStock}
+      />
+
+      <StatusAlert isSuccess={isDeleteSuccess} message="Purchase deleted successfully" error={deleteError} />
+      <StatusAlert isSuccess={isPostSuccess} message="Purchase posted to stock successfully" error={postError} />
+      <PageTItle title="Purchase List" />
+      <Row>
+        <Col xl={12}>
+          <Card>
+            <div className="d-flex card-header justify-content-between align-items-center">
+              <div>
+                <CardTitle as={'h4'}>All Purchase Items</CardTitle>
+              </div>
+              <Dropdown>
+                <DropdownToggle
+                  as={'a'}
+                  href="#"
+                  className="btn btn-sm btn-outline-light rounded content-none icons-center"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  This Month <IconifyIcon className="ms-1" width={16} height={16} icon="bx:chevron-down" />
+                </DropdownToggle>
+                <DropdownMenu className="dropdown-menu-end">
+                  <DropdownItem>Download</DropdownItem>
+                  <DropdownItem>Export</DropdownItem>
+                  <DropdownItem>Import</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+            <CardBody className="p-0">
+              <div className="table-responsive">
+                <table className="table align-middle mb-0 table-hover table-centered">
+                  <thead className="bg-light-subtle">
+                    <tr>
+                      <th
+                        style={{
+                          width: 20,
+                        }}>
+                        <div className="form-check">
+                          <input type="checkbox" className="form-check-input" id="customCheck1" />
+                          <label className="form-check-label" htmlFor="customCheck1" />
+                        </div>
+                      </th>
+                      <th>Supplier Name</th>
+                      <th>Invoice No</th>
+                      <th>Warehouse</th>
+                      <th>Purchase Date</th>
+                      <th>Status</th> ,
+                      <th>Sub Total</th>
+                      <th>Tax Amount</th>
+                      <th>Total Amount</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isLoading && (
+                      <tr>
+                        <td colSpan="10" className="text-center">Loading...</td>
+                      </tr>
+                    )}
+                    {isError && (
+                      <tr>
+                        <td colSpan="10" className="text-center text-danger">Error loading purchases</td>
+                      </tr>
+                    )}
+                    {!isLoading && !isError && purchases?.length === 0 && (
+                      <tr>
+                        <td colSpan="10" className="text-center">No Record Found</td>
+                      </tr>
+                    )}
+
+                    {purchases?.map((purchase, index) => (
+                      <tr key={purchase._id || index}>
+                        <td>
+                          <div className="form-check">
+                            <input type="checkbox" className="form-check-input" id={`customCheck${index}`} />
+                            <label className="form-check-label" htmlFor={`customCheck${index}`} />
+                          </div>
+                        </td>
+                        <td>{purchase.supplierName}</td>
+                        <td>{purchase.invoiceNo}</td>
+                        <td>{purchase.warehouse}</td>
+                        <td>{formatDate(purchase.purchaseDate)}</td>
+                        <td>{purchase.status}</td>
+                        <td>{purchase.subTotal}</td>
+                        <td>{purchase.taxAmount}</td>
+                        <td>{purchase.totalAmount}</td>
+                        <td>
+                          <div className="d-flex gap-2">
+                            <Link to={`/purchases/purchase-edit/${purchase._id}`} className="btn btn-light btn-sm"
+                            >
+                              <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
+
+                            </Link>
+                            <Link to={`/purchases/purchase-detail/${purchase._id}`} className="btn btn-light btn-sm">
+                              <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
+                            </Link>
+                            <Button className="btn btn-light btn-sm" onClick={() => handleDeleteClick(purchase._id)} disabled={isDeleting}>
+                              <IconifyIcon
+                                icon="solar:trash-bin-minimalistic-2-broken"
+                                className="align-middle fs-18"
+                              />
+                            </Button>
+                            {!purchase.postedToStock && (
+                              <Button
+                                className="btn btn-soft-primary btn-sm"
+                                onClick={() => handlePostToStockClick(purchase._id)}
+                                disabled={isPosting}
+                                title="Post to Stock"
+                              >
+                                <IconifyIcon icon="solar:send-square-bold-duotone" className="align-middle fs-18" />
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardBody>
+            <CardFooter className="border-top">
+              <nav aria-label="Page navigation example">
+                <ul className="pagination justify-content-end mb-0">
+                  <li className="page-item">
+                    <Link className="page-link" to="">
+                      Previous
+                    </Link>
+                  </li>
+                  <li className="page-item active">
+                    <Link className="page-link" to="">
+                      1
+                    </Link>
+                  </li>
+                  <li className="page-item">
+                    <Link className="page-link" to="">
+                      2
+                    </Link>
+                  </li>
+                  <li className="page-item">
+                    <Link className="page-link" to="">
+                      3
+                    </Link>
+                  </li>
+                  <li className="page-item">
+                    <Link className="page-link" to="">
+                      Next
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+            </CardFooter>
+          </Card>
+        </Col>
+      </Row>
+    </>
+  )
+}
+export default PurchaseListPage

@@ -1,0 +1,114 @@
+import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
+const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
+  if (isLoadingPurchase) {
+    return (
+      <Col lg={12}>
+        <Card>
+          <CardBody>
+            <GlobalSpinner show={isLoadingPurchase}  />
+          </CardBody>
+        </Card>
+      </Col>
+    );
+  }
+
+  const {
+    invoiceNo,
+    purchaseDate,
+    supplierName,
+    warehouse,
+    status,
+    notes,
+    totalAmount,
+    items
+  } = purchaseData || {};
+
+  return (
+    <Col lg={12}>
+      <Card>
+        <CardHeader>
+          <CardTitle as={'h4'}>Purchase Details</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <div className='d-flex flex-row  gap-5'>
+            <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
+              <li>
+                <span className="fw-medium text-dark fw-bold">Invoice No:&nbsp;</span>
+                {invoiceNo}
+              </li>
+              <li>
+                <span className="fw-medium text-dark fw-bold">Purchase Date:&nbsp;</span>
+                {purchaseDate ? new Date(purchaseDate).toLocaleDateString() : 'N/A'}
+              </li>
+              <li>
+                <span className="fw-medium text-dark fw-bold">Supplier:&nbsp;</span>
+                {supplierName}
+              </li>
+              <li>
+                <span className="fw-medium text-dark fw-bold">Warehouse ID:&nbsp;</span>
+                {warehouse}
+              </li>
+            </ul>
+               <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
+
+              <li>
+                <span className="fw-medium text-dark fw-bold">Status:&nbsp;</span>
+                {status}
+              </li>
+              <li>
+                <span className="fw-medium text-dark fw-bold">Total Amount:&nbsp;</span>
+                {totalAmount}
+              </li>
+              <li>
+                <span className="fw-medium text-dark fw-bold">Notes:&nbsp;</span>
+                {notes || 'N/A'}
+              </li>
+            </ul>
+          </div>
+
+          <div className="mt-4">
+            <h5 className="mb-3">Items</h5>
+            <div className="table-responsive">
+              <table className="table table-bordered mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th>Product ID</th>
+                    <th>Variant ID</th>
+                    <th>Batch No</th>
+                    <th>Expiry Date</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items && items.length > 0 ? (
+                    items.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.product}</td>
+                        <td>{item.variant}</td>
+                        <td>{item.batchNo}</td>
+                        <td>{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'N/A'}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.purchasePrice}</td>
+                        <td>{item.lineTotal}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="text-center">No items found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+    </Col>
+  );
+};
+export default ItemDetails;
