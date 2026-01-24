@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useGetProductByIdQuery } from '../../../../../services/endpoints/product';
-import { Col, Card, CardBody, Spinner, Alert, Row } from 'react-bootstrap';
+import { Col, Card, CardBody, Spinner, Alert, Row, CardHeader, CardTitle } from 'react-bootstrap';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import product1 from '@/assets/images/product/noimage.png';
 import { currency } from '@/context/constants';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 import { categoryOptions } from '../../product-add/utils';
 
@@ -76,6 +78,16 @@ const ProductDetails = () => {
   return (
     <Col xl={12} lg={12}>
       <Card>
+        <CardHeader >
+          <CardTitle >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+              <Typography variant='h6'>Product Detail</Typography>
+              <Link to={`/products/product-edits/${productId}`} className="btn btn-sm btn-primary">
+                Edit Product
+              </Link>
+            </Box>
+          </CardTitle>
+        </CardHeader>
         <CardBody>
           <Row>
             <Col xl={4} lg={4} md={4} sm={12} xs={12}>

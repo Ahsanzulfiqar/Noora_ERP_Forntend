@@ -24,7 +24,7 @@ const ProductDetailsPage = () => {
   }, []);
   return <>
       <PageTItle title="Product Details" />
-      <ProductDetails />
+      <ProductDetails productId={productId} />
       <Step />
       <Row>
         <ItemDetails />
