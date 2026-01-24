@@ -106,7 +106,7 @@ const AddProductVariant = () => {
                     barcode: values.barcode,
                     purchasePrice: Number(values.purchasePrice),
                     salePrice: Number(values.salePrice),
-                    packSize: values.packSize ? Number(values.packSize) : undefined,
+                    packSize: values.packSize,
                     netWeight: values.netWeight,
                     isActive: values.isActive,
                     attributes: values.attributes.filter(attr => attr.name && attr.value),

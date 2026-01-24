@@ -104,9 +104,7 @@ const AddPurchase = () => {
               supplierName: purchaseData?.supplierName || '',
               invoiceNo: purchaseData?.invoiceNo || '',
               warehouseId: purchaseData?.warehouse?._id || purchaseData?.warehouse || '',
-              product: '',
               purchaseDate: purchaseData?.purchaseDate ? new Date(purchaseData.purchaseDate).toISOString().split('T')[0] : '',
-              status: purchaseData?.status || '',
               items: purchaseData?.items?.map(item => ({
                 product: item.product?._id || item.product || '',
                 quantity: item.quantity || '',
@@ -121,15 +119,12 @@ const AddPurchase = () => {
               taxAmount: purchaseData?.taxAmount || 0,
               totalAmount: purchaseData?.totalAmount || 0,
               notes: purchaseData?.notes || '',
-              postedToStock: purchaseData?.postedToStock || false,
             }}
             validationSchema={Yup.object({
               supplierName: Yup.string().required('Required'),
               invoiceNo: Yup.string().required('Required'),
               warehouseId: Yup.string().required('Required'),
-              product: Yup.string().required('Required'),
               purchaseDate: Yup.string().required('Required'),
-              status: Yup.string().required('Required'),
 
               items: Yup.array().of(
                 Yup.object({
@@ -142,7 +137,6 @@ const AddPurchase = () => {
               subTotal: Yup.number(),
               taxAmount: Yup.number().required('Required'),
               totalAmount: Yup.number(),
-              postedToStock: Yup.boolean(),
             })}
             onSubmit={async (values, { resetForm }) => {
               try {
@@ -197,15 +191,15 @@ const AddPurchase = () => {
                 <Form>
                   <PurchaseCalculations />
                   <Row className="g-2">
-                    <Col lg={4}>
+                    <Col lg={3}>
                       <FormikTextField name="supplierName" label="Supplier Name" placeholder="Enter Supplier Name" />
                     </Col>
 
-                    <Col lg={4}>
+                    <Col lg={3}>
                       <FormikTextField name="invoiceNo" label="Invoice No" placeholder="Invoice No" />
                     </Col>
 
-                    <Col lg={4}>
+                    <Col lg={3}>
                       <Field name="warehouseId">
                         {({ field, form }) => (
                           <ChoicesSearchFormInput
@@ -222,47 +216,13 @@ const AddPurchase = () => {
                       </Field>
                     </Col>
 
-                    <Col lg={4}>
-                      <Field name="product">
-                        {({ field, form }) => (
-                          <ChoicesSearchFormInput
-                            label="Product"
-                            labelClassName="form-label fw-bold"
-                            className="form-control"
-                            id="product"
-                            {...field}
-                            options={productOptions}
-                            onChange={(val) => form.setFieldValue('product', val)}
-                            placeholder="Select Product"
-                          />
-                        )}
-                      </Field>
-                    </Col>
 
-                    <Col lg={4}>
+
+                    <Col lg={3}>
                       <FormikDateField name="purchaseDate" label="Purchase Date" />
                     </Col>
 
-                    <Col lg={4}>
-                      <Field name="status">
-                        {({ field, form }) => (
-                          <ChoicesSearchFormInput
-                            label="Status"
-                            labelClassName="form-label fw-bold"
-                            className="form-control"
-                            id="status"
-                            {...field}
-                            options={[
-                              { label: 'Pending', value: 'Pending' },
-                              { label: 'Ordered', value: 'Ordered' },
-                              { label: 'Received', value: 'Received' },
-                            ]}
-                            onChange={(val) => form.setFieldValue('status', val)}
-                            placeholder="Select Status"
-                          />
-                        )}
-                      </Field>
-                    </Col>
+           
                   </Row>
 
                   {/* ----------------------- */}
@@ -449,23 +409,18 @@ const AddPurchase = () => {
                   </Box>
 
                   <Row className="mt-3">
-                    <Col lg={3}>
+                    <Col lg={4}>
                       <FormikTextField type="number" name="taxAmount" label="Tax Amount" />
                     </Col>
 
-                    <Col lg={3}>
+                    <Col lg={4}>
                       <FormikTextField type="number" name="subTotal" label="Sub Total" disabled />
                     </Col>
 
-                    <Col lg={3}>
+                    <Col lg={4}>
                       <FormikTextField type="number" name="totalAmount" label="Total Amount" disabled />
                     </Col>
-                    <Col lg={3}>
-                      <FormikToggleSwitch
-                        name="postedToStock"
-                        label="Posted to Stock"
-                      />
-                    </Col>
+
 
                     <Col lg={12}>
                       <FormikTextArea name="notes" label="Notes" placeholder="Write Notes ..." />
