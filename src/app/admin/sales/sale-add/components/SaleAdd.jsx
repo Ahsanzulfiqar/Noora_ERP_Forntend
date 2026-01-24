@@ -9,7 +9,7 @@ import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } fro
 import { useGetSellersQuery } from '../../../../../services/endpoints/sellers';
 import { useGetAllWarehousesQuery } from '../../../../../services/endpoints/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/endpoints/product';
-import { useGetAllProductVariantsQuery } from '../../../../../services/endpoints/productvariant';
+import { useGetVariantsByProductQuery } from '../../../../../services/endpoints/productvariant';
 import { useGetAllCouriersQuery } from '../../../../../services/authenticateendpoint/courier';
 
 // Reusable Components
@@ -31,9 +31,8 @@ const SaleAdd = () => {
   const { data: sellersData } = useGetSellersQuery({ limit: 100 });
   const { data: warehousesData } = useGetAllWarehousesQuery();
   const { data: productsData } = useGetAllProductsQuery();
-  const { data: variantsData } = useGetAllProductVariantsQuery();
   const { data: couriersData } = useGetAllCouriersQuery();
-  const [showItemForm, setShowItemForm] = useState(false);
+
   const [newItem, setNewItem] = useState({
     product: '',
     variant: '',
@@ -43,8 +42,9 @@ const SaleAdd = () => {
     quantity: 1,
     salePrice: 0,
     batchNo: '',
-    expiryDate: '',
   });
+
+  const { data: variantsData } = useGetVariantsByProductQuery(newItem.product, { skip: !newItem.product });
 
   const statusOptions = [
     { value: 'draft', label: 'Draft' },
@@ -57,6 +57,7 @@ const SaleAdd = () => {
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.name, sku: p.sku, salePrice: p.salePrice })) || [];
   const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
+  const [showItemForm, setShowItemForm] = useState(false);
 
   const initialValues = {
     seller: saleData?.seller || '',
@@ -150,7 +151,6 @@ const SaleAdd = () => {
           quantity: Number(item.quantity),
           salePrice: Number(item.salePrice),
           batchNo: item.batchNo,
-          expiryDate: item.expiryDate,
         })),
         taxAmount: Number(values.taxAmount) || 0,
         courierId: values.courier,
@@ -347,7 +347,7 @@ const SaleAdd = () => {
                                   <ChoicesSearchFormInput
                                     label=""
                                     placeholder="Select Variant"
-                                    options={variantsData?.filter(v => v.product === newItem.product).map(v => ({ value: v._id, label: v.name })) || []}
+                                    options={variantsData?.map(v => ({ value: v._id, label: v.name })) || []}
                                     value={newItem.variant}
                                     onChange={(val) => {
                                       const variant = variantsData?.find(v => v._id === val);
@@ -410,7 +410,7 @@ const SaleAdd = () => {
                                   />
                                 </div>
                               </Col>
-                              <Col md={3}>
+                              {/* <Col md={3}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Expiry Date</label>
                                   <input
@@ -420,7 +420,7 @@ const SaleAdd = () => {
                                     onChange={(e) => setNewItem({ ...newItem, expiryDate: e.target.value })}
                                   />
                                 </div>
-                              </Col>
+                              </Col> */}
                               <Col md={12} className="d-flex justify-content-end">
                                 <Button
                                   variant="primary"
@@ -438,7 +438,7 @@ const SaleAdd = () => {
                                       quantity: 1,
                                       salePrice: 0,
                                       batchNo: '',
-                                      expiryDate: '',
+                                      // expiryDate: '',
                                     });
                                   }}
                                 >
@@ -459,7 +459,7 @@ const SaleAdd = () => {
                                 <th>Qty</th>
                                 <th>Price</th>
                                 <th>Batch No</th>
-                                <th>Expiry date</th>
+                                {/* <th>Expiry date</th> */}
                                 <th style={{ width: '50px' }}>Action</th>
                               </tr>
                             </thead>
@@ -473,7 +473,7 @@ const SaleAdd = () => {
                                     <td>{item.quantity}</td>
                                     <td>${item.salePrice?.toFixed(2)}</td>
                                     <td>{item.batchNo || '-'}</td>
-                                    <td>{item.expiryDate || '-'}</td>
+                                    {/* <td>{item.expiryDate || '-'}</td> */}
                                     <td className="text-center">
                                       <IconButton
                                         type="button"
