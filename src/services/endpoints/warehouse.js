@@ -115,6 +115,47 @@ export const warehousesAPI = api.injectEndpoints({
       invalidatesTags: ['Warehouses'],
     }),
 
+    // GET WAREHOUSE STOCK
+    getWarehouseStock: build.query({
+      query: (params) => ({
+        method: 'POST',
+        body: {
+          query: `
+            query GetWarehouseStock($filter: WarehouseStockFilterInput, $page: Int, $limit: Int) {
+              GetWarehouseStock(filter: $filter, page: $page, limit: $limit) {
+                data {
+                  _id
+                  warehouse
+                  product
+                  variant
+                  quantity
+                  reserved
+                  reorderLevel
+                  batches {
+                    batchNo
+                    expiryDate
+                    quantity
+                  }
+                  createdAt
+                  updatedAt
+                }
+                total
+                page
+                limit
+                totalPages
+              }
+            }
+          `,
+          variables: {
+            filter: params?.filter || {},
+            page: params?.page || 1,
+            limit: params?.limit || 50,
+          },
+        },
+      }),
+      transformResponse: (response) => response?.data?.GetWarehouseStock || { data: [], total: 0 },
+      providesTags: ['WarehouseStock'],
+    }),
 
   }),
 })
@@ -125,4 +166,5 @@ export const {
   useGetWarehouseByIdQuery,
   useUpdateWarehouseMutation,
   useDeleteWarehouseMutation,
+  useGetWarehouseStockQuery,
 } = warehousesAPI

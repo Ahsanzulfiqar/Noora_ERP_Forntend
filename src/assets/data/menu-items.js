@@ -111,12 +111,12 @@ export const MENU_ITEMS = [
         url: '/inventory/warehouse',
         parentKey: 'inventory',
       },
-      {
-        key: 'received-orders',
-        label: 'Received Orders',
-        url: '/inventory/received-orders',
-        parentKey: 'inventory',
-      },
+      // {
+      //   key: 'received-orders',
+      //   label: 'Received Orders',
+      //   url: '/inventory/received-orders',
+      //   parentKey: 'inventory',
+      // },
     ],
   },
   // {

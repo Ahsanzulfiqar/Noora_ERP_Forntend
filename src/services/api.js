@@ -28,6 +28,6 @@ const baseQueryWithErrorHandling = async (args, api, extraOptions) => {
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithErrorHandling,
-  tagTypes: ['User', 'Project', 'Warehouses'],
+  tagTypes: ['User', 'Project', 'Warehouses', 'WarehouseStock'],
   endpoints: () => ({}), // empty, others will inject
 })
