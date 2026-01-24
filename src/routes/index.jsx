@@ -73,6 +73,7 @@ const ProductAdd = lazy(() => import('@/app/admin/products/product-add/page'))
 // productVarient Routes
 const ProductVarientList = lazy(() => import('../app/admin/productVarient/productVarient-list/page'))
 const ProductVarientAdd = lazy(() => import('../app/admin/productVarient/productVarient-add/page'))
+const ProductVarientDetails = lazy(() => import('../app/admin/productVarient/[productVarientId]/page'))
 // productVarient Routes
 const PostToStock = lazy(() => import('../app/admin/stock/stock-add/page'))
 const PostToStockList = lazy(() => import('../app/admin/stock/stock-list/page'))
@@ -640,6 +641,11 @@ const productRoutes = [
     name: 'productvarient-edit',
     path: '/products/product-varient-edit/:productvarientId',
     element: <ProductVarientAdd />,
+  },
+  {
+    name: 'productvarient-details',
+    path: '/products/product-varient-details/:productvarientId',
+    element: <ProductVarientDetails />,
   },
 ]
 const productVarientRoutes = [

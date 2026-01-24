@@ -14,7 +14,8 @@ const ProductCard = ({
   rating,
   size,
   stockLeft,
-  stockSold
+  stockSold,
+  _id
 }) => {
   return <tr>
     <td>
@@ -62,10 +63,10 @@ const ProductCard = ({
     </td>
     <td>
       <div className="d-flex gap-2">
-        <Link to="" className="btn btn-light btn-sm">
+        <Link to={`/products/product-varient-details/${_id}`} className="btn btn-light btn-sm">
           <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
         </Link>
-        <Link to="" className="btn btn-soft-primary btn-sm">
+        <Link to={`/products/product-varient-edit/${_id}`} className="btn btn-soft-primary btn-sm">
           <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
         </Link>
         <Link to="" className="btn btn-soft-danger btn-sm">
