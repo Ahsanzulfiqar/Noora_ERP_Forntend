@@ -84,8 +84,8 @@ const CategoryEdit = lazy(() => import('@/app/(admin)/category/category-edit/pag
 const CategoryAdd = lazy(() => import('@/app/(admin)/category/category-add/page'))
 
 // inventory Routes
-const Warehouse = lazy(() => import('@/app/(admin)/inventory/warehouse/page'))
-const ReceivedOrders = lazy(() => import('@/app/(admin)/inventory/received-orders/page'))
+const Warehouse = lazy(() => import('@/app/admin/inventory/warehouse/page'))
+const ReceivedOrders = lazy(() => import('@/app/admin/inventory/received-orders/page'))
 
 // Orders Routes
 const OrdersList = lazy(() => import('@/app/(admin)/orders/orders-list/page'))
