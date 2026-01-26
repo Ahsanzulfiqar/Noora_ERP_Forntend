@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 const ProductDetails = ({ variant, productvarientId }) => {
   const images = variant?.images?.length ? variant.images.map(img => img.url) : [];
   const [activeIndex, setActiveIndex] = useState(0);
-console.log('variant', variant);
+  console.log('variant', variant);
 
   const handleSelect = (selectedIndex) => {
     setActiveIndex(selectedIndex);
@@ -84,26 +84,58 @@ console.log('variant', variant);
               </Link>
             </p>
 
-            <h2 className="fw-medium my-3">
-              {currency}{variant.salePrice} <span className="fs-16 text-decoration-line-through">{currency}{variant.purchasePrice}</span>
-            </h2>
-
-            <Row className="align-items-center g-2 mt-3">
-              {variant.attributes?.map((attr, idx) => (
-                <Col lg={3} key={idx}>
-                  <div>
-                    <h5 className="text-dark fw-medium">
-                      {attr.name} &gt; <span className="text-muted">{attr.value}</span>
-                    </h5>
-                  </div>
-                </Col>
-              ))}
-            </Row>
-
-            <div className="quantity mt-4">
-              <h4 className="text-dark fw-medium mt-3">Pack Size: {variant.packSize || 'N/A'}</h4>
-              <h4 className="text-dark fw-medium mt-3">Net Weight: {variant.netWeight || 'N/A'}</h4>
+            <div className="table-responsive mt-4">
+              <table className="table table-sm table-bordered align-middle mb-0">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="py-2">Price & Specifications</th>
+                    <th className="py-2">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="text-muted py-1" style={{ width: '180px' }}>Sale Price</td>
+                    <td className="py-1">
+                      <h3 className="text-primary fw-bold mb-0">{currency}{variant.salePrice}</h3>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-muted py-1">Purchase Price</td>
+                    <td className="py-1">
+                      <span className="text-muted  fs-18">{currency}{variant.purchasePrice}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-muted py-1">Net Weight</td>
+                    <td className="py-1 fw-medium text-dark fs-16">{variant.netWeight || 'N/A'}</td>
+                  </tr>
+                  <tr>
+                    <td className="text-muted py-1">Pack Size</td>
+                    <td className="py-1 fw-medium text-dark fs-16">{variant.packSize || 'N/A'}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+
+            <div className="table-responsive mt-3">
+              <table className="table table-sm table-bordered align-middle mb-0">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="py-2">Attribute</th>
+                    <th className="py-2">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {variant.attributes?.map((attr, idx) => (
+                    <tr key={idx}>
+                      <td className="text-muted py-1" style={{ width: '140px' }}>{attr.name}</td>
+                      <td className="py-1 fw-medium text-dark fs-16">{attr.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
 
             <ul className="d-flex flex-column gap-2 list-unstyled fs-15 my-3">
               <li>
