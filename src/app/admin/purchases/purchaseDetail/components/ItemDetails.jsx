@@ -4,7 +4,31 @@ import { Link } from 'react-router-dom';
 import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { usePostToStockMutation } from '@/services/endpoints/purchases';
+import { useState } from 'react';
+import DeleteConfirmModal from '../../../../../components/DeleteConfirmModal';
+import StatusAlert from '@/components/StatusAlert';
+
 const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
+  const [postToStock, { isLoading: isPosting, isSuccess: isPostSuccess, error: postError }] = usePostToStockMutation();
+  const [showPostConfirm, setShowPostConfirm] = useState(false);
+
+  const handlePostToStockClick = () => {
+    setShowPostConfirm(true);
+  };
+
+  const handleConfirmPostToStock = async () => {
+    try {
+      await postToStock(purchaseData?._id).unwrap();
+      setShowPostConfirm(false);
+    } catch (err) {
+      console.error('Failed to post to stock:', err);
+    }
+  };
+
+  const handleCancelPostToStock = () => {
+    setShowPostConfirm(false);
+  };
   if (isLoadingPurchase) {
     return (
       <Col lg={12}>
@@ -30,6 +54,18 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
 
   return (
     <Col lg={12}>
+      <StatusAlert isSuccess={isPostSuccess} message="Purchase posted to stock successfully" error={postError} />
+      <DeleteConfirmModal
+        show={showPostConfirm}
+        title="Post to Stock"
+        message="Are you sure you want to post this purchase to stock?"
+        confirmText="Yes, Post"
+        cancelText="Cancel"
+        confirmVariant="primary"
+        loading={isPosting}
+        onConfirm={handleConfirmPostToStock}
+        onCancel={handleCancelPostToStock}
+      />
       <Card>
         {/* <CardHeader>
           <CardTitle as={'h4'}>Purchase Details</CardTitle>
@@ -42,8 +78,13 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                 <Link to={`/purchases/purchase-edit/${purchaseData?._id}`} className="btn btn-sm btn-primary">
                   Edit Purchase
                 </Link>
-                {status === 'confirmed' &&
-                  <Button variant='success' className='btn btn-sm btn-success'>
+                {status === 'confirmed' && !purchaseData?.postedToStock &&
+                  <Button
+                    variant='success'
+                    className='btn btn-sm btn-success'
+                    onClick={handlePostToStockClick}
+                    disabled={isPosting}
+                  >
                     Post To Stock
                   </Button>
                 }
