@@ -2,12 +2,14 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { currency } from '@/context/constants';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { Card, CardBody, CardFooter, Carousel, CarouselItem, Col, Row } from 'react-bootstrap';
+import { Card, CardBody, CardFooter, Carousel, CarouselItem, Col, Row, CardHeader, CardTitle } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-
-const ProductDetails = ({ variant }) => {
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+const ProductDetails = ({ variant, productvarientId }) => {
   const images = variant?.images?.length ? variant.images.map(img => img.url) : [];
   const [activeIndex, setActiveIndex] = useState(0);
+console.log('variant', variant);
 
   const handleSelect = (selectedIndex) => {
     setActiveIndex(selectedIndex);
@@ -21,8 +23,23 @@ const ProductDetails = ({ variant }) => {
 
   return (
     <Row>
+      <Col lg={12} >
+        <Box sx={{ backgroundColor: '#fff', p: 2, mb: 2, borderRadius: 2 }}>
+          <CardHeader >
+            <CardTitle >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+                <Typography variant='h6'>Product Detail</Typography>
+                <Link to={`/products/product-edit/${productvarientId}`} className="btn btn-sm btn-primary">
+                  Edit Product
+                </Link>
+              </Box>
+            </CardTitle>
+          </CardHeader>
+        </Box>
+      </Col>
       <Col lg={4}>
         <Card>
+
           <CardBody>
             <div id="carouselExampleFade" className="carousel slide carousel-fade" data-bs-ride="carousel">
               <Carousel activeIndex={activeIndex} onSelect={handleSelect} indicators={false} className="carousel-inner" role="listbox">
@@ -54,27 +71,7 @@ const ProductDetails = ({ variant }) => {
               </div>
             </div>
           </CardBody>
-          <CardFooter className="border-top">
-            <Row className="g-2">
-              <Col lg={5}>
-                <Link to="" className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100">
-                  <IconifyIcon icon="bx:cart" className="fs-18" /> Add To Cart
-                </Link>
-              </Col>
-              <Col lg={5}>
-                <Link to="" className="btn btn-light d-flex align-items-center justify-content-center gap-2 w-100">
-                  <IconifyIcon icon="bx:shopping-bag" className="fs-18" /> Buy Now
-                </Link>
-              </Col>
-              <Col lg={2}>
-                <button type="button" className="btn btn-soft-danger btn-sm d-inline-flex align-items-center justify-content-center fs-20 rounded w-100">
-                  <span>
-                    <IconifyIcon width={20} height={20} icon="solar:heart-broken" />
-                  </span>
-                </button>
-              </Col>
-            </Row>
-          </CardFooter>
+
         </Card>
       </Col>
       <Col lg={8}>
@@ -86,18 +83,7 @@ const ProductDetails = ({ variant }) => {
                 {variant.name}
               </Link>
             </p>
-            <div className="d-flex gap-2 align-items-center">
-              <ul className="d-flex text-warning m-0 fs-20 list-unstyled">
-                <li><IconifyIcon icon="bxs:star" /></li>
-                <li><IconifyIcon icon="bxs:star" /></li>
-                <li><IconifyIcon icon="bxs:star" /></li>
-                <li><IconifyIcon icon="bxs:star" /></li>
-                <li><IconifyIcon icon="bxs:star-half" /></li>
-              </ul>
-              <p className="mb-0 fw-medium fs-18 text-dark">
-                4.5 <span className="text-muted fs-13">(Mock Review)</span>
-              </p>
-            </div>
+
             <h2 className="fw-medium my-3">
               {currency}{variant.salePrice} <span className="fs-16 text-decoration-line-through">{currency}{variant.purchasePrice}</span>
             </h2>

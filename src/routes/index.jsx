@@ -614,7 +614,7 @@ const productRoutes = [
   },
   {
     name: 'product-details',
-    path: '/products/product-edits/:productId',
+    path: '/products/product-details/:productId',
     element: <Products />,
   },
   {

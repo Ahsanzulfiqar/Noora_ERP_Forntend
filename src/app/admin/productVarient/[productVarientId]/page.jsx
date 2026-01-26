@@ -18,12 +18,12 @@ const ProductDetailsPage = () => {
   return (
     <>
       <PageTItle title="Product Details" />
-      <ProductDetails variant={variant} />
-      <Step />
-      <Row>
+      <ProductDetails variant={variant} productvarientId={productvarientId} />
+      {/* <Step /> */}
+      {/* <Row>
         <ItemDetails variant={variant} />
         <Review />
-      </Row>
+      </Row> */}
     </>
   );
 };

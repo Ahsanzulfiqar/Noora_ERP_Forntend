@@ -58,7 +58,7 @@ const ProductCard = ({ product }) => {
             size="small"
             className="btn btn-light btn-sm"
             aria-label="view"
-            onClick={() => navigate(`/products/product-edits/${_id}`)}
+            onClick={() => navigate(`/products/product-details/${_id}`)}
           >
             <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
           </IconButton>

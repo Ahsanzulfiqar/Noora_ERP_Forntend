@@ -12,7 +12,7 @@ import {
   useGetUserByIdQuery
 } from '../../../../services/authenticateendpoint/users';
 import { useGetAllWarehousesQuery } from '../../../../services/endpoints/warehouse';
-import { useGetAllProjectsQuery } from '../../../../services/endpoints/project';
+import { useGetAllProjectsQuery } from '../../../../services/authenticateendpoint/project';
 import FormikRadioGroup from '@/components/formikfield/FormikRadioGroup';
 import { useEffect, useState } from 'react';
 import { ROLE_OPTIONS } from '@/assets/data/roles';
@@ -210,12 +210,13 @@ const RoleAddPage = () => {
                 </CardBody>
                 <CardFooter className="border-top">
                   <div className="d-flex gap-2">
-                    <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                      {isLoading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update User' : 'Create User')}
-                    </button>
+
                     <Link to="/role/role-list" className="btn btn-outline-secondary">
                       Cancel
                     </Link>
+                    <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                      {isLoading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update User' : 'Create User')}
+                    </button>
                   </div>
                 </CardFooter>
               </Form>
