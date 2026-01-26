@@ -104,22 +104,23 @@ const AddPurchase = () => {
               supplierName: purchaseData?.supplierName || '',
               invoiceNo: purchaseData?.invoiceNo || '',
               warehouseId: purchaseData?.warehouse?._id || purchaseData?.warehouse || '',
-              purchaseDate: purchaseData?.purchaseDate ? new Date(purchaseData.purchaseDate).toISOString().split('T')[0] : '',
-              items: purchaseData?.items?.map(item => ({
-                product: item.product?._id || item.product || '',
-                quantity: item.quantity || '',
-                purchasePrice: item.purchasePrice || '',
-                lineTotal: item.lineTotal || 0,
-                batchNo: item.batchNo || '',
-                expiryDate: item.expiryDate ? new Date(item.expiryDate).toISOString().split('T')[0] : '',
-                sku: item.sku || '',
-                variant: item.variant || ''
-              })) || [],
+              purchaseDate: purchaseData?.purchaseDate
+                ? new Date(purchaseData.purchaseDate).toISOString().split('T')[0]
+                : new Date().toISOString().split('T')[0], items: purchaseData?.items?.map(item => ({
+                  product: item.product?._id || item.product || '',
+                  quantity: item.quantity || '',
+                  purchasePrice: item.purchasePrice || '',
+                  lineTotal: item.lineTotal || 0,
+                  batchNo: item.batchNo || '',
+                  expiryDate: item.expiryDate ? new Date(item.expiryDate).toISOString().split('T')[0] : '',
+                  sku: item.sku || '',
+                  variant: item.variant || ''
+                })) || [],
               subTotal: purchaseData?.subTotal || 0,
               taxAmount: purchaseData?.taxAmount || 0,
               totalAmount: purchaseData?.totalAmount || 0,
               notes: purchaseData?.notes || '',
-              status: purchaseData?.status || 'confirmed',
+              status: purchaseData?.status || 'draft',
             }}
             validationSchema={Yup.object({
               supplierName: Yup.string().required('Required'),
@@ -138,7 +139,7 @@ const AddPurchase = () => {
               subTotal: Yup.number(),
               taxAmount: Yup.number().required('Required'),
               totalAmount: Yup.number(),
-              status: Yup.string().oneOf(['confirmed', 'cancelled']),
+              // status: Yup.string().oneOf(['confirmed', 'cancelled']),
             })}
             onSubmit={async (values, { resetForm }) => {
               try {
@@ -455,14 +456,14 @@ const AddPurchase = () => {
 
                   <div className="p-3 bg-light mt-4 rounded">
                     <Row className="justify-content-end g-2">
-        
+
 
                       <Col lg={2}>
                         <Link to="/purchases/purchase-list" className="btn btn-primary w-100">
                           Cancel
                         </Link>
                       </Col>
-                         <Col lg={2}>
+                      <Col lg={2}>
                         <Button type="submit" className="btn btn-outline-secondary w-100" disabled={isCreating || isUpdating}>
                           {isCreating || isUpdating ? 'Saving...' : 'Save'}
                         </Button>

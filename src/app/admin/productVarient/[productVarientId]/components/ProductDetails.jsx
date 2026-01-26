@@ -77,14 +77,17 @@ const ProductDetails = ({ variant, productvarientId }) => {
       <Col lg={8}>
         <Card>
           <CardBody>
-            <h4 className="badge bg-success text-light fs-14 py-1 px-2">{variant.isActive ? 'Active' : 'Inactive'}</h4>
-            <p className="mb-1">
-              <Link to="" className="fs-24 text-dark fw-medium">
-                {variant.name}
-              </Link>
-            </p>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+              <p>
+                <Link to="" className="fs-24 text-dark fw-medium">
+                  {variant.name}
+                </Link>
+              </p>
+              <h4 className="badge bg-success text-light fs-14 py-1 px-2">{variant.isActive ? 'Active' : 'Inactive'}</h4>
 
-            <div className="table-responsive mt-4">
+            </Box>
+
+            <div className="table-responsive  ">
               <table className="table table-sm table-bordered align-middle mb-0">
                 <thead className="bg-light">
                   <tr>
@@ -144,15 +147,13 @@ const ProductDetails = ({ variant, productvarientId }) => {
               <li>
                 <IconifyIcon icon="bx:check" className="text-success" /> Barcode: {variant.barcode}
               </li>
-              <li>
-                <IconifyIcon icon="bx:check" className="text-success" /> {variant.isActive ? 'Available' : 'Currently Unavailable'}
-              </li>
+
             </ul>
-            <h4 className="text-dark fw-medium">Description :</h4>
-            <p className="text-muted">
+            {/* <h4 className="text-dark fw-medium">Description :</h4> */}
+            {/* <p className="text-muted">
               This is a variant of product ID: {variant.product}.
               It has a sale price of {currency}{variant.salePrice} and is currently {variant.isActive ? 'active' : 'inactive'}.
-            </p>
+            </p> */}
           </CardBody>
         </Card>
       </Col>
