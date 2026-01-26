@@ -47,6 +47,11 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                     Post To Stock
                   </Button>
                 }
+                {status === 'draft' &&
+                  <Typography variant='success' className='bg-success text-white px-2 py-1 rounded'>
+                    Draft
+                  </Typography>
+                }
               </Box>
             </Box>
           </CardTitle>

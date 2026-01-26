@@ -166,20 +166,21 @@ const AddPurchase = () => {
                 });
 
                 // Construct strict payload based on errors
+                const { status, ...restOfValues } = values;
+
                 const payload = {
-                  supplierName: values.supplierName,
-                  invoiceNo: values.invoiceNo,
-                  warehouseId: values.warehouseId,
-                  purchaseDate: values.purchaseDate,
-                  taxAmount: parseFloat(values.taxAmount) || 0,
-                  notes: values.notes || "",
+                  supplierName: restOfValues.supplierName,
+                  invoiceNo: restOfValues.invoiceNo,
+                  warehouseId: restOfValues.warehouseId,
+                  purchaseDate: restOfValues.purchaseDate,
+                  taxAmount: parseFloat(restOfValues.taxAmount) || 0,
+                  notes: restOfValues.notes || "",
                   items: formattedItems,
-                  status: values.status,
                   // postedToStock and productId are removed as they are not defined in CreatePurchaseInput
                 };
 
                 if (purchaseId) {
-                  await updatePurchase({ id: purchaseId, data: payload }).unwrap();
+                  await updatePurchase({ id: purchaseId, data: { ...payload, status: values.status } }).unwrap();
                 } else {
                   await createPurchase(payload).unwrap();
                 }
