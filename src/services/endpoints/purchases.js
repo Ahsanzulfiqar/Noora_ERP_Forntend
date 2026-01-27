@@ -102,6 +102,8 @@ export const purchasesAPI = api.injectEndpoints({
                 items {
                   product
                   variant
+                  variantName
+                  productName
                   quantity
                   purchasePrice
                   lineTotal

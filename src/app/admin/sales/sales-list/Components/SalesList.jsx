@@ -11,6 +11,7 @@ import OutForDeliveryModal from '../../salesId/components/modals/OutForDeliveryM
 import DeliveredModal from '../../salesId/components/modals/DeliveredModal';
 import ReturnSaleModal from '../../salesId/components/modals/ReturnSaleModal';
 import CancelSaleModal from '../../salesId/components/modals/CancelSaleModal';
+import Pagination from '@/components/Pagination';
 
 const SalesList = () => {
   const [filter, setFilter] = useState({
@@ -40,6 +41,12 @@ const SalesList = () => {
 
   console.log('salesResponse', salesResponse);
   const salesData = salesResponse?.data || [];
+
+  // Assuming the API returns totalDocs or similar for total items to calculate total pages.
+  // If strict totalPages is returned, use that. 
+  // Based on typical API response in this project, it might be in salesResponse.total or similar.
+  // For now, I will use a safe fallback or calculation if total is available.
+  const totalPages = salesResponse?.totalPages || Math.ceil((salesResponse?.totalDocs || 0) / limit) || 1;
 
   const handleFilterChange = (key, value) => {
     setFilter(prev => ({ ...prev, [key]: value }));
@@ -138,9 +145,9 @@ const SalesList = () => {
               </Row>
             </CardHeader>
             <CardBody className="p-0">
-              <div className="table-responsive">
+              <div className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
                 <Table hover className="table-centered table-nowrap mb-0">
-                  <thead className="bg-light text-muted">
+                  <thead className="bg-light text-muted" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                     <tr>
                       <th className="ps-3 uppercase font-weight-bold">Invoice No</th>
                       <th className="uppercase font-weight-bold">Date</th>
@@ -215,6 +222,13 @@ const SalesList = () => {
                     )}
                   </tbody>
                 </Table>
+              </div>
+              <div className="p-3 border-top">
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                />
               </div>
             </CardBody>
           </Card>
