@@ -183,7 +183,7 @@ const SalesList = () => {
                               <Link to={`/sales/sales-edit/${item._id}`} className="btn btn-outline-info btn-sm rounded-circle p-1 border-0 shadow-none">
                                 <IconifyIcon icon="solar:pen-2-broken" className="fs-18" />
                               </Link>
-                              <Dropdown>
+                              <Dropdown drop="start">
                                 <Dropdown.Toggle as="div" className="btn btn-outline-secondary btn-sm rounded-circle p-1 border-0 shadow-none arrow-none cursor-pointer">
                                   <IconifyIcon icon="solar:menu-dots-bold" className="fs-18" />
                                 </Dropdown.Toggle>
