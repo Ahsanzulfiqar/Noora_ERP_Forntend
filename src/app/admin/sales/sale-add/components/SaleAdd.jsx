@@ -18,7 +18,7 @@ import FormikTextArea from '@/components/formikfield/FormikTextArea';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import StatusAlert from '@/components/StatusAlert';
 import { SalesValidationSchema } from '../../utils/utils';
-import { Plus, Trash2, X } from 'lucide-react';
+import { Plus, Trash2, X, Edit } from 'lucide-react';
 import { IconButton, Tooltip } from '@mui/material';
 
 const SaleAdd = () => {
@@ -58,6 +58,7 @@ const SaleAdd = () => {
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.name, sku: p.sku, salePrice: p.salePrice })) || [];
   const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
   const [showItemForm, setShowItemForm] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
 
   const initialValues = {
     seller: saleData?.seller || '',
@@ -78,16 +79,8 @@ const SaleAdd = () => {
       quantity: item.quantity || 1,
       salePrice: item.salePrice || 0,
       lineTotal: item.lineTotal || 0,
-    })) || [{
-      product: '',
-      variant: '',
-      productName: '',
-      variantName: '',
-      sku: '',
-      quantity: 1,
-      salePrice: 0,
-      lineTotal: 0,
-    }],
+      lineTotal: item.lineTotal || 0,
+    })) || [],
     subTotal: saleData?.subTotal || 0,
     taxAmount: saleData?.taxAmount || 0,
     totalAmount: saleData?.totalAmount || 0,
@@ -291,7 +284,7 @@ const SaleAdd = () => {
 
               <Card className="mb-4">
                 <FieldArray name="items">
-                  {({ push, remove }) => (
+                  {({ push, remove, replace }) => (
                     <>
                       <CardHeader className="d-flex justify-content-between align-items-center">
                         <CardTitle as={'h4'}>Items</CardTitle>
@@ -420,14 +413,42 @@ const SaleAdd = () => {
                                   />
                                 </div>
                               </Col> */}
-                              <Col md={12} className="d-flex justify-content-end">
+                              <Col md={12} className="d-flex justify-content-end gap-2">
+                                {editingIndex !== null && (
+                                  <Button
+                                    variant="outline-secondary"
+                                    className="mt-2"
+                                    onClick={() => {
+                                      setEditingIndex(null);
+                                      setNewItem({
+                                        product: '',
+                                        variant: '',
+                                        productName: '',
+                                        variantName: '',
+                                        sku: '',
+                                        quantity: 1,
+                                        salePrice: 0,
+                                        batchNo: '',
+                                      });
+                                      setShowItemForm(false);
+                                    }}
+                                  >
+                                    Cancel
+                                  </Button>
+                                )}
                                 <Button
                                   variant="primary"
                                   className="mt-2"
                                   style={{ backgroundColor: '#5c7186', borderColor: '#5c7186' }}
                                   disabled={!newItem.product}
                                   onClick={() => {
-                                    push({ ...newItem, lineTotal: newItem.quantity * newItem.salePrice });
+                                    const itemData = { ...newItem, lineTotal: newItem.quantity * newItem.salePrice };
+                                    if (editingIndex !== null) {
+                                      replace(editingIndex, itemData);
+                                      setEditingIndex(null);
+                                    } else {
+                                      push(itemData);
+                                    }
                                     setNewItem({
                                       product: '',
                                       variant: '',
@@ -439,9 +460,10 @@ const SaleAdd = () => {
                                       batchNo: '',
                                       // expiryDate: '',
                                     });
+                                    if (editingIndex !== null) setShowItemForm(false);
                                   }}
                                 >
-                                  ADD ITEM
+                                  {editingIndex !== null ? 'UPDATE ITEM' : 'ADD ITEM'}
                                 </Button>
                               </Col>
                             </Row>
@@ -473,7 +495,18 @@ const SaleAdd = () => {
                                     <td>${item.salePrice?.toFixed(2)}</td>
                                     {/* <td>{item.batchNo || '-'}</td> */}
                                     {/* <td>{item.expiryDate || '-'}</td> */}
-                                    <td className="text-center">
+                                    <td className="text-center d-flex">
+                                      <IconButton
+                                        type="button"
+                                        onClick={() => {
+                                          setNewItem(item);
+                                          setEditingIndex(index);
+                                          setShowItemForm(true);
+                                        }}
+                                        sx={{ backgroundColor: '#eef2f6', mr: 1 }}
+                                      >
+                                        <Edit size={17} color="#5c7186" strokeWidth={2} />
+                                      </IconButton>
                                       <IconButton
                                         type="button"
                                         onClick={() => remove(index)}
