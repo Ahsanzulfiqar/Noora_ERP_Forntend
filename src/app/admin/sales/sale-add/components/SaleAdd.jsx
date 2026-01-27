@@ -578,15 +578,17 @@ const SaleAdd = () => {
 
               <div className="p-3 bg-light mt-4 mb-3 rounded d-flex justify-content-end gap-2">
                 <Button
-                  variant="outline-secondary"
+                  variant="primary"
+
                   onClick={() => navigate(-1)}
                   style={{ width: '150px' }}
                 >
                   Cancel
                 </Button>
                 <Button
+                  variant="outline-secondary"
+
                   type="submit"
-                  variant="primary"
                   disabled={isCreating || isUpdating}
                   style={{ width: '150px' }}
                 >
