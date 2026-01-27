@@ -20,7 +20,7 @@ const SalesList = () => {
     search: ''
   });
   const [page, setPage] = useState(1);
-  const limit = 20;
+  const [limit, setLimit] = useState(10);
 
   const [activeModal, setActiveModal] = useState(null);
   const [selectedSaleId, setSelectedSaleId] = useState(null);
@@ -46,7 +46,7 @@ const SalesList = () => {
   // If strict totalPages is returned, use that. 
   // Based on typical API response in this project, it might be in salesResponse.total or similar.
   // For now, I will use a safe fallback or calculation if total is available.
-  const totalPages = salesResponse?.totalPages || Math.ceil((salesResponse?.totalDocs || 0) / limit) || 1;
+  const totalPages = salesResponse?.totalPages || Math.ceil((salesResponse?.total || 0) / limit) || 1;
 
   const handleFilterChange = (key, value) => {
     setFilter(prev => ({ ...prev, [key]: value }));
@@ -145,7 +145,7 @@ const SalesList = () => {
               </Row>
             </CardHeader>
             <CardBody className="p-0">
-              <div className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+              <div className="table-responsive" style={{ height: 'calc(100vh - 420px)', overflowY: 'auto' }}>
                 <Table hover className="table-centered table-nowrap mb-0">
                   <thead className="bg-light text-muted" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                     <tr>
@@ -223,7 +223,24 @@ const SalesList = () => {
                   </tbody>
                 </Table>
               </div>
-              <div className="p-3 border-top">
+              <div className="p-3 border-top d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center gap-2">
+                  <span>Rows per page:</span>
+                  <Form.Select
+                    size="sm"
+                    value={limit}
+                    onChange={(e) => {
+                      setLimit(Number(e.target.value));
+                      setPage(1);
+                    }}
+                    style={{ width: '80px' }}
+                  >
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </Form.Select>
+                </div>
                 <Pagination
                   currentPage={page}
                   totalPages={totalPages}

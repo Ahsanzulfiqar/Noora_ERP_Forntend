@@ -44,7 +44,7 @@ const SaleAdd = () => {
     batchNo: '',
   });
 
-  const { data: variantsData } = useGetVariantsByProductQuery(newItem.product, { skip: !newItem.product });
+  const { data: variantsData } = useGetVariantsByPproductQuery(newItem.product, { skip: !newItem.product });
 
   const statusOptions = [
     { value: 'draft', label: 'Draft' },

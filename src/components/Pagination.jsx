@@ -4,7 +4,7 @@ import { Pagination as BootstrapPagination } from 'react-bootstrap';
 import IconifyIcon from './wrappers/IconifyIcon';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-    if (totalPages <= 1) return null;
+    // if (totalPages <= 1) return null;
 
     const items = [];
     const maxDisplayedPages = 5; // Number of page buttons to show
@@ -29,7 +29,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     }
 
     return (
-        <div className="d-flex justify-content-end align-items-center mt-3">
+        <div className="d-flex align-items-center">
             <BootstrapPagination>
                 <BootstrapPagination.Prev
                     onClick={() => onPageChange(currentPage - 1)}

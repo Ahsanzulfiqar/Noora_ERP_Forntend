@@ -203,7 +203,7 @@
      .page-content {
           position: relative;
           transition: all 0.3s ease-in-out;
-          min-height: calc(100vh - $topbar-height);
+          min-height: calc(100vh - 200px);
           padding-bottom: $footer-height;
           margin-left: $main-nav-width;
      }

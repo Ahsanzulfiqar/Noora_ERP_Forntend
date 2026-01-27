@@ -112,6 +112,10 @@ export const salesAPI = api.injectEndpoints({
                 subTotal
                 taxAmount
                 totalAmount
+                courierName
+                trackingNo
+                trackingUrl
+                deliveryNotes
                 createdAt
               }
             }
@@ -135,7 +139,12 @@ export const salesAPI = api.injectEndpoints({
                 _id
                 invoiceNo
                 status
+                status
                 totalAmount
+                courierName
+                trackingNo
+                trackingUrl
+                deliveryNotes
               }
             }
           `,

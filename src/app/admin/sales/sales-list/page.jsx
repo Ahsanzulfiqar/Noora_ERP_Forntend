@@ -5,7 +5,7 @@ const SalesListPage = () => {
   return (
     <>
       <PageTItle title="Sales List" />
-      <Row>
+      <Row >
         <Col xl={12}>
           <SalesList />
         </Col>
