@@ -61,7 +61,7 @@ const PurchaseListPage = () => {
   const navigate = useNavigate()
 
   const handleEditClick = (purchase) => {
-    if (purchase.status === 'received') {
+    if (purchase.status === 'received' || purchase.status === 'confirmed') {
       setSelectedId(purchase._id)
       setShowEditConfirm(true)
     } else {
@@ -162,7 +162,7 @@ const PurchaseListPage = () => {
                       <th>Invoice No</th>
                       <th>Warehouse</th>
                       <th>Purchase Date</th>
-                      <th>Status</th> ,
+                      <th>Status</th>
                       <th>Sub Total</th>
                       <th>Tax Amount</th>
                       <th>Total Amount</th>
@@ -218,7 +218,7 @@ const PurchaseListPage = () => {
                                 className="align-middle fs-18"
                               />
                             </Button>
-                            {!purchase.postedToStock && (
+                            {/* {!purchase.postedToStock && (
                               <Button
                                 className="btn btn-soft-primary btn-sm"
                                 onClick={() => handlePostToStockClick(purchase._id)}
@@ -227,7 +227,7 @@ const PurchaseListPage = () => {
                               >
                                 <IconifyIcon icon="solar:send-square-bold-duotone" className="align-middle fs-18" />
                               </Button>
-                            )}
+                            )} */}
                           </div>
                         </td>
                       </tr>

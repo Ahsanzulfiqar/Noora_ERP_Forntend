@@ -9,7 +9,7 @@ import FormikTextField from '@/components/formikfield/FormikTextField'
 import FormikDateField from '@/components/formikfield/FormikDateField'
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput'
 import { Box, Divider, IconButton } from '@mui/material'
-import { Trash2, Plus, X, Save } from 'lucide-react'
+import { Trash2, Plus, X, Save, Edit } from 'lucide-react'
 // import { useCreatePurchaseMutation } from '../../../../../services/endpoints/purchases'
 // import { useGetAllWarehousesQuery } from '../../../../../services/endpoints/warehouse'
 // import { useGetAllProductsQuery } from '../../../../../services/endpoints/product'
@@ -66,6 +66,7 @@ const AddPurchase = () => {
   const warehouseOptions = warehouses?.map(w => ({ label: w.name, value: w._id })) || [];
 
   const [showAddItemForm, setShowAddItemForm] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
   const [currentItem, setCurrentItem] = useState({
     product: '',
     variant: '',
@@ -255,7 +256,7 @@ const AddPurchase = () => {
                   {/* ----------------------- */}
                   <Box sx={{ border: '1px solid #dfdfdfff', borderRadius: '10px', mt: 3 }}>
                     <FieldArray name="items">
-                      {({ push, remove }) => (
+                      {({ push, remove, replace }) => (
                         <>
                           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, px: 2, pt: 1 }}>
                             <h5 className="mb-0">Items</h5>
@@ -354,6 +355,28 @@ const AddPurchase = () => {
                                   />
                                 </Col>
                                 <Col lg={12} className="text-end mt-2">
+                                  {editingIndex !== null && (
+                                    <Button
+                                      variant="outlined"
+                                      size="small"
+                                      onClick={() => {
+                                        setEditingIndex(null);
+                                        setCurrentItem({
+                                          product: '',
+                                          variant: '',
+                                          sku: '',
+                                          quantity: '',
+                                          purchasePrice: '',
+                                          batchNo: '',
+                                          expiryDate: ''
+                                        });
+                                        setShowAddItemForm(false);
+                                      }}
+                                      sx={{ mr: 1, color: '#5c7186', borderColor: '#5c7186', '&:hover': { borderColor: '#4a5b6d', backgroundColor: '#f0f0f0' } }}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  )}
                                   <Button
                                     variant="contained"
                                     size="small"
@@ -362,7 +385,15 @@ const AddPurchase = () => {
                                         alert("Please fill required fields (Product, Qty, Price)");
                                         return;
                                       }
-                                      push({ ...currentItem, lineTotal: (parseFloat(currentItem.quantity) || 0) * (parseFloat(currentItem.purchasePrice) || 0) });
+                                      const newItem = { ...currentItem, lineTotal: (parseFloat(currentItem.quantity) || 0) * (parseFloat(currentItem.purchasePrice) || 0) };
+
+                                      if (editingIndex !== null) {
+                                        replace(editingIndex, newItem);
+                                        setEditingIndex(null);
+                                      } else {
+                                        push(newItem);
+                                      }
+
                                       setCurrentItem({
                                         product: '',
                                         variant: '',
@@ -376,7 +407,7 @@ const AddPurchase = () => {
                                     }}
                                     sx={{ backgroundColor: '#5c7186', '&:hover': { backgroundColor: '#4a5b6d' } }}
                                   >
-                                    Add Item
+                                    {editingIndex !== null ? 'Update Item' : 'Add Item'}
                                   </Button>
                                 </Col>
                               </Row>
@@ -415,10 +446,18 @@ const AddPurchase = () => {
                                         <td className="px-1 py-2">{item.purchasePrice}</td>
                                         <td className="px-1 py-2">{item.batchNo || '-'}</td>
                                         <td className="px-1 py-2">{item.expiryDate || '-'}</td>
-                                        <td className="text-center px-2 py-2">
+                                        <td className="text-center px-1 py-2 d-flex align-items-center">
+                                          <IconButton type="button" onClick={() => {
+                                            setCurrentItem(item);
+                                            setEditingIndex(index);
+                                            setShowAddItemForm(true);
+                                          }}
+                                            sx={{ backgroundColor: '#eef2f6', mr: 1 }}>
+                                            <Edit size={17} color="#5c7186" strokeWidth={2} />
+                                          </IconButton>
                                           <IconButton type="button" onClick={() => remove(index)}
                                             sx={{ backgroundColor: '#ffdcdcff' }}>
-                                            <Trash2 size={17} color="#ff3939ff" strokeWidth={2} />
+                                            <Trash2 size={15} color="#ff3939ff" strokeWidth={2} />
                                           </IconButton>
                                         </td>
                                       </tr>
