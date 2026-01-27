@@ -75,9 +75,12 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
               <Typography variant='h6'>Purchase Details</Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Link to={`/purchases/purchase-edit/${purchaseData?._id}`} className="btn btn-sm btn-primary">
-                  Edit Purchase
-                </Link>
+                {status != 'received' &&
+                  <Link to={`/purchases/purchase-edit/${purchaseData?._id}`} className="btn btn-sm btn-primary">
+                    Edit Purchase
+                  </Link>
+                }
+
                 {status === 'confirmed' && !purchaseData?.postedToStock &&
                   <Button
                     variant='success'
@@ -89,8 +92,13 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                   </Button>
                 }
                 {status === 'draft' &&
-                  <Typography variant='success' className='bg-success text-white px-2 py-1 rounded'>
+                  <Typography variant='success' className='bg-success text-white px-2 py-1 rounded text-capitalize'>
                     Draft
+                  </Typography>
+                }
+                {status != 'draft' && status != 'confirmed' &&
+                  <Typography variant='success' className='bg-success text-white px-2 py-1 rounded text-capitalize'>
+                    {status}
                   </Typography>
                 }
               </Box>

@@ -2,7 +2,7 @@ import PageTItle from '@/components/PageTItle'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAllPurchasesQuery, useDeletePurchaseMutation, usePostToStockMutation } from '@/services/endpoints/purchases'
 import { Card, CardBody, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Button } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import StatusAlert from '@/components/StatusAlert'
 import { useState } from 'react'
 import DeleteConfirmModal from '../../../../components/DeleteConfirmModal'
@@ -15,6 +15,7 @@ const PurchaseListPage = () => {
   const [postToStock, { isLoading: isPosting, isSuccess: isPostSuccess, error: postError }] = usePostToStockMutation()
   const [showConfirm, setShowConfirm] = useState(false)
   const [showPostConfirm, setShowPostConfirm] = useState(false)
+  const [showEditConfirm, setShowEditConfirm] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
 
   // const handleDelete = async (id) => {
@@ -57,6 +58,27 @@ const PurchaseListPage = () => {
     setSelectedId(null)
   }
 
+  const navigate = useNavigate()
+
+  const handleEditClick = (purchase) => {
+    if (purchase.status === 'received') {
+      setSelectedId(purchase._id)
+      setShowEditConfirm(true)
+    } else {
+      navigate(`/purchases/purchase-edit/${purchase._id}`)
+    }
+  }
+
+  const handleConfirmEdit = () => {
+    setShowEditConfirm(false)
+    setSelectedId(null)
+  }
+
+  const handleCancelEdit = () => {
+    setShowEditConfirm(false)
+    setSelectedId(null)
+  }
+
 
   return (
     <>
@@ -82,6 +104,18 @@ const PurchaseListPage = () => {
         loading={isPosting}
         onConfirm={handleConfirmPostToStock}
         onCancel={handleCancelPostToStock}
+      />
+
+
+      <DeleteConfirmModal
+        show={showEditConfirm}
+        title="Cannot Edit Purchase"
+        message="This purchase is already received and cannot be edited."
+        confirmText="OK"
+        cancelText="Close"
+        confirmVariant="secondary"
+        onConfirm={handleConfirmEdit}
+        onCancel={handleCancelEdit}
       />
 
       <StatusAlert isSuccess={isDeleteSuccess} message="Purchase deleted successfully" error={deleteError} />
@@ -170,11 +204,11 @@ const PurchaseListPage = () => {
                         <td>{purchase.totalAmount}</td>
                         <td>
                           <div className="d-flex gap-2">
-                            <Link to={`/purchases/purchase-edit/${purchase._id}`} className="btn btn-light btn-sm"
-                            >
-                              <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
 
-                            </Link>
+                            <Button className="btn btn-light btn-sm" onClick={() => handleEditClick(purchase)}>
+                              <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
+                            </Button>
+
                             <Link to={`/purchases/purchase-detail/${purchase._id}`} className="btn btn-light btn-sm">
                               <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
                             </Link>
