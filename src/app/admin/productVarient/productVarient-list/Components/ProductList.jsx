@@ -7,14 +7,8 @@ import { useGetAllProductsQuery } from '../../../../../services/endpoints/produc
 import { useState } from 'react';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 const ProductCard = ({
-  title,
-  price,
-  category,
-  image,
-  rating,
-  size,
-  stockLeft,
-  stockSold,
+item,  image,
+
   _id
 }) => {
   return <tr>
@@ -26,41 +20,24 @@ const ProductCard = ({
         </label>
       </div>
     </td>
-    <td>
+    {/* <td>
       <div className="d-flex align-items-center gap-2">
         <div className="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
           <img src={image} alt="product" className="avatar-md" />
         </div>
         <div>
           <Link to="" className="text-dark fw-medium fs-15">
-            {title}
+            {item?.name}
           </Link>
-          <p className="text-muted mb-0 mt-1 fs-13">
-            <span>Size : </span>
-            {size}
-          </p>
         </div>
       </div>
-    </td>
-    <td>
-      {currency}
-      {price}.00
-    </td>
-    <td>
-      <p className="mb-1 text-muted">
-        <span className="text-dark fw-medium">{stockLeft} Item</span> Left
-      </p>
-      <p className="mb-0 text-muted">{stockSold} Sold</p>
-    </td>
-    <td>{category}</td>
-    <td>
-      {' '}
-      <span className="badge p-1 bg-light text-dark fs-12 me-1">
-        <IconifyIcon icon="bxs:star" className="align-text-top fs-14 text-warning me-1" />
-        {rating?.star || 0}
-      </span>{' '}
-      {rating?.review || 0} Review
-    </td>
+    </td> */}
+
+    <td>{item?.name}</td>
+    <td>{item?.salePrice}</td>
+    <td>{item?.purchasePrice}</td>
+    <td>{item?.sku}</td>
+    <td><span className={item?.isActive ? 'badge bg-success' : 'badge bg-danger'}>{item?.isActive ? 'Active' : 'Inactive'}</span></td>
     <td>
       <div className="d-flex gap-2">
         <Link to={`/products/product-varient-details/${_id}`} className="btn btn-light btn-sm">
@@ -128,11 +105,11 @@ const ProductList = () => {
                   <label className="form-check-label" htmlFor="customCheck1" />
                 </div>
               </th>
-              <th>Product Name &amp; Size</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Category</th>
-              <th>Rating</th>
+              <th>Product Name</th>
+              <th>Sale Price</th>
+              <th>Purchase Price</th>
+              <th>SKU</th>
+              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -156,10 +133,8 @@ const ProductList = () => {
               <ProductCard
                 key={idx}
                 {...item}
-                title={item.name}
-                price={item.salePrice}
+                item={item}
                 image={item.images?.[0]?.url}
-                size={item.packSize}
               />
             ))}
           </tbody>
