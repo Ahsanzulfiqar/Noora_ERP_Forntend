@@ -1,14 +1,48 @@
 import PageTItle from '@/components/PageTItle';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { Fragment } from 'react';
-import { Card, CardBody, CardTitle, CardHeader  } from 'react-bootstrap';
+import { useState } from 'react';
+import { Card, CardBody, CardTitle, CardHeader } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { useGetAllUsersQuery } from '@/services/authenticateendpoint/users';
-import { Badge,  Col, Row, Spinner, Table, Button, Form } from 'react-bootstrap';
+import { useGetAllUsersQuery, useDeactivateUserMutation, useActivateUserMutation } from '@/services/authenticateendpoint/users';
+import { Badge, Col, Row, Spinner, Table, Button, Form, Modal } from 'react-bootstrap';
 
 
 const RoleListPage = () => {
   const { data: userData, isLoading, isError, error } = useGetAllUsersQuery();
+  const [deactivateUser, { isLoading: isDeactivating }] = useDeactivateUserMutation();
+  const [activateUser, { isLoading: isActivating }] = useActivateUserMutation();
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleToggleClick = (user) => {
+    setSelectedUser(user);
+    setShowModal(true);
+  };
+
+  const handleConfirm = async () => {
+    if (!selectedUser) return;
+
+    try {
+      if (selectedUser.isActive) {
+        // Deactivate user
+        await deactivateUser(selectedUser._id).unwrap();
+      } else {
+        // Activate user
+        await activateUser(selectedUser._id).unwrap();
+      }
+      setShowModal(false);
+      setSelectedUser(null);
+    } catch (error) {
+      console.error('Error toggling user status:', error);
+      // You can add toast notification here if needed
+    }
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+    setSelectedUser(null);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -29,7 +63,7 @@ const RoleListPage = () => {
           <Link to="/role/role-add" className="btn btn-sm btn-primary">
             Add Role
           </Link>
-    
+
         </div>
       </CardHeader>
       <CardBody className="p-0">
@@ -81,7 +115,8 @@ const RoleListPage = () => {
                       role="switch"
                       id={`flexSwitchCheckChecked-${item._id}`}
                       checked={item.isActive}
-                      readOnly
+                      onChange={() => handleToggleClick(item)}
+                      style={{ cursor: 'pointer' }}
                     />
                   </div>
                 </td>
@@ -112,6 +147,33 @@ const RoleListPage = () => {
         {/* Pagination logic would go here if needed, but for now we show all results from API */}
       </Row>
     </Card>
+
+    {/* Confirmation Modal */}
+    <Modal show={showModal} onHide={handleCancel} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Confirm Action</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {selectedUser && (
+          <p>
+            Are you sure you want to {selectedUser.isActive ? 'deactivate' : 'activate'} user{' '}
+            <strong>{selectedUser.name}</strong>?
+          </p>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleCancel} disabled={isDeactivating || isActivating}>
+          Cancel
+        </Button>
+        <Button
+          variant={selectedUser?.isActive ? 'danger' : 'success'}
+          onClick={handleConfirm}
+          disabled={isDeactivating || isActivating}
+        >
+          {isDeactivating || isActivating ? 'Processing...' : 'Confirm'}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   </>;
 };
 

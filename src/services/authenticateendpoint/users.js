@@ -86,6 +86,28 @@ export const userManagementAPI = api.injectEndpoints({
             invalidatesTags: ['User'],
         }),
 
+        // ACTIVATE USER
+        activateUser: build.mutation({
+            query: (id) => ({
+                method: 'POST',
+                body: {
+                    query: `
+            mutation ActivateUser($id: ID!) {
+              ActivateUser(_id: $id)
+            }
+          `,
+                    variables: { id },
+                },
+            }),
+            transformResponse: (response) => {
+                if (response?.errors) {
+                    throw response.errors[0];
+                }
+                return response?.data?.ActivateUser;
+            },
+            invalidatesTags: ['User'],
+        }),
+
         // GET ALL USERS
         getAllUsers: build.query({
             query: () => ({
@@ -154,6 +176,7 @@ export const {
     useCreateUserMutation,
     useUpdateUserMutation,
     useDeactivateUserMutation,
+    useActivateUserMutation,
     useGetAllUsersQuery,
     useGetUserByIdQuery,
 } = userManagementAPI
