@@ -3,16 +3,16 @@ import { ROLES } from '@/assets/data/roles';
 
 export const getMenuItems = (role) => {
   if (role === ROLES.SELLER) {
-    return MENU_ITEMS.filter((item) => ['dashboard', 'project', 'sales', 'report'].includes(item.key))
+    return MENU_ITEMS.filter((item) => ['dashboard', 'projects', 'sales', 'report'].includes(item.key))
   }
   if (role === ROLES.SALES) {
     return MENU_ITEMS.filter((item) => ['dashboard', 'sales', 'inventory'].includes(item.key))
   }
   if (role === ROLES.MANAGER) {
-    return MENU_ITEMS.filter((item) => ['dashboard', 'project', 'sales', 'inventory', 'report'].includes(item.key))
+    return MENU_ITEMS.filter((item) => ['dashboard', 'projects', 'sales', 'inventory', 'purchases', 'sellers', 'report'].includes(item.key))
   }
   if (role === ROLES.WAREHOUSE) {
-    return MENU_ITEMS.filter((item) => ['dashboard', 'inventory', 'sales', 'purchases'].includes(item.key))
+    return MENU_ITEMS.filter((item) => ['dashboard', 'inventory', 'purchases', 'sales'].includes(item.key))
   }
   return MENU_ITEMS
 }

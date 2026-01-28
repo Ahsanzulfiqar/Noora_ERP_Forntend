@@ -378,31 +378,31 @@ export const MENU_ITEMS = [
       },
     ],
   },
-  {
-    key: 'permissions',
-    label: 'Permissions',
-    icon: 'solar:checklist-minimalistic-bold-duotone',
-    url: '/permissions',
-  },
-  {
-    key: 'customer',
-    label: 'Customers',
-    icon: 'solar:users-group-two-rounded-bold-duotone',
-    children: [
-      {
-        key: 'customer-list',
-        label: 'List',
-        url: '/customer/customer-list',
-        parentKey: 'customer',
-      },
-      {
-        key: 'customer-detail',
-        label: 'Details',
-        url: '/customer/customer-detail',
-        parentKey: 'customer',
-      },
-    ],
-  },
+  // {
+  //   key: 'permissions',
+  //   label: 'Permissions',
+  //   icon: 'solar:checklist-minimalistic-bold-duotone',
+  //   url: '/permissions',
+  // },
+  // {
+  //   key: 'customer',
+  //   label: 'Customers',
+  //   icon: 'solar:users-group-two-rounded-bold-duotone',
+  //   children: [
+  //     {
+  //       key: 'customer-list',
+  //       label: 'List',
+  //       url: '/customer/customer-list',
+  //       parentKey: 'customer',
+  //     },
+  //     {
+  //       key: 'customer-detail',
+  //       label: 'Details',
+  //       url: '/customer/customer-detail',
+  //       parentKey: 'customer',
+  //     },
+  //   ],
+  // },
 
   // {
   //   key: 'seller',
