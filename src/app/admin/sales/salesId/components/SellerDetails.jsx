@@ -30,7 +30,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
     setActiveModal(null);
   };
 
-  if (isLoadingSale) {
+  if (isLoadingSale) {  
     return (
       <Row>
         <Col lg={12}>
@@ -56,9 +56,15 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                 </Col>
                 <Col lg={6}>
                   <Box className="gap-1 hstack justify-content-end">
-                    <Link to={`/sales/sales-edit/${saleData?._id}`} className="btn btn-light btn-sm">
-                      <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
-                    </Link>
+                    {(saleData?.status === 'draft' || saleData?.status === 'DRAFT') ? (
+                      <Link to={`/sales/sales-edit/${saleData?._id}`} className="btn btn-light btn-sm">
+                        <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
+                      </Link>
+                    ) : (
+                      <button className="btn btn-light btn-sm" disabled style={{ cursor: 'not-allowed', opacity: 0.6 }}>
+                        <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
+                      </button>
+                    )}
                     {/* <Link to="" className="btn btn-danger btn-sm">
                       <IconifyIcon icon="solar:trash-bin-minimalistic-2-broken" className="align-middle fs-18" />
                     </Link> */}
