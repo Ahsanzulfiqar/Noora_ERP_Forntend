@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import FormikTextField from '@/components/formikfield/FormikTextField';
+import FormikPasswordField from '@/components/formikfield/FormikPasswordField';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import StatusAlert from '@/components/StatusAlert';
 import {
@@ -46,7 +47,7 @@ const RoleAddPage = () => {
     phone: '',
     password: '',
     role: '',
-    projectIds: [],
+    // projectIds: [],
     warehouseIds: [],
     isActive: true
   });
@@ -59,7 +60,7 @@ const RoleAddPage = () => {
         phone: userData.phone || '',
         password: '', // Password usually left blank on edit unless being changed
         role: userData.role || '',
-        projectIds: userData.assignedProjects || [],
+        // projectIds: userData.assignedProjects || [],
         warehouseIds: userData.assignedWarehouses || [],
         isActive: userData.isActive ?? true
       });
@@ -139,10 +140,9 @@ const RoleAddPage = () => {
                       <FormikTextField name="phone" label="Phone Number" placeholder="Enter Phone" />
                     </Col>
                     <Col lg={6}>
-                      <FormikTextField
+                      <FormikPasswordField
                         name="password"
                         label={isEditMode ? "Password (leave blank to keep current)" : "Password"}
-                        type="password"
                         placeholder="Enter Password"
                       />
                     </Col>
@@ -162,7 +162,7 @@ const RoleAddPage = () => {
                         )}
                       </Field>
                     </Col>
-                    <Col lg={6}>
+                    {/* <Col lg={6}>
                       <Field name="projectIds">
                         {({ field, form }) => (
                           <ChoicesSearchFormInput
@@ -178,7 +178,7 @@ const RoleAddPage = () => {
                           />
                         )}
                       </Field>
-                    </Col>
+                    </Col> */}
                     <Col lg={6}>
                       <Field name="warehouseIds">
                         {({ field, form }) => (
