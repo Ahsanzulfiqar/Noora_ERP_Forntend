@@ -6,11 +6,7 @@ import { useGetSellersQuery } from '@/services/endpoints/sellers';
 import { Badge, Card, CardBody, Col, Row, Spinner, Table, Button, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'
-import ConfirmSaleModal from '../../salesId/components/modals/ConfirmSaleModal';
-import OutForDeliveryModal from '../../salesId/components/modals/OutForDeliveryModal';
-import DeliveredModal from '../../salesId/components/modals/DeliveredModal';
-import ReturnSaleModal from '../../salesId/components/modals/ReturnSaleModal';
-import CancelSaleModal from '../../salesId/components/modals/CancelSaleModal';
+
 import Pagination from '@/components/Pagination';
 
 const SalesList = () => {
@@ -22,18 +18,7 @@ const SalesList = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const [activeModal, setActiveModal] = useState(null);
-  const [selectedSaleId, setSelectedSaleId] = useState(null);
 
-  const handleActionClick = (modalType, saleId) => {
-    setActiveModal(modalType);
-    setSelectedSaleId(saleId);
-  };
-
-  const closeModals = () => {
-    setActiveModal(null);
-    setSelectedSaleId(null);
-  };
 
   const { data: salesResponse, isLoading, error } = useGetSalesQuery({ page, limit, filter }, { refetchOnMountOrArgChange: true });
   const { data: sellersResponse } = useGetSellersQuery({ limit: 1000 });
@@ -190,18 +175,7 @@ const SalesList = () => {
                               <Link to={`/sales/sales-edit/${item._id}`} className="btn btn-outline-info btn-sm rounded-circle p-1 border-0 shadow-none">
                                 <IconifyIcon icon="solar:pen-2-broken" className="fs-18" />
                               </Link>
-                              <Dropdown drop="start">
-                                <Dropdown.Toggle as="div" className="btn btn-outline-secondary btn-sm rounded-circle p-1 border-0 shadow-none arrow-none cursor-pointer">
-                                  <IconifyIcon icon="solar:menu-dots-bold" className="fs-18" />
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                  <Dropdown.Item onClick={() => handleActionClick('CONFIRM', item._id)}>Confirm</Dropdown.Item>
-                                  <Dropdown.Item onClick={() => handleActionClick('OUT_FOR_DELIVERY', item._id)}>Out for Delivery</Dropdown.Item>
-                                  <Dropdown.Item onClick={() => handleActionClick('DELIVERED', item._id)}>Delivered</Dropdown.Item>
-                                  <Dropdown.Item onClick={() => handleActionClick('RETURN', item._id)}>Returned</Dropdown.Item>
-                                  <Dropdown.Item onClick={() => handleActionClick('CANCEL', item._id)}>Cancelled</Dropdown.Item>
-                                </Dropdown.Menu>
-                              </Dropdown>
+
                             </div>
                           </td>
                         </tr>
@@ -254,37 +228,7 @@ const SalesList = () => {
 
 
       {/* Modals */}
-      {
-        selectedSaleId && (
-          <>
-            <ConfirmSaleModal
-              show={activeModal === 'CONFIRM'}
-              onHide={closeModals}
-              saleId={selectedSaleId}
-            />
-            <OutForDeliveryModal
-              show={activeModal === 'OUT_FOR_DELIVERY'}
-              onHide={closeModals}
-              saleId={selectedSaleId}
-            />
-            <DeliveredModal
-              show={activeModal === 'DELIVERED'}
-              onHide={closeModals}
-              saleId={selectedSaleId}
-            />
-            <ReturnSaleModal
-              show={activeModal === 'RETURN'}
-              onHide={closeModals}
-              saleId={selectedSaleId}
-            />
-            <CancelSaleModal
-              show={activeModal === 'CANCEL'}
-              onHide={closeModals}
-              saleId={selectedSaleId}
-            />
-          </>
-        )
-      }
+
     </>
   );
 };

@@ -59,9 +59,9 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                     <Link to={`/sales/sales-edit/${saleData?._id}`} className="btn btn-light btn-sm">
                       <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
                     </Link>
-                    <Link to="" className="btn btn-danger btn-sm">
+                    {/* <Link to="" className="btn btn-danger btn-sm">
                       <IconifyIcon icon="solar:trash-bin-minimalistic-2-broken" className="align-middle fs-18" />
-                    </Link>
+                    </Link> */}
                     <Dropdown>
                       <Dropdown.Toggle variant="primary" id="dropdown-basic" className="d-flex align-items-center gap-1 arrow-none" style={{ borderRadius: '10px' }}>
                         Actions <IconifyIcon icon="solar:alt-arrow-down-bold" />
