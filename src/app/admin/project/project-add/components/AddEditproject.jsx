@@ -53,14 +53,14 @@ const AddEditproject = () => {
               name: data?.name || '',
               channel: data?.channel || '',
               warehouse: data?.warehouses?.[0] || '',
-              sellers: data?.sellers?.[0] || '',
+              // sellers: data?.sellers?.[0] || '',
               isActive: data?.isActive !== undefined ? data.isActive : true,
             }}
             validationSchema={Yup.object({
               name: Yup.string().required('Required'),
               channel: Yup.string().required('Required'),
               warehouse: Yup.string().required('Required'),
-              sellers: Yup.string().required('Required'),
+              // sellers: Yup.string().required('Required'),
               isActive: Yup.boolean(),
             })}
 
@@ -70,10 +70,10 @@ const AddEditproject = () => {
                 const payload = {
                   ...values,
                   warehouseIds: values.warehouse ? [values.warehouse] : [],
-                  sellerIds: values.sellers ? [values.sellers] : [],
+                  // sellerIds: values.sellers ? [values.sellers] : [],
                 }
                 delete payload.warehouse;
-                delete payload.sellers;
+                // delete payload.sellers;
 
                 if (projectId) {
                   await updateProject({ id: projectId, data: payload }).unwrap()
@@ -119,7 +119,7 @@ const AddEditproject = () => {
                       </Field>
                     </Col>
 
-                    <Col lg={6}>
+                    {/* <Col lg={6}>
                       <Field name="sellers">
                         {({ field }) => (
                           <ChoicesSearchFormInput
@@ -132,7 +132,7 @@ const AddEditproject = () => {
                           />
                         )}
                       </Field>
-                    </Col>
+                    </Col> */}
 
 
                     <Col lg={6}>

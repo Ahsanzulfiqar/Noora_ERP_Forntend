@@ -94,8 +94,11 @@ const SellerAdd = () => {
         onSubmit={handleSubmit}
         enableReinitialize={true}
       >
-        {({ values, setFieldValue }) => (
-          <Form>
+        {({ values, setFieldValue, errors }) => {
+          console.log(errors);
+          
+          return(
+                      <Form>
             <Card>
               <CardHeader>
                 <CardTitle as={'h4'}>
@@ -220,7 +223,8 @@ const SellerAdd = () => {
               </Row>
             </div>
           </Form>
-        )}
+          )
+        }}
       </Formik>
     </Col>
   );

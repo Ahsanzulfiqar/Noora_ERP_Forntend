@@ -167,18 +167,18 @@ export const MENU_ITEMS = [
         url: '/purchases/purchase-add',
         parentKey: 'purchases',
       },
-      {
-        key: 'purchase-order',
-        label: 'Order',
-        url: '/purchases/purchase-order',
-        parentKey: 'purchases',
-      },
-      {
-        key: 'purchase-returns',
-        label: 'Returns',
-        url: '/purchases/purchase-returns',
-        parentKey: 'purchases',
-      },
+      // {
+      //   key: 'purchase-order',
+      //   label: 'Order',
+      //   url: '/purchases/purchase-order',
+      //   parentKey: 'purchases',
+      // },
+      // {
+      //   key: 'purchase-returns',
+      //   label: 'Returns',
+      //   url: '/purchases/purchase-returns',
+      //   parentKey: 'purchases',
+      // },
     ],
   },
   // {

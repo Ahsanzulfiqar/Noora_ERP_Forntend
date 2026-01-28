@@ -84,6 +84,14 @@ const AddPurchase = () => {
 
   const variantOptions = productVariants?.map(v => ({ label: v.name, value: v._id })) || [];
 
+  useEffect(() => {
+    if (currentItem.product && productVariants && productVariants.length === 0) {
+      if (currentItem.variant !== "this product have no varient") {
+        setCurrentItem(prev => ({ ...prev, variant: "this product have no varient" }));
+      }
+    }
+  }, [productVariants, currentItem]);
+
   return (
     <Col xl={12} lg={12}>
       <StatusAlert
@@ -296,14 +304,24 @@ const AddPurchase = () => {
                                 </Col>
                                 <Col lg={4}>
                                   <label className="form-label fw-bold">Variant</label>
-                                  <ChoicesSearchFormInput
-                                    className="form-control"
-                                    id="add-variant"
-                                    value={currentItem.variant}
-                                    options={variantOptions}
-                                    onChange={(val) => setCurrentItem({ ...currentItem, variant: val })}
-                                    placeholder="Select Variant"
-                                  />
+                                  {!currentItem.product || (productVariants && productVariants.length > 0) ? (
+                                    <ChoicesSearchFormInput
+                                      className="form-control"
+                                      id="add-variant"
+                                      value={currentItem.variant}
+                                      options={variantOptions}
+                                      onChange={(val) => setCurrentItem({ ...currentItem, variant: val })}
+                                      placeholder="Select Variant"
+                                    />
+                                  ) : (
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      value="this product have no varient" // Display text
+                                      readOnly
+                                      disabled
+                                    />
+                                  )}
                                 </Col>
                                 <Col lg={4}>
                                   <label className="form-label fw-bold">SKU</label>
