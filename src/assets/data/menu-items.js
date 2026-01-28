@@ -341,21 +341,21 @@ export const MENU_ITEMS = [
     label: 'USERS',
     isTitle: true,
   },
-  {
-    key: 'profile',
-    label: 'Profile',
-    icon: 'solar:chat-square-like-bold-duotone',
-    url: '/profile',
-  },
-  {
-    key: 'report',
-    label: 'Report',
-    icon: 'solar:chat-square-like-bold-duotone',
-    url: '/profile',
-  },
+  // {
+  //   key: 'profile',
+  //   label: 'Profile',
+  //   icon: 'solar:chat-square-like-bold-duotone',
+  //   url: '/profile',
+  // },
+  // {
+  //   key: 'report',
+  //   label: 'Report',
+  //   icon: 'solar:chat-square-like-bold-duotone',
+  //   url: '/profile',
+  // },
   {
     key: 'role',
-    label: 'Roles',
+    label: 'Users',
     icon: 'solar:user-speak-rounded-bold-duotone',
     children: [
       {
