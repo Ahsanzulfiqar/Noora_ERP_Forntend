@@ -3,6 +3,7 @@ import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button, Table } from '
 import { useNavigate, useParams } from 'react-router-dom';
 import { Formik, Form, FieldArray, Field } from 'formik';
 import { Icon } from '@iconify/react';
+import { useAuth } from '@/hooks/useAuth';
 
 // Endpoints
 import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/endpoints/sales';
@@ -24,6 +25,7 @@ import { IconButton, Tooltip } from '@mui/material';
 const SaleAdd = () => {
   const navigate = useNavigate();
   const { salesId } = useParams();
+  const { role } = useAuth();
   const [createSale, { isLoading: isCreating, isSuccess: createSuccess, error: createError }] = useCreateSaleMutation();
   const [updateSale, { isLoading: isUpdating, isSuccess: updateSuccess, error: updateError }] = useUpdateSaleMutation();
 
@@ -69,6 +71,10 @@ const SaleAdd = () => {
     address: saleData?.address || '',
     status: saleData?.status || 'draft',
     courier: saleData?.courier || '',
+    courierName: saleData?.courierName || '',
+    trackingNo: saleData?.trackingNo || '',
+    trackingUrl: saleData?.trackingUrl || '',
+    deliveryNotes: saleData?.deliveryNotes || '',
     notes: saleData?.notes || '',
     items: saleData?.items?.map(item => ({
       product: item.product || '',
@@ -145,7 +151,10 @@ const SaleAdd = () => {
           salePrice: Number(item.salePrice),
         })),
         taxAmount: Number(values.taxAmount) || 0,
-        // courierId: values.courier,
+        courierName: values.courierName || '',
+        trackingNo: values.trackingNo || '',
+        trackingUrl: values.trackingUrl || '',
+        deliveryNotes: values.deliveryNotes || '',
         notes: values.notes,
       };
 
@@ -254,22 +263,32 @@ const SaleAdd = () => {
                         placeholder="Enter Customer Phone"
                       />
                     </Col>
-                    {/* <Col lg={4}>
-                      <Field name="courier">
-                        {({ field, form }) => (
-                          <ChoicesSearchFormInput
-                            label="Courier"
-                            labelClassName="form-label fw-bold"
-                            className="form-control"
-                            id="courier"
-                            {...field}
-                            options={courierOptions}
-                            onChange={(val) => form.setFieldValue('courier', val)}
-                            placeholder="Select Courier"
+
+                    {(role === 'Admin' || role === 'ADMIN') && (
+                      <>
+                        <Col lg={4}>
+                          <FormikTextField
+                            label="Courier Name"
+                            name="courierName"
+                            placeholder="Enter Courier Name"
                           />
-                        )}
-                      </Field>
-                    </Col> */}
+                        </Col>
+                        <Col lg={4}>
+                          <FormikTextField
+                            label="Tracking No"
+                            name="trackingNo"
+                            placeholder="Enter Tracking Number"
+                          />
+                        </Col>
+                        <Col lg={4}>
+                          <FormikTextField
+                            label="Tracking URL"
+                            name="trackingUrl"
+                            placeholder="Enter Tracking URL"
+                          />
+                        </Col>
+                      </>
+                    )}
 
                     <Col lg={12}>
                       <FormikTextArea
@@ -278,6 +297,17 @@ const SaleAdd = () => {
                         placeholder="Enter Full Address"
                       />
                     </Col>
+
+                    {(role === 'Admin' || role === 'ADMIN') && (
+                      <Col lg={12}>
+                        <FormikTextArea
+                          label="Delivery Notes"
+                          name="deliveryNotes"
+                          placeholder="Enter Delivery Notes"
+                          rows={3}
+                        />
+                      </Col>
+                    )}
                   </Row>
                 </CardBody>
               </Card>
