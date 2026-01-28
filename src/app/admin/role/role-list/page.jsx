@@ -122,7 +122,7 @@ const RoleListPage = () => {
                 </td>
                 <td>
                   <div className="d-flex gap-2">
-                    <Link to="#!" className="btn btn-light btn-sm">
+                    <Link to={`/role/role-view/${item._id}`} className="btn btn-light btn-sm">
                       <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
                     </Link>
                     <Link to={`/role/role-edit/${item._id}`} className="btn btn-soft-primary btn-sm">

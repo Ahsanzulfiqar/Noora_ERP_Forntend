@@ -113,6 +113,7 @@ const Profile = lazy(() => import('../app/admin/profile/page'))
 // Role Routes
 const RoleList = lazy(() => import('../app/admin/role/role-list/page'))
 const RoleAdd = lazy(() => import('../app/admin/role/role-add/page'))
+const RoleView = lazy(() => import('../app/admin/role/role-view/page'))
 // Permissions Routes
 const Permissions = lazy(() => import('../app/admin/permissions/page'))
 // Customer Routes
@@ -909,6 +910,11 @@ const RoleRoutes = [
     name: 'Role List',
     path: '/role/role-list',
     element: <RoleList />,
+  },
+  {
+    name: 'Role View',
+    path: '/role/role-view/:roleId',
+    element: <RoleView />,
   },
   {
     name: 'Role Edit',
