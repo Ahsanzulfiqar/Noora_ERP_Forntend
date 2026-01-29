@@ -30,7 +30,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
     setActiveModal(null);
   };
 
-  if (isLoadingSale) {  
+  if (isLoadingSale) {
     return (
       <Row>
         <Col lg={12}>
@@ -90,12 +90,14 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
               <Row className="g-3">
                 <Col lg={8} className="border-end">
                   <div>
-                    <h4 className="mb-1">Invoice #{saleData?.invoiceNo}</h4>
-                    <p className="mb-1">
-                      Status: <span className={`badge bg-${saleData?.status === 'completed' ? 'success' : saleData?.status === 'pending' ? 'warning' : 'info'}`}>
-                        {saleData?.status}
-                      </span>
-                    </p>
+                    <div className="d-flex align-items-center gap-2 mb-2 justify-content-between">
+                      <h4 className="mb-1">Invoice #{saleData?.invoiceNo}</h4>
+                      <p className="mb-1">
+                        <span className={`badge py-1 px-2 text-capitalize bg-${saleData?.status === 'completed' ? 'success' : saleData?.status === 'pending' ? 'warning' : 'info'}`}>
+                          {saleData?.status}
+                        </span>
+                      </p>
+                    </div>
                     <div className="mt-3">
                       <div className="d-flex align-items-center gap-2 mb-2">
                         <div className="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
@@ -184,7 +186,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                             <IconifyIcon icon="solar:history-bold-duotone" className="fs-20 text-primary" />
                           </div>
                           <div>
-                            <p className="mb-0 fw-medium">{history.status}</p>
+                            <p className="mb-0 fw-medium text-capitalize">{history.status}</p>
                             <small className="text-muted">{new Date(history.at).toLocaleString()}</small>
                             {history.note && <p className="mb-0 mt-1">{history.note}</p>}
                           </div>

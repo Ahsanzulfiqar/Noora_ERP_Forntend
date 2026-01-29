@@ -270,11 +270,20 @@ const SaleAdd = () => {
                     {(role === 'Admin' || role === 'ADMIN') && (
                       <>
                         <Col lg={4}>
-                          <FormikTextField
-                            label="Courier Name"
-                            name="courierName"
-                            placeholder="Enter Courier Name"
-                          />
+                          <Field name="courierName">
+                            {({ field }) => (
+                              <ChoicesSearchFormInput
+                                label="Courier Name"
+                                labelClassName="form-label fw-bold"
+                                className="form-control"
+                                id="courierName"
+                                {...field}
+                                options={courierOptions}
+                                onChange={(value) => setFieldValue('courierName', value)}
+                                placeholder="Select Courier"
+                              />
+                            )}
+                          </Field>
                         </Col>
                         <Col lg={4}>
                           <FormikTextField

@@ -128,21 +128,26 @@ const PurchaseListPage = () => {
               <div>
                 <CardTitle as={'h4'}>All Purchase Items</CardTitle>
               </div>
-              <Dropdown>
-                <DropdownToggle
-                  as={'a'}
-                  href="#"
-                  className="btn btn-sm btn-outline-light rounded content-none icons-center"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  This Month <IconifyIcon className="ms-1" width={16} height={16} icon="bx:chevron-down" />
-                </DropdownToggle>
-                <DropdownMenu className="dropdown-menu-end">
-                  <DropdownItem>Download</DropdownItem>
-                  <DropdownItem>Export</DropdownItem>
-                  <DropdownItem>Import</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
+              <div className="d-flex gap-2">
+                <Link to="/purchases/purchase-add" className="btn btn-sm btn-primary">
+                  <IconifyIcon icon="bx:plus" className="me-1" /> Add New Purchase
+                </Link>
+                <Dropdown>
+                  <DropdownToggle
+                    as={'a'}
+                    href="#"
+                    className="btn btn-sm btn-outline-light rounded content-none icons-center"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    This Month <IconifyIcon className="ms-1" width={16} height={16} icon="bx:chevron-down" />
+                  </DropdownToggle>
+                  <DropdownMenu className="dropdown-menu-end">
+                    <DropdownItem>Download</DropdownItem>
+                    <DropdownItem>Export</DropdownItem>
+                    <DropdownItem>Import</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
             </div>
             <CardBody className="p-0">
               <div className="table-responsive">

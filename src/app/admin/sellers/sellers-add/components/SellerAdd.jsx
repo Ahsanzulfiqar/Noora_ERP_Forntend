@@ -49,8 +49,8 @@ const SellerAdd = () => {
 
   const sellerTypeOptions = [
     { value: 'RESELLER', label: 'Reseller' },
-    { value: 'WHOLESALER', label: 'Wholesaler' },
-    { value: 'RETAILER', label: 'Retailer' },
+    { value: 'AFFILIATE', label: 'Affiliate' },
+    { value: 'INTERNAL', label: 'Internal' },
     { value: 'DISTRIBUTOR', label: 'Distributor' },
   ];
 
