@@ -47,6 +47,7 @@ const ChoicesSearchFormInput = ({
             label: placeholder,
             placeholder: true,
             selected: !initialValue,
+            disabled: true,
           });
         }
         choicesConfig.choices = finalChoices;

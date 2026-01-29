@@ -1,7 +1,7 @@
 import PageTItle from '@/components/PageTItle';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { useGetSellersQuery } from '@/services/endpoints/sellers';
-import { Badge, Card, CardBody, CardFooter, Col, Dropdown, DropdownMenu, DropdownToggle, ProgressBar, Row, Spinner } from 'react-bootstrap';
+import { Badge, Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Dropdown, DropdownMenu, DropdownToggle, ProgressBar, Row, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import zara from '@/assets/images/seller/zara.svg';
 
@@ -93,21 +93,30 @@ const SellerList = () => {
   }
 
   return <>
-    <PageTItle title="Sellers List" />
-    <Row>
-      {sellersData.map((item) => (
-        <Col xl={4} md={6} key={item._id}>
-          <SellersCard
-            _id={item._id}
-            title={item.name}
-            category={item.companyName}
-            email={item.email}
-            phone={item.phone}
-            isActive={item.isActive}
-          />
-        </Col>
-      ))}
-    </Row>
+    <Card>
+      <CardHeader className="d-flex justify-content-between align-items-center">
+        <CardTitle as="h4">All Sellers</CardTitle>
+        <Link to="/sellers/sellers-add" className="btn btn-sm btn-primary">
+          <IconifyIcon icon="bx:plus" className="me-1" /> Add New Seller
+        </Link>
+      </CardHeader>
+      <CardBody>
+        <Row>
+          {sellersData.map((item) => (
+            <Col xl={4} md={6} key={item._id}>
+              <SellersCard
+                _id={item._id}
+                title={item.name}
+                category={item.companyName}
+                email={item.email}
+                phone={item.phone}
+                isActive={item.isActive}
+              />
+            </Col>
+          ))}
+        </Row>
+      </CardBody>
+    </Card>
   </>;
 };
 
