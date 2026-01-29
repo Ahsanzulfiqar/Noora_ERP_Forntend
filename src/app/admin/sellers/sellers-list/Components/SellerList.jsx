@@ -16,13 +16,14 @@ const SellersCard = ({
   title,
   isActive
 }) => {
-  return <Card>
+  return <Card className="shadow-sm">
     <CardBody>
       <div className="d-flex flex-wrap justify-content-between align-items-center">
         <div>
           <h4 className="mb-1 text-capitalize">
             {title}
-            <span className="text-muted fs-13 ms-1">({category}) </span>
+            <br />
+            <span className="text-muted fs-13 ">({category}) </span>
           </h4>
         </div>
         <div>
@@ -93,7 +94,7 @@ const SellerList = () => {
   }
 
   return <>
-    <Card>
+    <Card className="shadow-sm">
       <CardHeader className="d-flex justify-content-between align-items-center">
         <CardTitle as="h4">All Sellers</CardTitle>
         <Link to="/sellers/sellers-add" className="btn btn-sm btn-primary">
