@@ -28,6 +28,12 @@ const WarehouseDetails = () => {
         <Box>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant='h5' fontWeight={'bold'} className='text-capitalize'>
+              {data?.mainId}
+            </Typography>
+            {<span className="badge bg-success" style={{ fontSize: '12px', paddingX: '12px', paddingY: '5px' }}>Main</span>}
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant='h5' fontWeight={'bold'} className='text-capitalize'>
               {data?.name}
             </Typography>
             {data?.ismain ? <span className="badge bg-success" style={{ fontSize: '12px', paddingX: '12px', paddingY: '5px' }}>Main</span> : <span className="badge bg-danger" style={{ fontSize: '12px', paddingX: '10px', paddingY: '5px' }}>Not Main</span>}

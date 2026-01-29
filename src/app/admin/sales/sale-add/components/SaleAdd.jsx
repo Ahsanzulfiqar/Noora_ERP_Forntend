@@ -151,15 +151,18 @@ const SaleAdd = () => {
           salePrice: Number(item.salePrice),
         })),
         taxAmount: Number(values.taxAmount) || 0,
-        courierName: values.courierName || '',
-        trackingNo: values.trackingNo || '',
-        trackingUrl: values.trackingUrl || '',
-        deliveryNotes: values.deliveryNotes || '',
         notes: values.notes,
       };
 
       if (salesId) {
-        const updatePayload = { ...payload, status: values.status }; // include status on update
+        const updatePayload = {
+          ...payload,
+          status: values.status,
+          courierName: values.courierName || '',
+          trackingNo: values.trackingNo || '',
+          trackingUrl: values.trackingUrl || '',
+          deliveryNotes: values.deliveryNotes || '',
+        };
         await updateSale({ id: salesId, data: updatePayload }).unwrap();
       } else {
         await createSale(payload).unwrap();
