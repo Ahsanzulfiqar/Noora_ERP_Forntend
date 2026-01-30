@@ -4,7 +4,7 @@ import { useGetProductByIdQuery } from '../../../../../services/endpoints/produc
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import product1 from '@/assets/images/product/noimage.png';
 import { currency } from '@/context/constants';
-import { Col, Card, CardBody, Spinner, Alert, Row, CardHeader, CardTitle } from 'react-bootstrap';
+import { Col, Card, CardBody, Spinner, Alert, Row, CardHeader, CardTitle, Table, Badge } from 'react-bootstrap';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
@@ -153,113 +153,88 @@ const ProductDetails = () => {
               )}
             </Col>
             <Col xl={8} lg={8} md={8} sm={12} xs={12}>
-              <div className="mt-3">
-                <div className="d-flex justify-content-between gap-2">
-                  <h4 className="text-capitalize  badge bg-success text-light fs-14 py-1 px-2">{product?.brand}</h4>
-                  {product?.isActive ? <h4 className="text-capitalize  badge  text-success  fs-14 py-1 px-2 border">Active</h4> : <h4 className="text-capitalize  badge  text-danger  fs-14 py-1 px-2 border">Inactive</h4>}
-
+              <div className="ps-lg-2">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h3 className="text-dark fw-bold mb-0 text-capitalize">{name || 'Product Name'}</h3>
+                  <Badge bg={isActive ? 'success' : 'danger'} className="fs-13 px-3 py-2">
+                    {isActive ? 'Active' : 'Inactive'}
+                  </Badge>
                 </div>
-                <h4 className='text-capitalize'>
-                  {product?.name || 'Product Name'} <span className="fs-14 text-muted ms-1">({categoryLabel})</span>
-                </h4>
-                {(product?.subCategory || product?.sku) && (
-                  <div className="fs-16 mt-1 d-flex gap-1 flex-column">
-                    {product?.subCategory && <span className='fw-bold text-dark'>Sub Category: {product?.subCategory}</span>}
-                    {product?.sku && <span className='fw-bold text-dark'>SKU: {product?.sku}</span>}
-                  </div>
-                )}
-                <h4 className="fw-semibold text-dark mt-2 d-flex align-items-center gap-1">
-                  <span >Purchase Price:</span>
-                  <span className='badge bg-secondary text-light fs-14 py-1 px-2'>{currency}{product?.purchasePrice || '0.00'}</span>
-                </h4>
-                <h4 className="fw-semibold text-dark mt-2 d-flex align-items-center gap-1">
-                  <span>Sale Price:</span>
-                  <span className='badge bg-secondary text-light fs-14 py-1 px-2'>{currency}{product?.salePrice || '0.00'}</span>
-                </h4>
+
+                <div className="table-responsive mb-4">
+                  <Table bordered className="mb-0">
+                    <thead className="bg-light-subtle">
+                      <tr>
+                        <th className="text-muted fw-bold" style={{ width: '40%' }}>Price & Specifications</th>
+                        <th className="text-muted fw-bold">Details</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="text-muted py-2">Sale Price</td>
+                        <td className="py-2">
+                          {currency}{salePrice || '0.00'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-muted py-2">Purchase Price</td>
+                        <td className="py-2 text-dark">{currency}{purchasePrice || '0.00'}</td>
+                      </tr>
+                      <tr>
+                        <td className="text-muted py-2">Net Weight</td>
+                        <td className="py-2 text-dark">{product?.netWeight || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td className="text-muted py-2">Pack Size</td>
+                        <td className="py-2 text-dark">{product?.packSize || 'N/A'}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </div>
 
                 {attributes.length > 0 && attributes[0].name !== '' && (
-                  <div className="mt-3">
-                    <h5 className="text-dark ">Attributes :</h5>
-                    <div className="d-flex flex-wrap gap-2 text-capitalize">
-                      {attributes.map((attr, idx) => (
-                        <div key={idx} className="badge bg-light text-dark p-2 border">
-                          <strong>{attr.name}:</strong> {attr.value}
-                        </div>
-                      ))}
-                    </div>
+                  <div className="table-responsive mb-4">
+                    <Table bordered className="mb-0">
+                      <thead className="bg-light-subtle">
+                        <tr>
+                          <th className="text-muted fw-bold" style={{ width: '40%' }}>Attribute</th>
+                          <th className="text-muted fw-bold">Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {attributes.map((attr, idx) => (
+                          <tr key={idx}>
+                            <td className="text-muted py-2">{attr.name}</td>
+                            <td className="py-2 text-dark">{attr.value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
                   </div>
                 )}
 
-                {product.description && (
-                  <div className="mt-3">
-                    <h5 className="text-dark ">Description :</h5>
-                    <div className="d-flex flex-wrap text-capitalize">
-                      {product.description}
+                <div className="mt-3">
+                  {sku && (
+                    <div className="d-flex align-items-center gap-2 mb-2">
+                      <IconifyIcon icon="solar:check-circle-broken" className="text-success fs-18" />
+                      <span className="text-muted">SKU: <span className="text-dark">{sku}</span></span>
+                    </div>
+                  )}
+                  {barcode && (
+                    <div className="d-flex align-items-center gap-2">
+                      <IconifyIcon icon="solar:check-circle-broken" className="text-success fs-18" />
+                      <span className="text-muted">Barcode: <span className="text-dark">{barcode}</span></span>
+                    </div>
+                  )}
+                </div>
+
+                {description && (
+                  <div className="mt-4 border-top pt-3">
+                    <h5 className="text-dark mb-2">Description :</h5>
+                    <div className="text-muted">
+                      {description}
                     </div>
                   </div>
-                )}
-
-                {!attributes.length && (
-                  <>
-                    <div className="mt-3">
-                      <h5 className="text-dark fw-medium">Size :</h5>
-                      <div className="d-flex flex-wrap gap-2" role="group" aria-label="Basic checkbox toggle button group">
-                        <input type="checkbox" className="btn-check" id="size-s" />
-                        <label className="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" htmlFor="size-s">
-                          S
-                        </label>
-                        <input type="checkbox" className="btn-check" id="size-m" defaultChecked />
-                        <label className="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" htmlFor="size-m">
-                          M
-                        </label>
-                        <input type="checkbox" className="btn-check" id="size-xl" />
-                        <label className="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" htmlFor="size-xl">
-                          Xl
-                        </label>
-                        <input type="checkbox" className="btn-check" id="size-xxl" />
-                        <label className="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" htmlFor="size-xxl">
-                          XXL
-                        </label>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <h5 className="text-dark fw-medium">Colors :</h5>
-                      <div className="d-flex flex-wrap gap-2" role="group" aria-label="Basic checkbox toggle button group">
-                        <input type="checkbox" className="btn-check" id="color-dark" />
-                        <label className="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" htmlFor="color-dark">
-                          {' '}
-                          <span>
-                            {' '}
-                            <IconifyIcon icon="bxs:circle" height={18} width={18} className="fs-18 text-dark" />
-                          </span>
-                        </label>
-                        <input type="checkbox" className="btn-check" id="color-yellow" />
-                        <label className="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" htmlFor="color-yellow">
-                          {' '}
-                          <span>
-                            {' '}
-                            <IconifyIcon icon="bxs:circle" height={18} width={18} className="fs-18 text-warning" />
-                          </span>
-                        </label>
-                        <input type="checkbox" className="btn-check" id="color-white" />
-                        <label className="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" htmlFor="color-white">
-                          {' '}
-                          <span>
-                            {' '}
-                            <IconifyIcon icon="bxs:circle" height={18} width={18} className="fs-18 text-white" />
-                          </span>
-                        </label>
-                        <input type="checkbox" className="btn-check" id="color-red" />
-                        <label className="btn btn-light avatar-sm rounded d-flex justify-content-center align-items-center" htmlFor="color-red">
-                          {' '}
-                          <span>
-                            {' '}
-                            <IconifyIcon icon="bxs:circle" height={18} width={18} className="fs-18 text-danger" />
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  </>
                 )}
               </div>
             </Col>
