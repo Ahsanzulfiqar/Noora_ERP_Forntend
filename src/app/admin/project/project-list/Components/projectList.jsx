@@ -6,11 +6,18 @@ import { IconButton } from '@mui/material';
 import LoaderSpinner from '../../../../../components/loaders/LoaderSpinner';
 import { useState } from 'react';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 
 const ProjectList = () => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const { data, isLoading } = useGetAllProjectsQuery();
   const [deleteProject] = useDeleteProjectMutation();
   const navigate = useNavigate();
+
+  const totalItems = data?.length || 0;
+  const totalPages = Math.ceil(totalItems / limit);
+  const currentData = data?.slice((page - 1) * limit, page * limit) || [];
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [projectIdToDelete, setProjectIdToDelete] = useState(null);
@@ -44,9 +51,9 @@ const ProjectList = () => {
         </Link>
       </CardHeader>
       <div>
-        <div className="table-responsive">
+        <div className="table-responsive" style={{ height: 'calc(100vh - 265px)', overflowY: 'auto' }}>
           <table className="table align-middle mb-0 table-hover table-centered">
-            <thead className="bg-light-subtle">
+            <thead className="bg-light-subtle" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
               <tr>
                 <th style={{ width: 20 }}>
                   <div className="form-check ms-1">
@@ -64,7 +71,7 @@ const ProjectList = () => {
             </thead>
             <tbody style={{ textAlign: 'left' }}>
               {isLoading && <LoaderSpinner show={isLoading} colSpan={8} />}
-              {!isLoading && data?.map((item) => (
+              {!isLoading && currentData?.map((item) => (
                 <tr key={item?._id}>
                   <td>
                     <div className="form-check ms-1">
@@ -118,27 +125,13 @@ const ProjectList = () => {
           </table>
         </div>
       </div>
-      <CardFooter className="border-top">
-        <nav aria-label="Page navigation example">
-          <ul className="pagination justify-content-end mb-0">
-            <li className="page-item">
-              <Link className="page-link" to="">
-                Previous
-              </Link>
-            </li>
-            <li className="page-item active">
-              <Link className="page-link" to="">
-                1
-              </Link>
-            </li>
-            <li className="page-item">
-              <Link className="page-link" to="">
-                Next
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </CardFooter>
+      <CustomTablePaginations
+        limit={limit}
+        setLimit={setLimit}
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+      />
       <DeleteConfirmModal
         show={showDeleteModal}
         onConfirm={handleConfirmDelete}

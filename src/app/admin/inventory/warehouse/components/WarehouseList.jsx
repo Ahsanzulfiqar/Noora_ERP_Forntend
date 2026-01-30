@@ -3,6 +3,7 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import TableNoData from '@/components/TableNoData';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useGetWarehouseStockQuery, useGetAllWarehousesQuery } from '@/services/endpoints/warehouse';
 import { useGetAllProductsQuery } from '@/services/endpoints/product';
 import { useGetVariantsByProductQuery } from '@/services/endpoints/productvariant';
@@ -14,7 +15,7 @@ const WarehouseList = () => {
     productId: '',
     variantId: '',
   });
-  const limit = 10;
+  const [limit, setLimit] = useState(10);
 
   // Fetching Options
   const { data: warehousesData } = useGetAllWarehousesQuery();
@@ -117,9 +118,9 @@ const WarehouseList = () => {
         </div>
 
         <div>
-          <div className="table-responsive">
+          <div className="table-responsive" style={{ height: 'calc(100vh - 309px)', overflowY: 'auto' }}>
             <table className="table align-middle mb-0 table-hover table-centered">
-              <thead className="bg-light-subtle">
+              <thead className="bg-light-subtle" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
                   <th style={{
                     width: 20
@@ -184,29 +185,13 @@ const WarehouseList = () => {
             </table>
           </div>
         </div>
-        <CardFooter className="border-top">
-          <nav aria-label="Page navigation example">
-            <ul className="pagination justify-content-end mb-0">
-              <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => handlePageChange(page - 1)}>
-                  Previous
-                </button>
-              </li>
-              {[...Array(totalPages)].map((_, i) => (
-                <li key={i + 1} className={`page-item ${page === i + 1 ? 'active' : ''}`}>
-                  <button className="page-link" onClick={() => handlePageChange(i + 1)}>
-                    {i + 1}
-                  </button>
-                </li>
-              ))}
-              <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => handlePageChange(page + 1)}>
-                  Next
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </CardFooter>
+        <CustomTablePaginations
+          limit={limit}
+          setLimit={setLimit}
+          page={page}
+          setPage={setPage}
+          totalPages={totalPages}
+        />
       </Card>
     </Col>
   </Row>;

@@ -4,13 +4,15 @@ import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, Dropdo
 import { Link, useNavigate } from 'react-router-dom'
 import { useDeleteProductMutation, useGetAllProductsQuery } from '../../../../../services/endpoints/product'
 import IconButton from '@mui/material/IconButton'
+import { useState } from 'react'
+import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const [deleteProduct] = useDeleteProductMutation();
 
   const { _id, name, brand, sku, category, subCategory, purchasePrice, salePrice, isActive, attributes, images } = product || {}
   return (
-    
+
     <tr>
       <td>
         <div className="form-check ms-1">
@@ -87,7 +89,13 @@ const ProductCard = ({ product }) => {
   )
 }
 const ProductList = () => {
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
   const { data: productData, isLoading, error } = useGetAllProductsQuery()
+
+  const totalItems = productData?.length || 0
+  const totalPages = Math.ceil(totalItems / limit)
+  const currentData = productData?.slice((page - 1) * limit, page * limit) || []
 
   console.log(productData)
   return (
@@ -112,9 +120,9 @@ const ProductList = () => {
         </Dropdown>
       </CardHeader>
       <div>
-        <div className="table-responsive">
+        <div className="table-responsive" style={{ height: 'calc(100vh - 265px)', overflowY: 'auto' }}>
           <table className="table align-middle mb-0 table-hover table-centered">
-            <thead className="bg-light-subtle">
+            <thead className="bg-light-subtle" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
               <tr>
                 <th
                   style={{
@@ -152,7 +160,7 @@ const ProductList = () => {
                   </td>
                 </tr>
               )}
-              {productData?.map((product) => (
+              {currentData?.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
               {!isLoading && !error && productData?.length === 0 && (
@@ -166,37 +174,13 @@ const ProductList = () => {
           </table>
         </div>
       </div>
-      <CardFooter className="border-top">
-        <nav aria-label="Page navigation example">
-          <ul className="pagination justify-content-end mb-0">
-            <li className="page-item">
-              <Link className="page-link" to="">
-                Previous
-              </Link>
-            </li>
-            <li className="page-item active">
-              <Link className="page-link" to="">
-                1
-              </Link>
-            </li>
-            <li className="page-item">
-              <Link className="page-link" to="">
-                2
-              </Link>
-            </li>
-            <li className="page-item">
-              <Link className="page-link" to="">
-                3
-              </Link>
-            </li>
-            <li className="page-item">
-              <Link className="page-link" to="">
-                Next
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </CardFooter>
+      <CustomTablePaginations
+        limit={limit}
+        setLimit={setLimit}
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+      />
     </Card>
   )
 }
