@@ -16,7 +16,7 @@ const SellersCard = ({
   title,
   isActive
 }) => {
-  return <Card className="shadow-sm">
+  return <Card className="shadow-sm" style={{ boxShadow: '0 4px 15px rgba(255, 140, 0, 0.9)' }}>
     <CardBody>
       <div className="d-flex flex-wrap justify-content-between align-items-center">
         <div>
@@ -94,7 +94,7 @@ const SellerList = () => {
   }
 
   return <>
-    <Card className="shadow-sm">
+    <Card className="shadow-sm" style={{ boxShadow: '0 4px 15px rgba(255, 140, 0, 0.3)' }}>
       <CardHeader className="d-flex justify-content-between align-items-center">
         <CardTitle as="h4">All Sellers</CardTitle>
         <Link to="/sellers/sellers-add" className="btn btn-sm btn-primary">

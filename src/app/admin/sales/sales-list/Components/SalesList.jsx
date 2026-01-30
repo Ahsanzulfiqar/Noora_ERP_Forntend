@@ -130,7 +130,7 @@ const SalesList = () => {
               </Row>
             </CardHeader>
             <CardBody className="p-0">
-              <div className="table-responsive" style={{ height: 'calc(100vh - 420px)', overflowY: 'auto' }}>
+              <div className="table-responsive" style={{ height: 'calc(100vh - 354px)', overflowY: 'auto' }}>
                 <Table hover className="table-centered table-nowrap mb-0">
                   <thead className="bg-light text-muted" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                     <tr>
@@ -220,7 +220,7 @@ const SalesList = () => {
                     <option value={50}>50</option>
                     <option value={100}>100</option>
                   </Form.Select>
-                </div>
+                </div>``
                 <Pagination
                   currentPage={page}
                   totalPages={totalPages}

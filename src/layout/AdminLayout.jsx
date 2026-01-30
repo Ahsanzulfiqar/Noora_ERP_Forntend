@@ -21,7 +21,7 @@ const AdminLayout = ({
         <Suspense fallback={<Preloader />}>{children}</Suspense>
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   </div>;
 };
