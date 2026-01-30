@@ -7,7 +7,7 @@ import { Badge, Card, CardBody, Col, Row, Spinner, Table, Button, Form } from 'r
 import { Link } from 'react-router-dom';
 import { CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'
 
-import Pagination from '@/components/Pagination';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 
 const SalesList = () => {
   const [filter, setFilter] = useState({
@@ -69,9 +69,9 @@ const SalesList = () => {
       <PageTItle title="Sales List" />
       <Row>
         <Col xs={12}>
-          <Card>
+          <Card className='mb-0'>
             <CardHeader>
-              <div className="d-flex justify-content-between align-items-center gap-1 mb-3">
+              <div className="d-flex justify-content-between align-items-center gap-1 pb-1">
                 <CardTitle as={'h4'} className="flex-grow-1">
                   All Sales Lists
                 </CardTitle>
@@ -130,7 +130,7 @@ const SalesList = () => {
               </Row>
             </CardHeader>
             <CardBody className="p-0">
-              <div className="table-responsive" style={{ height: 'calc(100vh - 354px)', overflowY: 'auto' }}>
+              <div className="table-responsive" style={{ height: 'calc(100vh - 309px)', overflowY: 'auto' }}>
                 <Table hover className="table-centered table-nowrap mb-0">
                   <thead className="bg-light text-muted" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                     <tr>
@@ -203,30 +203,13 @@ const SalesList = () => {
                   </tbody>
                 </Table>
               </div>
-              <div className="p-3 border-top d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center gap-2">
-                  <span>Rows per page:</span>
-                  <Form.Select
-                    size="sm"
-                    value={limit}
-                    onChange={(e) => {
-                      setLimit(Number(e.target.value));
-                      setPage(1);
-                    }}
-                    style={{ width: '80px' }}
-                  >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </Form.Select>
-                </div>``
-                <Pagination
-                  currentPage={page}
-                  totalPages={totalPages}
-                  onPageChange={setPage}
-                />
-              </div>
+              <CustomTablePaginations
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+              />
             </CardBody>
           </Card>
         </Col>

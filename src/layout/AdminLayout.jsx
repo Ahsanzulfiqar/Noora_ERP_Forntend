@@ -1,6 +1,8 @@
 import FallbackLoading from '@/components/FallbackLoading';
-import Footer from '@/components/layout/Footer';
+// import Footer from '@/components/layout/Footer';
 import Preloader from '@/components/Preloader';
+import Box from '@mui/material/Box';
+import { Col, Row } from 'react-bootstrap';
 import { lazy, Suspense } from 'react';
 const VerticalNavigationBar = lazy(() => import('@/components/layout/VerticalNavigationBar/page'));
 const TopNavigationBar = lazy(() => import('@/components/layout/TopNavigationBar/page'));
@@ -21,7 +23,11 @@ const AdminLayout = ({
         <Suspense fallback={<Preloader />}>{children}</Suspense>
       </div>
 
-      {/* <Footer /> */}
+      <Box sx={{ position: 'fixed', bottom: 0, left: 0, right: 0,  padding: '0rem 1rem 0.5rem 1rem', textAlign: 'center'  }}>
+
+        © NooraERP.
+
+      </Box>
     </div>
   </div>;
 };
