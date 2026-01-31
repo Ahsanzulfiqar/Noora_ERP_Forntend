@@ -85,6 +85,7 @@ const CategoryAdd = lazy(() => import('@/app/(admin)/category/category-add/page'
 
 // inventory Routes
 const Warehouse = lazy(() => import('@/app/admin/inventory/warehouse/page'))
+const WarehouseAddManual = lazy(() => import('@/app/admin/inventory/warehouse-add/page'))
 const ReceivedOrders = lazy(() => import('@/app/admin/inventory/received-orders/page'))
 
 // Orders Routes
@@ -766,6 +767,11 @@ const InventoryRoutes = [
     name: 'Warehouse',
     path: '/inventory/warehouse',
     element: <Warehouse />,
+  },
+  {
+    name: 'Warehouse Add',
+    path: '/inventory/warehouse-add',
+    element: <WarehouseAddManual />,
   },
   {
     name: 'Received Orders',

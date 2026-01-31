@@ -104,6 +104,9 @@ const WarehouseList = () => {
               </Form.Select>
             </Form.Group>
 
+            <Link to="/inventory/warehouse-add" className="btn btn-sm btn-primary">
+              Add Inventory
+            </Link>
             <Dropdown>
               <DropdownToggle as={'a'} className="dropdown-toggle btn btn-sm btn-outline-light rounded content-none icons-center" data-bs-toggle="dropdown" aria-expanded="false">
                 <IconifyIcon className="me-1" width={16} height={16} icon="bx:dots-vertical-rounded" />
