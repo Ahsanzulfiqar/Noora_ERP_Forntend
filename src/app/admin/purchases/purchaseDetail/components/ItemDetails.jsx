@@ -41,18 +41,6 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
     );
   }
 
-  const {
-    invoiceNo,
-    purchaseDate,
-    supplierName,
-    warehouse,
-    status,
-    notes,
-    totalAmount,
-    purchaseData,
-    items
-  } = purchaseData || {};
-
   return (
     <Col lg={12}>
       <StatusAlert isSuccess={isPostSuccess} message="Purchase posted to stock successfully" error={postError} />
@@ -76,13 +64,13 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
               <Typography variant='h6'>Purchase Details</Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                {status != 'received' &&
+                {purchaseData?.status != 'received' &&
                   <Link to={`/purchases/purchase-edit/${purchaseData?._id}`} className="btn btn-sm btn-primary">
                     Edit Purchase
                   </Link>
                 }
 
-                {status === 'confirmed' && !purchaseData?.postedToStock &&
+                {purchaseData?.status === 'confirmed' && !purchaseData?.postedToStock &&
                   <Button
                     variant='success'
                     className='btn btn-sm btn-success'
@@ -92,14 +80,14 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                     Post To Stock
                   </Button>
                 }
-                {status === 'draft' &&
+                {purchaseData?.status === 'draft' &&
                   <Typography variant='success' className='bg-success text-white px-2 py-1 rounded text-capitalize'>
                     Draft
                   </Typography>
                 }
-                {status != 'draft' && status != 'confirmed' &&
+                {purchaseData?.status != 'draft' && purchaseData?.status != 'confirmed' &&
                   <Typography variant='success' className='bg-success text-white px-2 py-1 rounded text-capitalize'>
-                    {status}
+                    {purchaseData?.status}
                   </Typography>
                 }
               </Box>
@@ -112,34 +100,34 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
             <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
               <li>
                 <span className="fw-medium text-dark fw-bold">Invoice No:&nbsp;</span>
-                {invoiceNo}
+                {purchaseData?.invoiceNo}
               </li>
               <li>
                 <span className="fw-medium text-dark fw-bold">Purchase Date:&nbsp;</span>
-                {purchaseDate ? new Date(purchaseDate).toLocaleDateString() : 'N/A'}
+                {purchaseData?.purchaseDate ? new Date(purchaseData?.purchaseDate).toLocaleDateString() : 'N/A'}
               </li>
               <li>
                 <span className="fw-medium text-dark fw-bold">Supplier:&nbsp;</span>
-                {supplierName}
+                {purchaseData?.supplierName}
               </li>
               <li>
-                <span className="fw-medium text-dark fw-bold">Warehouse ID:&nbsp;</span>
-                {warehouse}
+                <span className="fw-medium text-dark fw-bold">Warehouse:&nbsp;</span>
+                {purchaseData?.warehouseName}
               </li>
             </ul>
             <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
 
               <li>
                 <span className="fw-medium text-dark fw-bold">Status:&nbsp;</span>
-                {status}
+                {purchaseData?.status}
               </li>
               <li>
                 <span className="fw-medium text-dark fw-bold">Total Amount:&nbsp;</span>
-                {totalAmount}
+                {purchaseData?.totalAmount}
               </li>
               <li>
                 <span className="fw-medium text-dark fw-bold">Notes:&nbsp;</span>
-                {notes || 'N/A'}
+                {purchaseData?.notes || 'N/A'}
               </li>
             </ul>
           </div>
@@ -160,11 +148,11 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {items && items.length > 0 ? (
-                    items.map((item, index) => (
+                  {purchaseData?.items && purchaseData?.items.length > 0 ? (
+                    purchaseData?.items.map((item, index) => (
                       <tr key={index}>
-                        <td>{item.product}</td>
-                        <td>{item.variant}</td>
+                        <td>{item.productName}</td>
+                        <td>{item.variantName}</td>
                         <td>{item.batchNo}</td>
                         <td>{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'N/A'}</td>
                         <td>{item.quantity}</td>
