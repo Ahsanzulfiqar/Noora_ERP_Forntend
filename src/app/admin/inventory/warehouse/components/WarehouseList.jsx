@@ -4,9 +4,10 @@ import { Card, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu,
 import { Link } from 'react-router-dom';
 import TableNoData from '@/components/TableNoData';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
-import { useGetWarehouseStockQuery, useGetAllWarehousesQuery } from '@/services/endpoints/warehouse';
+import { useGetAllWarehousesQuery } from '@/services/endpoints/warehouse';
 import { useGetAllProductsQuery } from '@/services/endpoints/product';
 import { useGetVariantsByProductQuery } from '@/services/endpoints/productvariant';
+import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/stock';
 
 const WarehouseList = () => {
   const [page, setPage] = useState(1);
@@ -37,6 +38,7 @@ const WarehouseList = () => {
   const warehouseStock = data?.data || [];
   const totalPages = data?.totalPages || 1;
 
+
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
@@ -58,7 +60,7 @@ const WarehouseList = () => {
       <Card>
         <div className="d-flex card-header justify-content-between align-items-center">
           <div>
-            <CardTitle as={'h4'}>Warehouse Inventory Stock</CardTitle>
+            <CardTitle as={'h4'}>Warehouse Inventory Stock{warehouseStock.length}</CardTitle>
           </div>
           <div className="d-flex gap-2 align-items-center">
             <Form.Group className="mb-0">
@@ -159,9 +161,9 @@ const WarehouseList = () => {
                         </div>
                       </td>
                       <td>{item._id}</td>
-                      <td>{item.warehouse}</td>
-                      <td>{item.product}</td>
-                      <td>{item.variant}</td>
+                      <td>{item.warehouseName}</td>
+                      <td>{item.productName}</td>
+                      <td>{item.variantName}</td>
                       <td>{item.quantity}</td>
                       <td>{item.reserved}</td>
                       <td>{item.reorderLevel}</td>
