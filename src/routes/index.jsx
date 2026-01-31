@@ -79,9 +79,10 @@ const PostToStock = lazy(() => import('../app/admin/stock/stock-add/page'))
 const PostToStockList = lazy(() => import('../app/admin/stock/stock-list/page'))
 
 // Category Routes
-const CategoryList = lazy(() => import('@/app/(admin)/category/category-list/page'))
-const CategoryEdit = lazy(() => import('@/app/(admin)/category/category-edit/page'))
-const CategoryAdd = lazy(() => import('@/app/(admin)/category/category-add/page'))
+const CategoryList = lazy(() => import('@/app/admin/category/category-list/page'))
+const CategoryAdd = lazy(() => import('@/app/admin/category/category-add/page'))
+const SubCategoryList = lazy(() => import('@/app/admin/category/subcategory-list/page'))
+const SubCategoryAdd = lazy(() => import('@/app/admin/category/subcategory-add/page'))
 
 // inventory Routes
 const Warehouse = lazy(() => import('@/app/admin/inventory/warehouse/page'))
@@ -748,18 +749,33 @@ const CourierRoutes = [
 const CategoryRoutes = [
   {
     name: 'category-list',
-    path: '/category/category-list',
+    path: '/admin/category/category-list',
     element: <CategoryList />,
   },
   {
+    name: 'subcategory-list',
+    path: '/admin/category/subcategory-list',
+    element: <SubCategoryList />,
+  },
+  {
     name: 'category-edit',
-    path: '/category/category-edit',
-    element: <CategoryEdit />,
+    path: '/admin/category/category-edit/:id',
+    element: <CategoryAdd />,
   },
   {
     name: 'category-add',
-    path: '/category/category-add',
+    path: '/admin/category/category-add',
     element: <CategoryAdd />,
+  },
+  {
+    name: 'subcategory-edit',
+    path: '/admin/category/subcategory-edit/:id',
+    element: <SubCategoryAdd />,
+  },
+  {
+    name: 'subcategory-add',
+    path: '/admin/category/subcategory-add',
+    element: <SubCategoryAdd />,
   },
 ]
 const InventoryRoutes = [

@@ -76,24 +76,24 @@ export const MENU_ITEMS = [
   {
     key: 'category',
     icon: 'solar:clipboard-list-bold-duotone',
-    label: 'Product Varient',
+    label: 'Categories',
     children: [
       {
         key: 'category-list',
-        label: 'List',
-        url: '/products/product-varient-list',
+        label: 'Category List',
+        url: '/admin/category/category-list',
         parentKey: 'category',
       },
-      // {
-      //   key: 'category-edit',
-      //   label: 'Edit',
-      //   url: '/category/category-edit',
-      //   parentKey: 'category',
-      // },
+      {
+        key: 'subcategory-list',
+        label: 'Sub-Category List',
+        url: '/admin/category/subcategory-list',
+        parentKey: 'category',
+      },
       {
         key: 'category-add',
         label: 'Create',
-        url: '/products/product-varient-add',
+        url: '/admin/category/category-add',
         parentKey: 'category',
       },
     ],
