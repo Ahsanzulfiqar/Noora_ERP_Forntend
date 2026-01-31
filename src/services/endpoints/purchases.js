@@ -92,6 +92,7 @@ export const purchasesAPI = api.injectEndpoints({
                 supplierName
                 invoiceNo
                 warehouse
+                warehouseName
                 purchaseDate
                 status
                 subTotal
@@ -101,15 +102,18 @@ export const purchasesAPI = api.injectEndpoints({
                 notes
                 items {
                   product
+                  productName
                   variant
                   variantName
-                  productName
+                  sku
                   quantity
                   purchasePrice
                   lineTotal
                   batchNo
                   expiryDate
                 }
+                createdAt
+                updatedAt
               }
             }
           `,

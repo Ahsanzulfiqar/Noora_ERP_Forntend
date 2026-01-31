@@ -49,6 +49,7 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
     status,
     notes,
     totalAmount,
+    purchaseData,
     items
   } = purchaseData || {};
 
