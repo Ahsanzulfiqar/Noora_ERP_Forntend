@@ -7,6 +7,7 @@ import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useFilterSubCategoriesQuery, useDeleteSubCategoryMutation } from '@/services/authenticateendpoint/category';
 import StatusAlert from '@/components/StatusAlert';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
+import ViewDetailModal from '../../components/ViewDetailModal';
 
 const SubCategoryList = () => {
     const navigate = useNavigate();
@@ -15,7 +16,9 @@ const SubCategoryList = () => {
     const [isActive, setIsActive] = useState(''); // '' for All, 'true' for Active, 'false' for Inactive
     const [search, setSearch] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     const { data, isLoading } = useFilterSubCategoriesQuery({
         page,
@@ -42,6 +45,11 @@ const SubCategoryList = () => {
         setPage(1);
     };
 
+    const handleViewClick = (item) => {
+        setSelectedItem(item);
+        setShowViewModal(true);
+    };
+
     const handleDeleteClick = (id) => {
         setSelectedId(id);
         setShowDeleteModal(true);
@@ -56,6 +64,23 @@ const SubCategoryList = () => {
         }
     };
 
+    const subCategoryFields = [
+        { label: 'Sub-Category ID', key: '_id', col: 12 },
+        { label: 'Name', key: 'name', className: 'text-capitalize' },
+        { label: 'Slug', key: 'slug', className: 'text-capitalize' },
+        { label: 'Parent Category', key: 'categoryName', className: 'text-capitalize' },
+        { label: 'Description', key: 'description', col: 12, className: 'text-capitalize' },
+        {
+            label: 'Status',
+            key: 'isActive',
+            render: (data) => (
+                <span className={`badge ${data.isActive ? 'bg-success' : 'bg-danger'}`}>
+                    {data.isActive ? 'Active' : 'Inactive'}
+                </span>
+            )
+        },
+    ];
+
     return (
         <Row>
             <Col xl={12}>
@@ -65,6 +90,13 @@ const SubCategoryList = () => {
                     onConfirm={handleConfirmDelete}
                     onCancel={() => setShowDeleteModal(false)}
                     loading={isDeleting}
+                />
+                <ViewDetailModal
+                    show={showViewModal}
+                    onHide={() => setShowViewModal(false)}
+                    title="Sub-Category Details"
+                    data={selectedItem || {}}
+                    fields={subCategoryFields}
                 />
                 <Card>
                     <CardHeader className="d-flex justify-content-between align-items-center">
@@ -135,6 +167,9 @@ const SubCategoryList = () => {
                                             <td>{new Date(item.createdAt).toLocaleDateString()}</td>
                                             <td className="text-end">
                                                 <div className="d-flex gap-2 justify-content-end">
+                                                    <Button variant="light" size="sm" onClick={() => handleViewClick(item)}>
+                                                        <IconifyIcon icon="solar:eye-broken" className="fs-18" />
+                                                    </Button>
                                                     <Button variant="light" size="sm" onClick={() => navigate(`/admin/category/subcategory-edit/${item._id}`)}>
                                                         <IconifyIcon icon="solar:pen-2-broken" className="fs-18" />
                                                     </Button>
