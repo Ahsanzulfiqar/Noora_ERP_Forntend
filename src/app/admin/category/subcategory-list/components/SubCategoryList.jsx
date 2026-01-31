@@ -21,7 +21,6 @@ const SubCategoryList = () => {
         limit,
         filter: {
             search: search,
-            isActive: true,
             includeDeleted: false
         }
     });
