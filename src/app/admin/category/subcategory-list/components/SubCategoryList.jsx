@@ -12,6 +12,7 @@ const SubCategoryList = () => {
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
+    const [isActive, setIsActive] = useState(''); // '' for All, 'true' for Active, 'false' for Inactive
     const [search, setSearch] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
@@ -21,6 +22,7 @@ const SubCategoryList = () => {
         limit,
         filter: {
             search: search,
+            ...(isActive !== '' && { isActive: isActive === 'true' }),
             includeDeleted: false
         }
     });
@@ -32,6 +34,11 @@ const SubCategoryList = () => {
 
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
+        setPage(1);
+    };
+
+    const handleStatusChange = (e) => {
+        setIsActive(e.target.value);
         setPage(1);
     };
 
@@ -63,6 +70,16 @@ const SubCategoryList = () => {
                     <CardHeader className="d-flex justify-content-between align-items-center">
                         <CardTitle as={'h4'}>Sub-Categories ({data?.total || 0})</CardTitle>
                         <div className="d-flex gap-2 align-items-center">
+                            <Form.Select
+                                size="sm"
+                                value={isActive}
+                                onChange={handleStatusChange}
+                                style={{ width: '130px' }}
+                            >
+                                <option value="">All Status</option>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </Form.Select>
                             <Form.Control
                                 type="text"
                                 placeholder="Search sub-categories..."
@@ -107,9 +124,9 @@ const SubCategoryList = () => {
                                                     <input type="checkbox" className="form-check-input" />
                                                 </div>
                                             </td>
-                                            <td>{item.name}</td>
-                                            <td>{item.categoryName}</td>
-                                            <td>{item.slug}</td>
+                                            <td className='text-capitalize'>{item.name}</td>
+                                            <td className='text-capitalize'>{item.categoryName}</td>
+                                            <td className='text-capitalize'>{item.slug}</td>
                                             <td>
                                                 <span className={`badge ${item.isActive ? 'bg-success' : 'bg-danger'}`}>
                                                     {item.isActive ? 'Active' : 'Inactive'}

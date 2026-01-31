@@ -95,16 +95,17 @@ const AddCategory = () => {
 
                 <div className="p-3 bg-light mt-4 rounded">
                   <Row className="justify-content-end g-2">
-                    <Col lg={2}>
-                      <button type="submit" className="btn btn-outline-secondary w-100">
-                        Create
-                      </button>
-                    </Col>
+
 
                     <Col lg={2}>
                       <Link to="" className="btn btn-primary w-100">
                         Cancel
                       </Link>
+                    </Col>
+                    <Col lg={2}>
+                      <button type="submit" className="btn btn-outline-secondary w-100">
+                        Create
+                      </button>
                     </Col>
                   </Row>
                 </div>

@@ -121,15 +121,16 @@ const AddSubCategory = () => {
 
                                 <div className="p-3 bg-light mt-4 rounded">
                                     <Row className="justify-content-end g-2">
-                                        <Col lg={2}>
-                                            <Button type="submit" variant="primary" className="w-100" disabled={isCreating || isUpdating}>
-                                                {isCreating || isUpdating ? 'Saving...' : (isEdit ? 'Update' : 'Create')}
-                                            </Button>
-                                        </Col>
+
                                         <Col lg={2}>
                                             <Link to="/admin/category/subcategory-list" className="btn btn-outline-secondary w-100">
                                                 Cancel
                                             </Link>
+                                        </Col>             
+                                             <Col lg={2}>
+                                            <Button type="submit" variant="primary" className="w-100" disabled={isCreating || isUpdating}>
+                                                {isCreating || isUpdating ? 'Saving...' : (isEdit ? 'Update' : 'Create')}
+                                            </Button>
                                         </Col>
                                     </Row>
                                 </div>
