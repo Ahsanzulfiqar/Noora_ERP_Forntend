@@ -1,4 +1,4 @@
-import { api } from '../api'
+import { api } from '../authapi'
 
 export const variantsAPI = api.injectEndpoints({
   endpoints: (build) => ({

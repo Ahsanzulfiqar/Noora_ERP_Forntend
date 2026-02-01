@@ -6,7 +6,8 @@ export const categoryAPI = api.injectEndpoints({
 
         // FILTER CATEGORIES
         filterCategories: build.query({
-            query: ({ filter, page = 1, limit = 20 }) => ({
+            query: ({
+        auth: true, filter, page = 1, limit = 20 }) => ({
                 method: 'POST',
                 body: {
                     query: `
@@ -89,7 +90,8 @@ export const categoryAPI = api.injectEndpoints({
 
         // UPDATE CATEGORY
         updateCategory: build.mutation({
-            query: ({ id, data }) => ({
+            query: ({
+        auth: true, id, data }) => ({
                 method: 'POST',
                 body: {
                     query: `
@@ -130,7 +132,8 @@ export const categoryAPI = api.injectEndpoints({
 
         // FILTER SUB-CATEGORIES
         filterSubCategories: build.query({
-            query: ({ filter, page = 1, limit = 20 }) => ({
+            query: ({
+        auth: true, filter, page = 1, limit = 20 }) => ({
                 method: 'POST',
                 body: {
                     query: `
@@ -217,7 +220,8 @@ export const categoryAPI = api.injectEndpoints({
 
         // UPDATE SUB-CATEGORY
         updateSubCategory: build.mutation({
-            query: ({ id, data }) => ({
+            query: ({
+        auth: true, id, data }) => ({
                 method: 'POST',
                 body: {
                     query: `

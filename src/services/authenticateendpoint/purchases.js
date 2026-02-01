@@ -1,4 +1,4 @@
-import { api } from '../api'
+import { api } from '../authapi'
 
 export const purchasesAPI = api.injectEndpoints({
   endpoints: (build) => ({

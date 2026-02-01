@@ -35,7 +35,7 @@ export const api = createApi({
     },
   }),
 
-  tagTypes: ['User', 'Project', 'Sales'],
+  tagTypes: ['User', 'Project', 'Sales', 'Category', 'SubCategory', 'Courier', 'Products', 'Variants', 'Purchases', 'Sellers', 'Warehouses', 'WarehouseStock', 'Stock'],
 
   endpoints: () => ({}), // empty, others will inject
 })
