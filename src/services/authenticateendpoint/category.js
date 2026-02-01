@@ -1,16 +1,16 @@
 import { api } from '../authapi'
 
 export const categoryAPI = api.injectEndpoints({
-    endpoints: (build) => ({
-        // CATEGORY QUERIES
+  endpoints: (build) => ({
+    // CATEGORY QUERIES
 
-        // FILTER CATEGORIES
-        filterCategories: build.query({
-            query: ({
-        auth: true, filter, page = 1, limit = 20 }) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // FILTER CATEGORIES
+    filterCategories: build.query({
+      query: ({
+        auth = true, filter, page = 1, limit = 20 }) => ({
+          method: 'POST',
+          body: {
+            query: `
             query FilterCategories($filter: CategoryFilterInput, $page: Int, $limit: Int) {
               FilterCategories(filter: $filter, page: $page, limit: $limit) {
                 total
@@ -30,19 +30,19 @@ export const categoryAPI = api.injectEndpoints({
               }
             }
           `,
-                    variables: { filter, page, limit },
-                },
-            }),
-            transformResponse: (response) => response?.data?.FilterCategories || { data: [], total: 0 },
-            providesTags: ['Category'],
+            variables: { filter, page, limit },
+          },
         }),
+      transformResponse: (response) => response?.data?.FilterCategories || { data: [], total: 0 },
+      providesTags: ['Category'],
+    }),
 
-        // GET CATEGORY BY ID
-        getCategoryById: build.query({
-            query: (id) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // GET CATEGORY BY ID
+    getCategoryById: build.query({
+      query: (id) => ({
+        method: 'POST',
+        body: {
+          query: `
             query GetCategoryById($id: ID!) {
               GetCategoryById(id: $id) {
                 _id
@@ -57,21 +57,21 @@ export const categoryAPI = api.injectEndpoints({
               }
             }
           `,
-                    variables: { id },
-                },
-            }),
-            transformResponse: (response) => response?.data?.GetCategoryById,
-            providesTags: (result, error, id) => [{ type: 'Category', id }],
-        }),
+          variables: { id },
+        },
+      }),
+      transformResponse: (response) => response?.data?.GetCategoryById,
+      providesTags: (result, error, id) => [{ type: 'Category', id }],
+    }),
 
-        // CATEGORY MUTATIONS
+    // CATEGORY MUTATIONS
 
-        // CREATE CATEGORY
-        createCategory: build.mutation({
-            query: (data) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // CREATE CATEGORY
+    createCategory: build.mutation({
+      query: (data) => ({
+        method: 'POST',
+        body: {
+          query: `
             mutation CreateCategory($data: CreateCategoryInput!) {
               CreateCategory(data: $data) {
                 _id
@@ -82,19 +82,19 @@ export const categoryAPI = api.injectEndpoints({
               }
             }
           `,
-                    variables: { data },
-                },
-            }),
-            invalidatesTags: ['Category'],
-        }),
+          variables: { data },
+        },
+      }),
+      invalidatesTags: ['Category'],
+    }),
 
-        // UPDATE CATEGORY
-        updateCategory: build.mutation({
-            query: ({
-        auth: true, id, data }) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // UPDATE CATEGORY
+    updateCategory: build.mutation({
+      query: ({
+        auth = true, id, data }) => ({
+          method: 'POST',
+          body: {
+            query: `
             mutation UpdateCategory($id: ID!, $data: UpdateCategoryInput!) {
               UpdateCategory(id: $id, data: $data) {
                 _id
@@ -106,37 +106,37 @@ export const categoryAPI = api.injectEndpoints({
               }
             }
           `,
-                    variables: { id, data },
-                },
-            }),
-            invalidatesTags: (result, error, { id }) => ['Category', { type: 'Category', id }],
+            variables: { id, data },
+          },
         }),
+      invalidatesTags: (result, error, { id }) => ['Category', { type: 'Category', id }],
+    }),
 
-        // DELETE CATEGORY
-        deleteCategory: build.mutation({
-            query: (id) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // DELETE CATEGORY
+    deleteCategory: build.mutation({
+      query: (id) => ({
+        method: 'POST',
+        body: {
+          query: `
             mutation DeleteCategory($id: ID!) {
               DeleteCategory(id: $id)
             }
           `,
-                    variables: { id },
-                },
-            }),
-            invalidatesTags: ['Category'],
-        }),
+          variables: { id },
+        },
+      }),
+      invalidatesTags: ['Category'],
+    }),
 
-        // SUB-CATEGORY QUERIES
+    // SUB-CATEGORY QUERIES
 
-        // FILTER SUB-CATEGORIES
-        filterSubCategories: build.query({
-            query: ({
-        auth: true, filter, page = 1, limit = 20 }) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // FILTER SUB-CATEGORIES
+    filterSubCategories: build.query({
+      query: ({
+        auth = true, filter, page = 1, limit = 20 }) => ({
+          method: 'POST',
+          body: {
+            query: `
             query FilterSubCategories($filter: SubCategoryFilterInput, $page: Int, $limit: Int) {
               FilterSubCategories(filter: $filter, page: $page, limit: $limit) {
                 total
@@ -158,19 +158,19 @@ export const categoryAPI = api.injectEndpoints({
               }
             }
           `,
-                    variables: { filter, page, limit },
-                },
-            }),
-            transformResponse: (response) => response?.data?.FilterSubCategories || { data: [], total: 0 },
-            providesTags: ['SubCategory'],
+            variables: { filter, page, limit },
+          },
         }),
+      transformResponse: (response) => response?.data?.FilterSubCategories || { data: [], total: 0 },
+      providesTags: ['SubCategory'],
+    }),
 
-        // GET SUB-CATEGORY BY ID
-        getSubCategoryById: build.query({
-            query: (id) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // GET SUB-CATEGORY BY ID
+    getSubCategoryById: build.query({
+      query: (id) => ({
+        method: 'POST',
+        body: {
+          query: `
             query GetSubCategoryById($id: ID!) {
               GetSubCategoryById(id: $id) {
                 _id
@@ -187,21 +187,21 @@ export const categoryAPI = api.injectEndpoints({
               }
             }
           `,
-                    variables: { id },
-                },
-            }),
-            transformResponse: (response) => response?.data?.GetSubCategoryById,
-            providesTags: (result, error, id) => [{ type: 'SubCategory', id }],
-        }),
+          variables: { id },
+        },
+      }),
+      transformResponse: (response) => response?.data?.GetSubCategoryById,
+      providesTags: (result, error, id) => [{ type: 'SubCategory', id }],
+    }),
 
-        // SUB-CATEGORY MUTATIONS
+    // SUB-CATEGORY MUTATIONS
 
-        // CREATE SUB-CATEGORY
-        createSubCategory: build.mutation({
-            query: (data) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // CREATE SUB-CATEGORY
+    createSubCategory: build.mutation({
+      query: (data) => ({
+        method: 'POST',
+        body: {
+          query: `
             mutation CreateSubCategory($data: CreateSubCategoryInput!) {
               CreateSubCategory(data: $data) {
                 _id
@@ -212,19 +212,19 @@ export const categoryAPI = api.injectEndpoints({
               }
             }
           `,
-                    variables: { data },
-                },
-            }),
-            invalidatesTags: ['SubCategory'],
-        }),
+          variables: { data },
+        },
+      }),
+      invalidatesTags: ['SubCategory'],
+    }),
 
-        // UPDATE SUB-CATEGORY
-        updateSubCategory: build.mutation({
-            query: ({
-        auth: true, id, data }) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // UPDATE SUB-CATEGORY
+    updateSubCategory: build.mutation({
+      query: ({
+        auth = true, id, data }) => ({
+          method: 'POST',
+          body: {
+            query: `
             mutation UpdateSubCategory($id: ID!, $data: UpdateSubCategoryInput!) {
               UpdateSubCategory(id: $id, data: $data) {
                 _id
@@ -238,39 +238,39 @@ export const categoryAPI = api.injectEndpoints({
               }
             }
           `,
-                    variables: { id, data },
-                },
-            }),
-            invalidatesTags: (result, error, { id }) => ['SubCategory', { type: 'SubCategory', id }],
+            variables: { id, data },
+          },
         }),
+      invalidatesTags: (result, error, { id }) => ['SubCategory', { type: 'SubCategory', id }],
+    }),
 
-        // DELETE SUB-CATEGORY
-        deleteSubCategory: build.mutation({
-            query: (id) => ({
-                method: 'POST',
-                body: {
-                    query: `
+    // DELETE SUB-CATEGORY
+    deleteSubCategory: build.mutation({
+      query: (id) => ({
+        method: 'POST',
+        body: {
+          query: `
             mutation DeleteSubCategory($id: ID!) {
               DeleteSubCategory(id: $id)
             }
           `,
-                    variables: { id },
-                },
-            }),
-            invalidatesTags: ['SubCategory'],
-        }),
+          variables: { id },
+        },
+      }),
+      invalidatesTags: ['SubCategory'],
     }),
+  }),
 })
 
 export const {
-    useFilterCategoriesQuery,
-    useGetCategoryByIdQuery,
-    useCreateCategoryMutation,
-    useUpdateCategoryMutation,
-    useDeleteCategoryMutation,
-    useFilterSubCategoriesQuery,
-    useGetSubCategoryByIdQuery,
-    useCreateSubCategoryMutation,
-    useUpdateSubCategoryMutation,
-    useDeleteSubCategoryMutation,
+  useFilterCategoriesQuery,
+  useGetCategoryByIdQuery,
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
+  useFilterSubCategoriesQuery,
+  useGetSubCategoryByIdQuery,
+  useCreateSubCategoryMutation,
+  useUpdateSubCategoryMutation,
+  useDeleteSubCategoryMutation,
 } = categoryAPI
