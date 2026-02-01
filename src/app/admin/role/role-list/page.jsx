@@ -74,18 +74,18 @@ const RoleListPage = () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Projects</th>
-                <th>Warehouses</th>
+                {/* <th>Projects</th>
+                <th>Warehouses</th> */}
                 <th>Status</th>
-                <th>Action</th>
+                <th className="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
               {userData?.map((item, idx) => <tr key={item._id || idx}>
-                <td>{item.name}</td>
+                <td className='text-capitalize'>{item.name}</td>
                 <td>{item.email}</td>
-                <td>{item.role}</td>
-                <td>
+                <td className='text-capitalize'>{item.role}</td>
+                {/* <td>
                   {item.assignedProjects?.length > 0 ? (
                     item.assignedProjects.map((project, pIdx) => (
                       <span key={pIdx} className="badge bg-light-subtle text-muted border py-1 px-2 me-1">
@@ -106,7 +106,7 @@ const RoleListPage = () => {
                   ) : (
                     <span className="text-muted">No warehouses</span>
                   )}
-                </td>
+                </td> */}
                 <td>
                   <div className="form-check form-switch">
                     <input
@@ -120,7 +120,7 @@ const RoleListPage = () => {
                     />
                   </div>
                 </td>
-                <td>
+                <td className="text-center d-flex justify-content-center align-items-center"> 
                   <div className="d-flex gap-2">
                     <Link to={`/role/role-view/${item._id}`} className="btn btn-light btn-sm">
                       <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />

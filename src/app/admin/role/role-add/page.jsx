@@ -209,12 +209,12 @@ const RoleAddPage = () => {
                   </Row>
                 </CardBody>
                 <CardFooter className="border-top">
-                  <div className="d-flex gap-2">
+                  <div className="d-flex gap-2 justify-content-end">
 
-                    <Link to="/role/role-list" className="btn btn-outline-secondary">
+                    <Link to="/role/role-list" className="btn btn-primary">
                       Cancel
                     </Link>
-                    <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                    <button type="submit" className="btn btn-outline-secondary" disabled={isLoading}>
                       {isLoading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update User' : 'Create User')}
                     </button>
                   </div>

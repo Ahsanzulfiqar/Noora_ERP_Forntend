@@ -1,33 +1,11 @@
 import { Card, CardBody, CardHeader, CardTitle, Row, Col, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { useGetAllWarehousesQuery } from '@/services/endpoints/warehouse';
-import { useGetAllProjectsQuery } from '@/services/authenticateendpoint/project';
 
 const UserDetails = ({ user }) => {
-    const { data: warehouses } = useGetAllWarehousesQuery();
-    const { data: projects } = useGetAllProjectsQuery();
 
-    // Helper function to get warehouse names from IDs
-    const getWarehouseNames = (warehouseIds) => {
-        if (!warehouseIds || warehouseIds.length === 0) return [];
-        return warehouseIds
-            .map(id => warehouses?.find(w => w._id === id))
-            .filter(Boolean)
-            .map(w => w.name);
-    };
 
-    // Helper function to get project names from IDs
-    const getProjectNames = (projectIds) => {
-        if (!projectIds || projectIds.length === 0) return [];
-        return projectIds
-            .map(id => projects?.find(p => p._id === id))
-            .filter(Boolean)
-            .map(p => p.name);
-    };
 
-    const warehouseNames = getWarehouseNames(user.assignedWarehouses);
-    const projectNames = getProjectNames(user.assignedProjects);
 
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
@@ -95,16 +73,16 @@ const UserDetails = ({ user }) => {
                                                         <td className="fw-semibold">Phone:</td>
                                                         <td>{user.phone || 'N/A'}</td>
                                                     </tr>
-                                                    <tr>
+                                                    {/* <tr>
                                                         <td className="fw-semibold">User ID:</td>
                                                         <td>
                                                             <code className="text-muted">{user._id}</code>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
+                                                    </tr> */}
+                                                    {/* <tr>
                                                         <td className="fw-semibold">Created At:</td>
                                                         <td>{formatDate(user.createdAt)}</td>
-                                                    </tr>
+                                                    </tr> */}
                                                 </tbody>
                                             </table>
                                         </CardBody>
@@ -151,9 +129,9 @@ const UserDetails = ({ user }) => {
                                                 <IconifyIcon icon="solar:box-bold" className="me-2 text-primary" />
                                                 Assigned Warehouses
                                             </h5>
-                                            {warehouseNames.length > 0 ? (
+                                            {user.assignedWarehouses.length > 0 ? (
                                                 <div className="d-flex flex-wrap gap-2">
-                                                    {warehouseNames.map((name, idx) => (
+                                                    {user.assignedWarehouses.map((name, idx) => (
                                                         <Badge key={idx} bg="light-subtle" text="muted" className="border py-2 px-3">
                                                             <IconifyIcon icon="solar:box-minimalistic-broken" className="me-1" />
                                                             {name}
@@ -177,9 +155,9 @@ const UserDetails = ({ user }) => {
                                                 <IconifyIcon icon="solar:folder-bold" className="me-2 text-primary" />
                                                 Assigned Projects
                                             </h5>
-                                            {projectNames.length > 0 ? (
+                                            {user.assignedProjects.length > 0 ? (
                                                 <div className="d-flex flex-wrap gap-2">
-                                                    {projectNames.map((name, idx) => (
+                                                    {user.assignedProjects.map((name, idx) => (
                                                         <Badge key={idx} bg="light-subtle" text="muted" className="border py-2 px-3">
                                                             <IconifyIcon icon="solar:folder-open-broken" className="me-1" />
                                                             {name}

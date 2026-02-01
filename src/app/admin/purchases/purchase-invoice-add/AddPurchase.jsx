@@ -129,7 +129,6 @@ const AddPurchase = () => {
               taxAmount: purchaseData?.taxAmount || 0,
               totalAmount: purchaseData?.totalAmount || 0,
               notes: purchaseData?.notes || '',
-              status: purchaseData?.status || 'draft',
             }}
             validationSchema={Yup.object({
               supplierName: Yup.string().required('Required'),
@@ -148,7 +147,6 @@ const AddPurchase = () => {
               subTotal: Yup.number(),
               taxAmount: Yup.number().required('Required'),
               totalAmount: Yup.number(),
-              // status: Yup.string().oneOf(['confirmed', 'cancelled']),
             })}
             onSubmit={async (values, { resetForm }) => {
               try {
@@ -185,14 +183,11 @@ const AddPurchase = () => {
                   items: formattedItems,
                 };
 
-                console.log('Final Payload Status:', values.status);
-                console.log('Final Payload:', { ...payload, status: values.status });
-
                 if (purchaseId) {
                   // For Update, explicitly include status
                   await updatePurchase({
                     id: purchaseId,
-                    data: { ...payload, status: values.status }
+                    data: { ...payload }
                   }).unwrap();
                 } else {
                   // For Create, omitted status (or defaults to draft)
@@ -241,27 +236,7 @@ const AddPurchase = () => {
                       <FormikDateField name="purchaseDate" label="Purchase Date" />
                     </Col>
 
-                    {purchaseId && (
-                      <Col lg={3}>
-                        <Field name="status">
-                          {({ field, form }) => (
-                            <ChoicesSearchFormInput
-                              label="Status"
-                              labelClassName="form-label fw-bold"
-                              className="form-control"
-                              id="status"
-                              {...field}
-                              options={[
-                                { label: 'Confirmed', value: 'confirmed' },
-                                { label: 'Cancel', value: 'cancelled' },
-                              ]}
-                              onChange={(val) => form.setFieldValue('status', val)}
-                              placeholder="Select Status"
-                            />
-                          )}
-                        </Field>
-                      </Col>
-                    )}
+
                   </Row>
 
                   {/* ----------------------- */}
