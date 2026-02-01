@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
-import { useMarkDeliveredMutation } from '@/services/endpoints/sales';
+import { useMarkDeliveredMutation } from '@/services/authenticateendpoint/sales';
 import ActionModal from './ActionModal';
 
 const DeliveredModal = ({ show, onHide, saleId }) => {

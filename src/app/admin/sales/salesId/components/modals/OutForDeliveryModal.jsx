@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import { Formik, Form, Field } from 'formik';
-import { useMarkOutForDeliveryMutation } from '@/services/endpoints/sales';
+import { useMarkOutForDeliveryMutation } from '@/services/authenticateendpoint/sales';
 import { useGetAllCouriersQuery } from '@/services/authenticateendpoint/courier';
 import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikTextArea from '@/components/formikfield/FormikTextArea';

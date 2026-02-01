@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
-import { useUpdateSaleMutation } from '@/services/endpoints/sales';
+import { useUpdateSaleMutation } from '@/services/authenticateendpoint/sales';
 import ActionModal from './ActionModal';
 
 const DraftSaleModal = ({ show, onHide, saleId }) => {

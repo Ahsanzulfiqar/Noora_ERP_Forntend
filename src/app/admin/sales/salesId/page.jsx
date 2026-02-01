@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 // Endpoints
 import {
   useGetSaleByIdQuery
-} from '@/services/endpoints/sales';
+} from '@/services/authenticateendpoint/sales';
 const SalesDetailPage = () => {
   const { salesId } = useParams();
   const { data: saleData, isLoading: isLoadingSale } = useGetSaleByIdQuery(salesId, { skip: !salesId });

@@ -6,7 +6,7 @@ import { Icon } from '@iconify/react';
 import { useAuth } from '@/hooks/useAuth';
 
 // Endpoints
-import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/endpoints/sales';
+import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/authenticateendpoint/sales';
 import { useGetSellersQuery } from '../../../../../services/endpoints/sellers';
 import { useGetAllWarehousesQuery } from '../../../../../services/endpoints/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/endpoints/product';
