@@ -2,7 +2,7 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useGetProjectByIdQuery } from '../../../../../services/authenticateendpoint/project';
-import { useGetAllWarehousesQuery } from '../../../../../services/endpoints/warehouse';
+import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
 import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 

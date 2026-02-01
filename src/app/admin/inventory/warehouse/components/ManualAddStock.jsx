@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikSelectField from '@/components/formikfield/FormikSelectField';
 import FormikDateField from '@/components/formikfield/FormikDateField';
-import { useGetAllWarehousesQuery } from '@/services/endpoints/warehouse';
-import { useGetAllProductsQuery } from '@/services/endpoints/product';
-import { useGetVariantsByProductQuery } from '@/services/endpoints/productvariant';
+import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
+import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product';
+import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
 import { useAddManualStockMutation } from '@/services/authenticateendpoint/stock';
 import StatusAlert from '@/components/StatusAlert';
 

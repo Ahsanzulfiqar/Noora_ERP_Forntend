@@ -12,7 +12,7 @@ import {
   useUpdateUserMutation,
   useGetUserByIdQuery
 } from '../../../../services/authenticateendpoint/users';
-import { useGetAllWarehousesQuery } from '../../../../services/endpoints/warehouse';
+import { useGetAllWarehousesQuery } from '../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProjectsQuery } from '../../../../services/authenticateendpoint/project';
 import FormikRadioGroup from '@/components/formikfield/FormikRadioGroup';
 import { useEffect, useState } from 'react';

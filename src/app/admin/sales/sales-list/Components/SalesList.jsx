@@ -2,7 +2,7 @@ import PageTItle from '@/components/PageTItle';
 import { useState } from 'react';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { useGetSalesQuery } from '@/services/authenticateendpoint/sales';
-import { useGetSellersQuery } from '@/services/endpoints/sellers';
+import { useGetSellersQuery } from '@/services/authenticateendpoint/sellers';
 import { Badge, Card, CardBody, Col, Row, Spinner, Table, Button, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'

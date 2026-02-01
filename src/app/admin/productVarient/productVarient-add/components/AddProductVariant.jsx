@@ -6,8 +6,8 @@ import FormikTextField from '@/components/formikfield/FormikTextField'
 import FormikSelectField from '@/components/formikfield/FormikSelectField'
 import FormikFileInput from '@/components/formikfield/FormikFileInput'
 import FormikToggleSwitch from '@/components/formikfield/FormikToggleSwitch'
-import { useCreateVariantMutation, useGetVariantByIdQuery, useUpdateVariantMutation } from '@/services/endpoints/productvariant'
-import { useGetAllProductsQuery } from '@/services/endpoints/product'
+import { useCreateVariantMutation, useGetVariantByIdQuery, useUpdateVariantMutation } from '@/services/authenticateendpoint/productvariant'
+import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product'
 import { toast } from 'react-toastify';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput'
 import StatusAlert from '../../../../../components/StatusAlert'
@@ -240,7 +240,7 @@ const AddProductVariant = () => {
 
                                       <Grid size={{ xs: 1, sm: 1, md: 1, lg: 1 }}>
                                         <IconButton type="button" onClick={() => remove(index)}
-                                         sx={{ backgroundColor: '#ffdcdcff', marginTop: '28px', marginLeft: '2px' }}>
+                                          sx={{ backgroundColor: '#ffdcdcff', marginTop: '28px', marginLeft: '2px' }}>
                                           <Trash2 size={17} color="#ff3939ff" strokeWidth={2} />
                                         </IconButton>
                                       </Grid>

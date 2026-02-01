@@ -7,7 +7,7 @@ import * as Yup from 'yup'
 import { Link } from 'react-router-dom'
 import FormikSelectField from '@/components/formikfield/FormikSelectField'
 import { usePostToStockMutation } from '../../../../../services/endpoints/stock'
-import { useGetAllPurchasesQuery } from '../../../../../services/endpoints/purchases'
+import { useGetAllPurchasesQuery } from '../../../../../services/authenticateendpoint/purchases'
 import Button from '@mui/material/Button'
 import StatusAlert from '../../../../../components/StatusAlert'
 

@@ -2,12 +2,12 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { currency } from '@/context/constants';
 import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { useGetVariantsByProductQuery } from '../../../../../services/endpoints/productvariant';
-import { useGetAllProductsQuery } from '../../../../../services/endpoints/product';
+import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
+import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useState } from 'react';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 const ProductCard = ({
-item,  image,
+  item, image,
 
   _id
 }) => {

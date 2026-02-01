@@ -1,6 +1,6 @@
 import PageTItle from '@/components/PageTItle';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { useGetSellersQuery } from '@/services/endpoints/sellers';
+import { useGetSellersQuery } from '@/services/authenticateendpoint/sellers';
 import { Badge, Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Dropdown, DropdownMenu, DropdownToggle, ProgressBar, Row, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import zara from '@/assets/images/seller/zara.svg';

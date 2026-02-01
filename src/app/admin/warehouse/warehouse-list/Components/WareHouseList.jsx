@@ -2,7 +2,7 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { currency } from '@/context/constants';
 import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDeleteWarehouseMutation, useGetAllWarehousesQuery } from '../../../../../services/endpoints/warehouse';
+import { useDeleteWarehouseMutation, useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { IconButton } from '@mui/material';
 import StatusAlert from '../../../../../components/StatusAlert';
 import LoaderSpinner from '../../../../../components/loaders/LoaderSpinner';
@@ -78,7 +78,7 @@ const ProductCard = ({
 const WareHouseList = () => {
   const { data, isLoading: isLoadingWarehouses, error } = useGetAllWarehousesQuery()
 
-  const [deleteWarehouse, {isSuccess: isDeleteSuccess, error: isDeleteError}] = useDeleteWarehouseMutation();
+  const [deleteWarehouse, { isSuccess: isDeleteSuccess, error: isDeleteError }] = useDeleteWarehouseMutation();
 
   console.log(';;;;;', data, isLoadingWarehouses, error)
   const navigate = useNavigate();
@@ -134,7 +134,7 @@ const WareHouseList = () => {
             </tr>
           </thead>
           <tbody style={{ textAlign: 'left' }}>
-            {isLoadingWarehouses && <LoaderSpinner show={isLoadingWarehouses} colSpan={8}/>}
+            {isLoadingWarehouses && <LoaderSpinner show={isLoadingWarehouses} colSpan={8} />}
             {!isLoadingWarehouses && data?.map((item) => (
               <tr key={item?._id}>
                 <td>
@@ -150,33 +150,33 @@ const WareHouseList = () => {
                 <td>{item?.mainId === 'null' ? "N/A" : item?.mainId}</td>
                 <td>{item?.contact}</td>
                 <td style={{ textAlign: 'center', gap: '10px', display: 'flex', justifyContent: 'center' }} >
-                    <IconButton
-                      size="small"
-                      className="btn btn-light btn-sm"
-                      aria-label="view"
-                      onClick={() => navigate(`/warehouses/${item?._id}`)}
-                    >
-                      <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      className="btn btn-soft-primary btn-sm"
-                      aria-label="edit"
-                      onClick={() => navigate(`/warehouses/warehouse-edit/${item?._id}`)}
-                    >
-                      <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      className="btn btn-soft-danger btn-sm"
-                      aria-label="delete"
-                      onClick={() => deleteWarehouse(item._id)}
-                    >
-                      <IconifyIcon
-                        icon="solar:trash-bin-minimalistic-2-broken"
-                        className="align-middle fs-18"
-                      />
-                    </IconButton>
+                  <IconButton
+                    size="small"
+                    className="btn btn-light btn-sm"
+                    aria-label="view"
+                    onClick={() => navigate(`/warehouses/${item?._id}`)}
+                  >
+                    <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    className="btn btn-soft-primary btn-sm"
+                    aria-label="edit"
+                    onClick={() => navigate(`/warehouses/warehouse-edit/${item?._id}`)}
+                  >
+                    <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    className="btn btn-soft-danger btn-sm"
+                    aria-label="delete"
+                    onClick={() => deleteWarehouse(item._id)}
+                  >
+                    <IconifyIcon
+                      icon="solar:trash-bin-minimalistic-2-broken"
+                      className="align-middle fs-18"
+                    />
+                  </IconButton>
                 </td>
               </tr>
             ))}

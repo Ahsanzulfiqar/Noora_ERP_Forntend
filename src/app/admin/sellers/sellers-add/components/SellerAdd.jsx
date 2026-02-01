@@ -9,7 +9,7 @@ import {
   useCreateSellerMutation,
   useUpdateSellerMutation,
   useGetSellerByIdQuery
-} from '@/services/endpoints/sellers';
+} from '@/services/authenticateendpoint/sellers';
 
 // Reusable Components
 import FormikTextField from '@/components/formikfield/FormikTextField';
@@ -96,133 +96,133 @@ const SellerAdd = () => {
       >
         {({ values, setFieldValue, errors }) => {
           console.log(errors);
-          
-          return(
-                      <Form>
-            <Card>
-              <CardHeader>
-                <CardTitle as={'h4'}>
-                  {sellerId ? 'Edit Seller' : 'Seller Personal Information'}
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <Row>
-                  <Col lg={4}>
-                    <FormikTextField
-                      label="Full Name"
-                      name="name"
-                      placeholder="Enter Seller Name"
-                    />
+
+          return (
+            <Form>
+              <Card>
+                <CardHeader>
+                  <CardTitle as={'h4'}>
+                    {sellerId ? 'Edit Seller' : 'Seller Personal Information'}
+                  </CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <Row>
+                    <Col lg={4}>
+                      <FormikTextField
+                        label="Full Name"
+                        name="name"
+                        placeholder="Enter Seller Name"
+                      />
+                    </Col>
+                    <Col lg={4}>
+                      <FormikTextField
+                        label="Email Address"
+                        name="email"
+                        type="email"
+                        placeholder="Enter Email"
+                      />
+                    </Col>
+                    <Col lg={4}>
+                      <FormikTextField
+                        label="Phone Number"
+                        name="phone"
+                        placeholder="Enter Phone Number"
+                      />
+                    </Col>
+                    <Col lg={4}>
+                      <FormikTextField
+                        label="Company Name"
+                        name="companyName"
+                        placeholder="Enter Company Name"
+                      />
+                    </Col>
+                    <Col lg={12}>
+                      <FormikTextArea
+                        label="Address"
+                        name="address"
+                        placeholder="Enter Full Address"
+                      />
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle as={'h4'}>Seller Business Information</CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <Row>
+                    <Col lg={4}>
+                      <Field name="sellerType">
+                        {({ field, form }) => (
+                          <ChoicesSearchFormInput
+                            label="Seller Type"
+                            labelClassName="form-label fw-bold"
+                            className="form-control"
+                            id="sellerType"
+                            {...field}
+                            options={sellerTypeOptions}
+                            onChange={(val) => form.setFieldValue('sellerType', val)}
+                            placeholder="Select seller type"
+                          />
+                        )}
+                      </Field>
+                    </Col>
+                    <Col lg={4}>
+                      <Field name="commissionType">
+                        {({ field, form }) => (
+                          <ChoicesSearchFormInput
+                            label="Commission Type"
+                            labelClassName="form-label fw-bold"
+                            className="form-control"
+                            id="commissionType"
+                            {...field}
+                            options={commissionTypeOptions}
+                            onChange={(val) => form.setFieldValue('commissionType', val)}
+                            placeholder="Select commission type"
+                          />
+                        )}
+                      </Field>
+                    </Col>
+                    <Col lg={4}>
+                      <FormikTextField
+                        label="Commission Value"
+                        name="commissionValue"
+                        type="number"
+                        placeholder="0"
+                      />
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+
+              <div className="p-3 bg-light mb-3 rounded">
+                <Row className="justify-content-end g-2">
+                  <Col lg={2}>
+                    <Button
+                      variant="outline-secondary"
+                      className="w-100"
+                      onClick={() => navigate(-1)}
+                    >
+                      Cancel
+                    </Button>
                   </Col>
-                  <Col lg={4}>
-                    <FormikTextField
-                      label="Email Address"
-                      name="email"
-                      type="email"
-                      placeholder="Enter Email"
-                    />
-                  </Col>
-                  <Col lg={4}>
-                    <FormikTextField
-                      label="Phone Number"
-                      name="phone"
-                      placeholder="Enter Phone Number"
-                    />
-                  </Col>
-                  <Col lg={4}>
-                    <FormikTextField
-                      label="Company Name"
-                      name="companyName"
-                      placeholder="Enter Company Name"
-                    />
-                  </Col>
-                  <Col lg={12}>
-                    <FormikTextArea
-                      label="Address"
-                      name="address"
-                      placeholder="Enter Full Address"
-                    />
+                  <Col lg={2}>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      className="w-100"
+                      disabled={isCreating || isUpdating}
+                    >
+                      {isCreating || isUpdating
+                        ? (sellerId ? 'Updating...' : 'Creating...')
+                        : (sellerId ? 'Update Seller' : 'Create Seller')}
+                    </Button>
                   </Col>
                 </Row>
-              </CardBody>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle as={'h4'}>Seller Business Information</CardTitle>
-              </CardHeader>
-              <CardBody>
-                <Row>
-                  <Col lg={4}>
-                    <Field name="sellerType">
-                      {({ field, form }) => (
-                        <ChoicesSearchFormInput
-                          label="Seller Type"
-                          labelClassName="form-label fw-bold"
-                          className="form-control"
-                          id="sellerType"
-                          {...field}
-                          options={sellerTypeOptions}
-                          onChange={(val) => form.setFieldValue('sellerType', val)}
-                          placeholder="Select seller type"
-                        />
-                      )}
-                    </Field>
-                  </Col>
-                  <Col lg={4}>
-                    <Field name="commissionType">
-                      {({ field, form }) => (
-                        <ChoicesSearchFormInput
-                          label="Commission Type"
-                          labelClassName="form-label fw-bold"
-                          className="form-control"
-                          id="commissionType"
-                          {...field}
-                          options={commissionTypeOptions}
-                          onChange={(val) => form.setFieldValue('commissionType', val)}
-                          placeholder="Select commission type"
-                        />
-                      )}
-                    </Field>
-                  </Col>
-                  <Col lg={4}>
-                    <FormikTextField
-                      label="Commission Value"
-                      name="commissionValue"
-                      type="number"
-                      placeholder="0"
-                    />
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
-
-            <div className="p-3 bg-light mb-3 rounded">
-              <Row className="justify-content-end g-2">
-                <Col lg={2}>
-                  <Button
-                    variant="outline-secondary"
-                    className="w-100"
-                    onClick={() => navigate(-1)}
-                  >
-                    Cancel
-                  </Button>
-                </Col>
-                <Col lg={2}>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    className="w-100"
-                    disabled={isCreating || isUpdating}
-                  >
-                    {isCreating || isUpdating
-                      ? (sellerId ? 'Updating...' : 'Creating...')
-                      : (sellerId ? 'Update Seller' : 'Create Seller')}
-                  </Button>
-                </Col>
-              </Row>
-            </div>
-          </Form>
+              </div>
+            </Form>
           )
         }}
       </Formik>

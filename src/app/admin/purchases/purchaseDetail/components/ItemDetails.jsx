@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { usePostToStockMutation } from '@/services/endpoints/purchases';
+import { usePostToStockMutation } from '@/services/authenticateendpoint/purchases';
 import { useConfirmPurchaseMutation } from '@/services/authenticateendpoint/purchaseStatus';
 import { useState } from 'react';
 import DeleteConfirmModal from '../../../../../components/DeleteConfirmModal';

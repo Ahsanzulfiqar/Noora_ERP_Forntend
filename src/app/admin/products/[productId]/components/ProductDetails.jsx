@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useGetProductByIdQuery } from '../../../../../services/endpoints/product';
+import { useGetProductByIdQuery } from '../../../../../services/authenticateendpoint/product';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import product1 from '@/assets/images/product/noimage.png';
 import { currency } from '@/context/constants';

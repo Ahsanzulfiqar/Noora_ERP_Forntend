@@ -7,10 +7,10 @@ import { useAuth } from '@/hooks/useAuth';
 
 // Endpoints
 import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/authenticateendpoint/sales';
-import { useGetSellersQuery } from '../../../../../services/endpoints/sellers';
-import { useGetAllWarehousesQuery } from '../../../../../services/endpoints/warehouse';
-import { useGetAllProductsQuery } from '../../../../../services/endpoints/product';
-import { useGetVariantsByProductQuery } from '../../../../../services/endpoints/productvariant';
+import { useGetSellersQuery } from '../../../../../services/authenticateendpoint/sellers';
+import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
+import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
+import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
 import { useGetAllCouriersQuery } from '../../../../../services/authenticateendpoint/courier';
 
 // Reusable Components
@@ -93,7 +93,6 @@ const SaleAdd = () => {
       sku: item.sku || '',
       quantity: item.quantity || 1,
       salePrice: item.salePrice || 0,
-      lineTotal: item.lineTotal || 0,
       lineTotal: item.lineTotal || 0,
     })) || [],
     subTotal: saleData?.subTotal || 0,

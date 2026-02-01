@@ -1,7 +1,7 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
 import { Link, useParams } from 'react-router-dom';
-import { useGetWarehouseByIdQuery } from '../../../../../services/endpoints/warehouse';
+import { useGetWarehouseByIdQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Contact, MapPin } from 'lucide-react';
@@ -26,7 +26,7 @@ const WarehouseDetails = () => {
       </CardHeader>
       <CardBody>
         <Box>
-          {!data?.ismain  && <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {!data?.ismain && <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant='h5' fontWeight={'bold'} className='text-capitalize'>
               {data?.mainId}
             </Typography>

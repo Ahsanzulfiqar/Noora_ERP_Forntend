@@ -1,4 +1,4 @@
-import { api } from '../api'
+import { api } from '../authapi'
 
 export const salesAPI = api.injectEndpoints({
   endpoints: (build) => ({
@@ -7,6 +7,7 @@ export const salesAPI = api.injectEndpoints({
     getSales: build.query({
       query: ({ page = 1, limit = 20, filter = {} } = {}) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
         query FilterSales($filter: SaleFilterInput, $page: Int, $limit: Int) {
@@ -58,6 +59,7 @@ export const salesAPI = api.injectEndpoints({
     getSaleById: build.query({
       query: (id) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             query GetSaleById($id: ID!) {
@@ -100,6 +102,7 @@ export const salesAPI = api.injectEndpoints({
     createSale: build.mutation({
       query: (data) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation CreateSale($data: CreateSaleInput!) {
@@ -132,6 +135,7 @@ export const salesAPI = api.injectEndpoints({
     updateSale: build.mutation({
       query: ({ id, data }) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation UpdateSale($id: ID!, $data: UpdateSaleInput!) {
@@ -164,6 +168,7 @@ export const salesAPI = api.injectEndpoints({
     confirmSale: build.mutation({
       query: (saleId) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation ConfirmSale($saleId: ID!) {
@@ -191,6 +196,7 @@ export const salesAPI = api.injectEndpoints({
     markOutForDelivery: build.mutation({
       query: ({ saleId, data }) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation MarkOutForDelivery($saleId: ID!, $data: OutForDeliveryInput!) {
@@ -223,6 +229,7 @@ export const salesAPI = api.injectEndpoints({
     markDelivered: build.mutation({
       query: (saleId) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation MarkDelivered($saleId: ID!) {
@@ -250,6 +257,7 @@ export const salesAPI = api.injectEndpoints({
     returnSale: build.mutation({
       query: (saleId) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation ReturnSale($saleId: ID!) {
@@ -277,6 +285,7 @@ export const salesAPI = api.injectEndpoints({
     cancelSale: build.mutation({
       query: (saleId) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation CancelSale($saleId: ID!) {

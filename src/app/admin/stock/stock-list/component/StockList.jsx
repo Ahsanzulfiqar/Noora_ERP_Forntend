@@ -1,8 +1,8 @@
 import { Card, CardBody, CardHeader, CardTitle, Table, Pagination, Form, Row, Col } from 'react-bootstrap';
 import { useGetWarehouseStockQuery } from '../../../../../services/endpoints/stock';
-import { useGetAllWarehousesQuery } from '../../../../../services/endpoints/warehouse';
-import { useGetAllProductsQuery } from '../../../../../services/endpoints/product';
-import { useGetVariantsByProductQuery } from '../../../../../services/endpoints/productvariant';
+import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
+import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
+import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
 import { useState } from 'react';
 import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
 

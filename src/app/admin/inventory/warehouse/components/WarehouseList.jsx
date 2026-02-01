@@ -4,9 +4,9 @@ import { Card, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu,
 import { Link } from 'react-router-dom';
 import TableNoData from '@/components/TableNoData';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
-import { useGetAllWarehousesQuery } from '@/services/endpoints/warehouse';
-import { useGetAllProductsQuery } from '@/services/endpoints/product';
-import { useGetVariantsByProductQuery } from '@/services/endpoints/productvariant';
+import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
+import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product';
+import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
 import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/stock';
 
 const WarehouseList = () => {

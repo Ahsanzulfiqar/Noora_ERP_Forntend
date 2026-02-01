@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap
 import { Formik, Form, Field, FieldArray } from 'formik'
 import * as Yup from 'yup'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useCreateProductMutation, useGetProductByIdQuery, useUpdateProductMutation } from '../../../../../services/endpoints/product'
+import { useCreateProductMutation, useGetProductByIdQuery, useUpdateProductMutation } from '../../../../../services/authenticateendpoint/product'
 import { useFilterCategoriesQuery, useFilterSubCategoriesQuery } from '../../../../../services/authenticateendpoint/category'
 import { toast } from 'react-toastify'
 

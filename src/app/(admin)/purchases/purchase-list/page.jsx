@@ -1,6 +1,6 @@
 import PageTItle from '@/components/PageTItle'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
-import { useGetAllPurchasesQuery, useDeletePurchaseMutation } from '@/services/endpoints/purchases'
+import { useGetAllPurchasesQuery, useDeletePurchaseMutation } from '@/services/authenticateendpoint/purchases'
 import { Card, CardBody, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import StatusAlert from '@/components/StatusAlert'

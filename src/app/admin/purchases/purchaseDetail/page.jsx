@@ -5,7 +5,7 @@ import { Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import ItemDetails from './components/ItemDetails';
 import Step from './components/Step';
-import { useGetPurchaseByIdQuery } from '../../../../services/endpoints/purchases';
+import { useGetPurchaseByIdQuery } from '../../../../services/authenticateendpoint/purchases';
 const ProductDetailsPage = () => {
   const { purchaseId } = useParams();
 

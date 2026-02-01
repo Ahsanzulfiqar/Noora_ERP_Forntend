@@ -1,7 +1,7 @@
 import PageTItle from '@/components/PageTItle';
 import { Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { useGetVariantByIdQuery } from '@/services/endpoints/productvariant';
+import { useGetVariantByIdQuery } from '@/services/authenticateendpoint/productvariant';
 import ItemDetails from './components/ItemDetails';
 import ProductDetails from './components/ProductDetails';
 import Review from './components/Review';
