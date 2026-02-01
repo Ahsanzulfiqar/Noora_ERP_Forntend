@@ -62,6 +62,15 @@ const SaleAdd = () => {
   const [showItemForm, setShowItemForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
 
+  // Auto-set variant to null when product has no variants
+  useEffect(() => {
+    if (newItem.product && variantsData && variantsData.length === 0) {
+      if (newItem.variant !== null) {
+        setNewItem(prev => ({ ...prev, variant: null, variantName: null }));
+      }
+    }
+  }, [variantsData, newItem.product, newItem.variant]);
+
   const initialValues = {
     seller: saleData?.seller || '',
     warehouse: saleData?.warehouse || '',
@@ -145,7 +154,7 @@ const SaleAdd = () => {
           productId: item.product,        // maps product field
           variantId: item.variant || null,
           productName: item.productName,
-          variantName: item.variantName || '',
+          variantName: item.variantName || null,
           sku: item.sku,
           quantity: Number(item.quantity),
           salePrice: Number(item.salePrice),
@@ -378,22 +387,32 @@ const SaleAdd = () => {
                               <Col md={4}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Variant</label>
-                                  <ChoicesSearchFormInput
-                                    label=""
-                                    placeholder="Select Variant"
-                                    options={variantsData?.map(v => ({ value: v._id, label: v.name })) || []}
-                                    value={newItem.variant}
-                                    onChange={(val) => {
-                                      const variant = variantsData?.find(v => v._id === val);
-                                      setNewItem({
-                                        ...newItem,
-                                        variant: val,
-                                        variantName: variant?.name || '',
-                                        sku: variant?.sku || newItem.sku,
-                                        salePrice: variant?.salePrice || newItem.salePrice,
-                                      });
-                                    }}
-                                  />
+                                  {!newItem.product || (variantsData && variantsData.length > 0) ? (
+                                    <ChoicesSearchFormInput
+                                      label=""
+                                      placeholder="Select Variant"
+                                      options={variantsData?.map(v => ({ value: v._id, label: v.name })) || []}
+                                      value={newItem.variant}
+                                      onChange={(val) => {
+                                        const variant = variantsData?.find(v => v._id === val);
+                                        setNewItem({
+                                          ...newItem,
+                                          variant: val,
+                                          variantName: variant?.name || '',
+                                          sku: variant?.sku || newItem.sku,
+                                          salePrice: variant?.salePrice || newItem.salePrice,
+                                        });
+                                      }}
+                                    />
+                                  ) : (
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      value="No variant available"
+                                      readOnly
+                                      disabled
+                                    />
+                                  )}
                                 </div>
                               </Col>
                               <Col md={4}>
@@ -531,7 +550,7 @@ const SaleAdd = () => {
                                 values.items.map((item, index) => (
                                   <tr key={index}>
                                     <td>{item.productName}</td>
-                                    <td>{item.variantName || '-'}</td>
+                                    <td>{item.variantName || 'No variant'}</td>
                                     <td>{item.sku}</td>
                                     <td>{item.quantity}</td>
                                     <td>${item.salePrice?.toFixed(2)}</td>

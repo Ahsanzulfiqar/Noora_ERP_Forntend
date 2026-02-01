@@ -86,8 +86,8 @@ const AddPurchase = () => {
 
   useEffect(() => {
     if (currentItem.product && productVariants && productVariants.length === 0) {
-      if (currentItem.variant !== "this product have no varient") {
-        setCurrentItem(prev => ({ ...prev, variant: "this product have no varient" }));
+      if (currentItem.variant !== null) {
+        setCurrentItem(prev => ({ ...prev, variant: null }));
       }
     }
   }, [productVariants, currentItem]);
@@ -164,8 +164,8 @@ const AddPurchase = () => {
                   return {
                     product: item.product,
                     productName: productDetails.name || "Unknown Product",
-                    variant: item.variant || "Default",
-                    variantName: item.variant || "Default",
+                    variant: item.variant || null,
+                    variantName: item.variant || null,
                     sku: item.sku || productDetails.sku || "N/A",
                     quantity: parseFloat(item.quantity) || 0,
                     purchasePrice: parseFloat(item.purchasePrice) || 0,
@@ -322,7 +322,7 @@ const AddPurchase = () => {
                                     <input
                                       type="text"
                                       className="form-control"
-                                      value="this product have no varient" // Display text
+                                      value="No variant available" // Display text
                                       readOnly
                                       disabled
                                     />
@@ -463,7 +463,7 @@ const AddPurchase = () => {
                                     return (
                                       <tr key={index} style={{ borderBottom: '1px solid #f0f0f0' }}>
                                         <td className="ps-2 py-2">{productName}</td>
-                                        <td className="px-1 py-2">{item.variant || '-'}</td>
+                                        <td className="px-1 py-2">{item.variant ? (variantOptions.find(v => v.value === item.variant)?.label || item.variant) : 'No variant'}</td>
                                         <td className="px-1 py-2">{item.sku || '-'}</td>
                                         <td className="px-1 py-2">{item.quantity}</td>
                                         <td className="px-1 py-2">{item.purchasePrice}</td>
