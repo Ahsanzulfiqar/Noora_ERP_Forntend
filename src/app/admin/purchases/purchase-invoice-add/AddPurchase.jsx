@@ -174,28 +174,33 @@ const AddPurchase = () => {
                   };
                 });
 
-                // Construct strict payload based on errors
-                const { status, ...restOfValues } = values;
-
+                // Construct payload
                 const payload = {
-                  supplierName: restOfValues.supplierName,
-                  invoiceNo: restOfValues.invoiceNo,
-                  warehouseId: restOfValues.warehouseId,
-                  purchaseDate: restOfValues.purchaseDate,
-                  taxAmount: parseFloat(restOfValues.taxAmount) || 0,
-                  notes: restOfValues.notes || "",
+                  supplierName: values.supplierName,
+                  invoiceNo: values.invoiceNo,
+                  warehouseId: values.warehouseId,
+                  purchaseDate: values.purchaseDate,
+                  taxAmount: parseFloat(values.taxAmount) || 0,
+                  notes: values.notes || "",
                   items: formattedItems,
-                  // postedToStock and productId are removed as they are not defined in CreatePurchaseInput
                 };
 
+                console.log('Final Payload Status:', values.status);
+                console.log('Final Payload:', { ...payload, status: values.status });
+
                 if (purchaseId) {
-                  await updatePurchase({ id: purchaseId, data: { ...payload, status: values.status } }).unwrap();
+                  // For Update, explicitly include status
+                  await updatePurchase({
+                    id: purchaseId,
+                    data: { ...payload, status: values.status }
+                  }).unwrap();
                 } else {
+                  // For Create, omitted status (or defaults to draft)
                   await createPurchase(payload).unwrap();
                 }
                 resetForm();
               } catch (err) {
-                console.error('Failed to create purchase:', err);
+                console.error('Failed to save purchase:', err);
               }
             }}>
             {({ values, errors }) => {
