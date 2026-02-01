@@ -1,8 +1,10 @@
+import React from 'react'
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form, Field, FieldArray } from 'formik'
 import * as Yup from 'yup'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useCreateProductMutation, useGetProductByIdQuery, useUpdateProductMutation } from '../../../../../services/endpoints/product'
+import { useFilterCategoriesQuery, useFilterSubCategoriesQuery } from '../../../../../services/authenticateendpoint/category'
 import { toast } from 'react-toastify'
 
 import FormikTextArea from '../../../../../components/formikfield/FormikTextArea'
@@ -13,7 +15,7 @@ import FileUpload from './FileUpload';
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import ProductDetails from './ProductDetails'
-import { categoryOptions, subCategoryOptions, statusOptions } from '../utils'
+import { statusOptions } from '../utils'
 import FormikInputGroupField from '../../../../../components/formikfield/FormikInputGroupField'
 import { DollarSign, Plus, Trash2 } from 'lucide-react'
 import FormikToggleSwitch from '../../../../../components/formikfield/FormikToggleSwitch'
@@ -29,6 +31,29 @@ const AddProduct = () => {
   const [createProduct, { isLoading: createLoading, error: createError, isSuccess: createSuccess }] = useCreateProductMutation()
   const [updateProduct, { isLoading: updateLoading, error: updateError, isSuccess: updateSuccess }] = useUpdateProductMutation()
   const navigate = useNavigate()
+
+  // Fetch categories and subcategories from API
+  const { data: categoriesData } = useFilterCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 })
+  const { data: subCategoriesData } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 })
+
+  // Transform categories into dropdown options
+  const categoryOptions = React.useMemo(() => {
+    if (!categoriesData?.data) return []
+    return categoriesData.data.map(cat => ({
+      value: cat._id,
+      label: cat.name
+    }))
+  }, [categoriesData])
+
+  // Transform subcategories into dropdown options
+  const allSubCategoryOptions = React.useMemo(() => {
+    if (!subCategoriesData?.data) return []
+    return subCategoriesData.data.map(subCat => ({
+      value: subCat._id,
+      label: subCat.name,
+      categoryId: subCat.category
+    }))
+  }, [subCategoriesData])
 
   return (
     <>
@@ -160,39 +185,56 @@ const AddProduct = () => {
 
                     <Col lg={6}>
                       <Field name="category">
-                        {({ field, form }) => (
-                          <ChoicesSearchFormInput
-                            label="category"
-                            labelClassName="form-label fw-bold"
-                            className="form-control"
-                            id="category"
-                            {...field}
-                            options={categoryOptions} onChange={(val) => form.setFieldValue('category', val)}
-                            placeholder="Select category"
-                          />
-                        )}
+                        {({ field, form }) => {
+                          // Filter subcategories based on selected category
+                          const filteredSubCategoryOptions = React.useMemo(() => {
+                            if (!form.values.category) return []
+                            return allSubCategoryOptions.filter(subCat => subCat.categoryId === form.values.category)
+                          }, [form.values.category, allSubCategoryOptions])
+
+                          return (
+                            <ChoicesSearchFormInput
+                              label="Category"
+                              labelClassName="form-label fw-bold"
+                              className="form-control"
+                              id="category"
+                              {...field}
+                              options={categoryOptions}
+                              onChange={(val) => {
+                                form.setFieldValue('category', val)
+                                // Clear subcategory when category changes
+                                form.setFieldValue('subCategory', '')
+                              }}
+                              placeholder="Select category"
+                            />
+                          )
+                        }}
                       </Field>
-                      {/* <FormikSelectField name="category" label="Category" options={[
-                      { value: '1', label: 'Category 1' },
-                      { value: '2', label: 'Category 2' },
-                      { value: '3', label: 'Category 3' },
-                    ]} /> */}
                     </Col>
 
                     <Col lg={6}>
                       <Field name="subCategory">
-                        {({ field, form }) => (
-                          <ChoicesSearchFormInput
-                            label="Sub Category"
-                            labelClassName="form-label fw-bold"
-                            className="form-control"
-                            id="subCategory"
-                            {...field}
-                            options={subCategoryOptions}
-                            onChange={(val) => form.setFieldValue('subCategory', val)}
-                            placeholder="Select sub category"
-                          />
-                        )}
+                        {({ field, form }) => {
+                          // Filter subcategories based on selected category
+                          const filteredSubCategoryOptions = React.useMemo(() => {
+                            if (!form.values.category) return []
+                            return allSubCategoryOptions.filter(subCat => subCat.categoryId === form.values.category)
+                          }, [form.values.category])
+
+                          return (
+                            <ChoicesSearchFormInput
+                              label="Sub Category"
+                              labelClassName="form-label fw-bold"
+                              className="form-control"
+                              id="subCategory"
+                              {...field}
+                              options={filteredSubCategoryOptions}
+                              onChange={(val) => form.setFieldValue('subCategory', val)}
+                              placeholder="Select sub category"
+                              disabled={!form.values.category}
+                            />
+                          )
+                        }}
                       </Field>
                     </Col>
 

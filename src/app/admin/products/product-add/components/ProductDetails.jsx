@@ -104,23 +104,23 @@ const ProductDetails = ({ values }) => {
             {values?.isActive ? <h4 className="text-capitalize  badge  text-success  fs-14 py-1 px-2 border">Active</h4> : <h4 className="text-capitalize  badge  text-danger  fs-14 py-1 px-2 border">Inactive</h4>}
 
           </div>
-          <h4 className='text-capitalize'>
+          <p className='text-capitalize'>
             {name || 'Product Name'} <span className="fs-14 text-muted ms-1">({categoryLabel})</span>
-          </h4>
+          </p>
           {(values?.subCategory || values?.sku) && (
             <div className="fs-16 mt-1 d-flex gap-1 flex-column">
               {values?.subCategory && <span className='fw-bold text-dark'>Sub Category: {values?.subCategory}</span>}
               {values?.sku && <span className='fw-bold text-dark'>SKU: {values?.sku}</span>}
             </div>
           )}
-          <h4 className="fw-semibold text-dark mt-2 d-flex align-items-center gap-1">
+          <p className=" text-dark mt-2 d-flex align-items-center gap-1">
             <span >Purchase Price:</span>
             <span className='badge bg-secondary text-light fs-14 py-1 px-2'>{currency}{purchasePrice || '0.00'}</span>
-          </h4>
-          <h4 className="fw-semibold text-dark mt-2 d-flex align-items-center gap-1">
+          </p>
+          <p className=" text-dark mt-2 d-flex align-items-center gap-1">
             <span>Sale Price:</span>
             <span className='badge bg-secondary text-light fs-14 py-1 px-2'>{currency}{salePrice || '0.00'}</span>
-          </h4>
+          </p>
 
           {attributes.length > 0 && attributes[0].name !== '' && (
             <div className="mt-3">
