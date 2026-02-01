@@ -2,7 +2,7 @@ import { Card, CardBody, CardHeader, CardTitle, Table, Form, Row, Col } from 're
 import { useState } from 'react';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
-import { useGetWarehouseProductBatchesQuery } from '../../../../../services/endpoints/stock';
+import { useGetWarehouseProductBatchesQuery } from '../../../../../services/authenticateendpoint/stock';
 import GlobalSpinner from '@/components/loaders/GlobalSpinner';
 
 const WareHouseBatchList = () => {

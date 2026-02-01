@@ -5,7 +5,7 @@ import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { usePostToStockMutation } from '@/services/authenticateendpoint/purchases';
-import { useConfirmPurchaseMutation } from '@/services/authenticateendpoint/purchaseStatus';
+import { useConfirmPurchaseMutation } from '@/services/authenticateendpoint/purchases';
 import { useState } from 'react';
 import DeleteConfirmModal from '../../../../../components/DeleteConfirmModal';
 import StatusAlert from '@/components/StatusAlert';

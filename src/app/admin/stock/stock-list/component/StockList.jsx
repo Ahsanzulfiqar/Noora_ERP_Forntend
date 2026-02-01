@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader, CardTitle, Table, Pagination, Form, Row, Col } from 'react-bootstrap';
-import { useGetWarehouseStockQuery } from '../../../../../services/endpoints/stock';
+import { useGetWarehouseStockQuery } from '../../../../../services/authenticateendpoint/stock';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';

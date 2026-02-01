@@ -7,6 +7,7 @@ export const purchasesAPI = api.injectEndpoints({
     getAllPurchases: build.query({
       query: () => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             query {
@@ -42,6 +43,7 @@ export const purchasesAPI = api.injectEndpoints({
     createPurchase: build.mutation({
       query: (data) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation CreatePurchase($data: CreatePurchaseInput!) {
@@ -84,6 +86,7 @@ export const purchasesAPI = api.injectEndpoints({
     getPurchaseById: build.query({
       query: (_id) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             query GetPurchaseById($_id: ID!) {
@@ -133,6 +136,7 @@ export const purchasesAPI = api.injectEndpoints({
     updatePurchase: build.mutation({
       query: ({ id, data }) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation UpdatePurchase($id: ID!, $data: UpdatePurchaseInput!) {
@@ -178,6 +182,7 @@ export const purchasesAPI = api.injectEndpoints({
     deletePurchase: build.mutation({
       query: (id) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation DeletePurchase($id: ID!) {
@@ -196,6 +201,7 @@ export const purchasesAPI = api.injectEndpoints({
     postToStock: build.mutation({
       query: (purchaseId) => ({
         method: 'POST',
+        auth: true,
         body: {
           query: `
             mutation PostToStock($purchaseId: ID!) {
@@ -217,6 +223,46 @@ export const purchasesAPI = api.injectEndpoints({
         'Purchases',
       ],
     }),
+
+    // CONFIRM PURCHASE
+    confirmPurchase: build.mutation({
+      query: (purchaseId) => ({
+        method: 'POST',
+        auth: true,
+        body: {
+          query: `
+            mutation ConfirmPurchase($purchaseId: ID!) {
+              ConfirmPurchase(purchaseId: $purchaseId) {
+                _id
+                supplierName
+                invoiceNo
+                status
+                postedToStock
+                warehouse
+                purchaseDate
+                items {
+                  product
+                  productName
+                  variant
+                  variantName
+                  quantity
+                  purchasePrice
+                  lineTotal
+                }
+                createdAt
+                updatedAt
+              }
+            }
+          `,
+          variables: { purchaseId },
+        },
+      }),
+      invalidatesTags: (result, error, purchaseId) => [
+        { type: 'Purchases', id: purchaseId },
+        'Purchases',
+      ],
+    }),
+
   }),
 })
 
@@ -227,4 +273,5 @@ export const {
   useUpdatePurchaseMutation,
   useDeletePurchaseMutation,
   usePostToStockMutation,
+  useConfirmPurchaseMutation,
 } = purchasesAPI
