@@ -1,9 +1,11 @@
-import { Card, CardBody, CardHeader, CardTitle, Row, Col, Badge } from 'react-bootstrap';
+import { Card, CardBody, CardHeader, CardTitle, Row, Col, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { useState } from 'react';
+import AssignProjectModal from './AssignProjectModal';
 
 const UserDetails = ({ user }) => {
-
+    const [showAssignProjectModal, setShowAssignProjectModal] = useState(false);
 
 
 
@@ -26,6 +28,14 @@ const UserDetails = ({ user }) => {
                         <CardHeader className="d-flex justify-content-between align-items-center">
                             <CardTitle as={'h4'}>User Information</CardTitle>
                             <div className="d-flex gap-2">
+                                <Button
+                                    variant="success"
+                                    size="sm"
+                                    onClick={() => setShowAssignProjectModal(true)}
+                                >
+                                    <IconifyIcon icon="solar:folder-with-files-broken" className="align-middle me-1" />
+                                    Assign Project
+                                </Button>
                                 <Link to={`/role/role-edit/${user._id}`} className="btn btn-primary btn-sm">
                                     <IconifyIcon icon="solar:pen-2-broken" className="align-middle me-1" />
                                     Edit User
@@ -178,6 +188,16 @@ const UserDetails = ({ user }) => {
                     </Card>
                 </Col>
             </Row>
+
+            <AssignProjectModal
+                show={showAssignProjectModal}
+                onHide={() => setShowAssignProjectModal(false)}
+                user={user}
+                onSuccess={() => {
+                    // Optionally refresh user data or show success message
+                    console.log('Projects assigned successfully');
+                }}
+            />
         </>
     );
 };

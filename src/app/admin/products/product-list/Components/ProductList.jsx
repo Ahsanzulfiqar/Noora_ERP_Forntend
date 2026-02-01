@@ -36,8 +36,8 @@ const ProductCard = ({ product }) => {
       </td>
       <td>{brand}</td>
       <td>{sku}</td>
-      <td>{category}</td>
-      <td>{subCategory}</td>
+      {/* <td>{category}</td>
+      <td>{subCategory}</td> */}
       <td>
         {currency}
         {purchasePrice}
@@ -46,15 +46,15 @@ const ProductCard = ({ product }) => {
         {currency}
         {salePrice}
       </td>
-      <td>
+      {/* <td>
         {attributes?.map((attr, index) => (
           <span key={index} className="badge bg-light text-dark me-1">
             {attr.name}: {attr.value}
           </span>
         ))}
-      </td>
+      </td> */}
       <td>{isActive ? <span className="badge bg-success">Active</span> : <span className="badge bg-danger">Inactive</span>}</td>
-      <td>
+      <td className='text-center d-flex gap-2 justify-content-center'>
         <div className="d-flex gap-2">
           <IconButton
             size="small"
@@ -136,13 +136,13 @@ const ProductList = () => {
                 <th>Name</th>
                 <th>Brand</th>
                 <th>Sku</th>
-                <th>Category</th>
-                <th>Sub Category</th>
+                {/* <th>Category</th>
+                <th>Sub Category</th> */}
                 <th>Purchase Price</th>
                 <th>Sale Price</th>
-                <th>Attributes</th>
+                {/* <th>Attributes</th> */}
                 <th>Status</th>
-                <th style={{ textAlign: 'center' }}>Action</th>
+                <th className='text-center'>Action</th>
               </tr>
             </thead>
             <tbody>
