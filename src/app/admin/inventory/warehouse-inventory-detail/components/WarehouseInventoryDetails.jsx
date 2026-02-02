@@ -1,0 +1,116 @@
+import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { useGetWarehouseStockByIdQuery } from '@/services/authenticateendpoint/stock';
+import { Card, CardBody, CardTitle, Col, Row, Table } from 'react-bootstrap';
+import { useParams, Link } from 'react-router-dom';
+
+const WarehouseInventoryDetails = () => {
+    const { inventoryId } = useParams();
+    const { data: stockData, isLoading } = useGetWarehouseStockByIdQuery(inventoryId);
+
+    if (isLoading) {
+        return (
+            <Card>
+                <CardBody>
+                    <p>Loading...</p>
+                </CardBody>
+            </Card>
+        );
+    }
+
+    if (!stockData) {
+        return (
+            <Card>
+                <CardBody>
+                    <p>Inventory not found</p>
+                </CardBody>
+            </Card>
+        );
+    }
+
+    return (
+        <Row>
+            <Col lg={12}>
+                <Card>
+                    <CardBody>
+                        <div className="d-flex align-items-center justify-content-between mb-3">
+                            <CardTitle as="h4">Stock Information</CardTitle>
+                            <Link to="/inventory/warehouse" className="btn btn-sm btn-outline-secondary">
+                                <IconifyIcon icon="solar:arrow-left-broken" className="me-1 align-middle" />
+                                Back to List
+                            </Link>
+                        </div>
+                        <Row className="g-3">
+                            <Col md={6}>
+                                <div className="border p-3 rounded">
+                                    <h6 className="text-muted mb-1">Product Details</h6>
+                                    <h5 className="mb-1">{stockData.productName}</h5>
+                                    <p className="mb-0 text-muted">Variant: {stockData.variantName || 'N/A'}</p>
+                                </div>
+                            </Col>
+                            <Col md={6}>
+                                <div className="border p-3 rounded">
+                                    <h6 className="text-muted mb-1">Warehouse Details</h6>
+                                    <h5 className="mb-0">{stockData.warehouseName}</h5>
+                                </div>
+                            </Col>
+                            <Col md={3}>
+                                <div className="border p-3 rounded">
+                                    <h6 className="text-muted mb-1">Total Quantity</h6>
+                                    <h4 className="mb-0 text-primary">{stockData.quantity}</h4>
+                                </div>
+                            </Col>
+                            <Col md={3}>
+                                <div className="border p-3 rounded">
+                                    <h6 className="text-muted mb-1">Reserved</h6>
+                                    <h4 className="mb-0 text-warning">{stockData.reserved}</h4>
+                                </div>
+                            </Col>
+                            <Col md={3}>
+                                <div className="border p-3 rounded">
+                                    <h6 className="text-muted mb-1">Available</h6>
+                                    <h4 className="mb-0 text-success">{stockData.quantity - stockData.reserved}</h4>
+                                </div>
+                            </Col>
+                            <Col md={3}>
+                                <div className="border p-3 rounded">
+                                    <h6 className="text-muted mb-1">Reorder Level</h6>
+                                    <h4 className="mb-0 text-danger">{stockData.reorderLevel}</h4>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <hr className="my-4" />
+
+                        <CardTitle as="h4" className="mb-3">Batches</CardTitle>
+                        {stockData.batches && stockData.batches.length > 0 ? (
+                            <div className="table-responsive">
+                                <Table bordered hover>
+                                    <thead className="bg-light">
+                                        <tr>
+                                            <th>Batch No</th>
+                                            <th>Expiry Date</th>
+                                            <th>Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {stockData.batches.map((batch, index) => (
+                                            <tr key={index}>
+                                                <td>{batch.batchNo}</td>
+                                                <td>{batch.expiryDate ? new Date(batch.expiryDate).toLocaleDateString() : 'N/A'}</td>
+                                                <td>{batch.quantity}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                            </div>
+                        ) : (
+                            <p className="text-muted">No batch information available.</p>
+                        )}
+                    </CardBody>
+                </Card>
+            </Col>
+        </Row>
+    );
+};
+
+export default WarehouseInventoryDetails;

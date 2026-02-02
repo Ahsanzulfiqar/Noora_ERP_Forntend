@@ -135,7 +135,7 @@ const WarehouseList = () => {
                       <label className="form-check-label" htmlFor="customCheck1" />
                     </div>
                   </th>
-                  <th>Stock ID</th>
+                  {/* <th>Stock ID</th> */}
                   <th>Warehouse</th>
                   <th>Product</th>
                   <th>Variant</th>
@@ -160,17 +160,17 @@ const WarehouseList = () => {
                           <label className="form-check-label" htmlFor={`check-${item._id}`} />
                         </div>
                       </td>
-                      <td>{item._id}</td>
-                      <td>{item.warehouseName}</td>
-                      <td>{item.productName}</td>
-                      <td>{item.variantName}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.reserved}</td>
-                      <td>{item.reorderLevel}</td>
+                      {/* <td>{item._id}</td> */}
+                      <td>{item.warehouse || 'N/A'}</td>
+                      <td>{item.product || 'N/A'}</td>
+                      <td>{item.variant || 'N/A'}</td>
+                      <td>{item.quantity || 'N/A'}</td>
+                      <td>{item.reserved || 'N/A'}</td>
+                      <td>{item.reorderLevel || 'N/A'}</td>
                       <td>{new Date(item.createdAt).toLocaleDateString()}</td>
                       <td>
                         <div className="d-flex gap-2">
-                          <Link to="" className="btn btn-light btn-sm">
+                          <Link to={`/inventory/warehouse-detail/${item._id}`} className="btn btn-light btn-sm">
                             <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
                           </Link>
                           <Link to="" className="btn btn-soft-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">

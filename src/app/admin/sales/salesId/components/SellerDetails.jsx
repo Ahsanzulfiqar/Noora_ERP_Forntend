@@ -1,4 +1,6 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { ROLES } from '@/assets/data/roles';
+import useUserRole from '@/hooks/useUserRole';
 import { Box } from '@mui/material';
 import { Card, CardBody, CardTitle, Col, Row, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -29,6 +31,8 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
   const closeModals = () => {
     setActiveModal(null);
   };
+
+  const role = useUserRole();
 
   if (isLoadingSale) {
     return (
@@ -68,22 +72,24 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                     {/* <Link to="" className="btn btn-danger btn-sm">
                       <IconifyIcon icon="solar:trash-bin-minimalistic-2-broken" className="align-middle fs-18" />
                     </Link> */}
-                    <Dropdown>
-                      <Dropdown.Toggle variant="primary" id="dropdown-basic" className="d-flex align-items-center gap-1 arrow-none" style={{ borderRadius: '10px' }}>
-                        Actions <IconifyIcon icon="solar:alt-arrow-down-bold" />
-                      </Dropdown.Toggle>
+                    {(role === ROLES.ADMIN || role === ROLES.MANAGER) && (
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic" className="d-flex align-items-center gap-1 arrow-none" style={{ borderRadius: '10px' }}>
+                          Actions <IconifyIcon icon="solar:alt-arrow-down-bold" />
+                        </Dropdown.Toggle>
 
-                      <Dropdown.Menu>
-                        {statusOptions.map((option) => (
-                          <Dropdown.Item
-                            key={option.value}
-                            onClick={() => handleActionClick(option.modal)}
-                          >
-                            {option.label}
-                          </Dropdown.Item>
-                        ))}
-                      </Dropdown.Menu>
-                    </Dropdown>
+                        <Dropdown.Menu>
+                          {statusOptions.map((option) => (
+                            <Dropdown.Item
+                              key={option.value}
+                              onClick={() => handleActionClick(option.modal)}
+                            >
+                              {option.label}
+                            </Dropdown.Item>
+                          ))}
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    )}
                   </Box>
                 </Col>
               </Row>

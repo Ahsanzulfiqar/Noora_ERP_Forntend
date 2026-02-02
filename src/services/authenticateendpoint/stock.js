@@ -131,6 +131,42 @@ export const stocksAPI = api.injectEndpoints({
       }),
       providesTags: ['Stock'],
     }),
+
+    // Get Warehouse Stock By ID
+    getWarehouseStockById: build.query({
+      query: (id) => ({
+        method: 'POST',
+        auth: true,
+        body: {
+          query: `
+            query GetWarehouseStockById($id: ID!) {
+              GetWarehouseStockById(id: $id) {
+                _id
+                warehouse
+                warehouseName
+                product
+                productName
+                variant
+                variantName
+                quantity
+                reserved
+                reorderLevel
+                batches {
+                  batchNo
+                  expiryDate
+                  quantity
+                }
+                createdAt
+                updatedAt
+              }
+            }
+          `,
+          variables: { id },
+        },
+      }),
+      transformResponse: (response) => response?.data?.GetWarehouseStockById,
+      providesTags: (result, error, id) => [{ type: 'Stock', id }],
+    }),
   }),
 })
 
@@ -139,4 +175,5 @@ export const {
   useCreateWarehouseStockMutation,
   useGetWarehouseStockQuery,
   useGetWarehouseProductBatchesQuery,
+  useGetWarehouseStockByIdQuery,
 } = stocksAPI
