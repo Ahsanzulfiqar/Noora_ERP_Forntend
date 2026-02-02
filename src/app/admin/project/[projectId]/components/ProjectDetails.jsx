@@ -1,6 +1,6 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { Card, CardBody, CardHeader, CardTitle, Col, Row, Badge, Table } from 'react-bootstrap';
+import { useParams, Link } from 'react-router-dom';
 import { useGetProjectByIdQuery } from '../../../../../services/authenticateendpoint/project';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
@@ -9,12 +9,18 @@ import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 const ProjectDetails = () => {
   const { projectId } = useParams();
 
-  const { data, isLoading, error } = useGetProjectByIdQuery(projectId, { skip: !projectId })
+  const { data, isLoading, error } = useGetProjectByIdQuery(projectId, { skip: !projectId });
   const { data: warehousesData } = useGetAllWarehousesQuery();
   const { data: usersData } = useGetAllUsersQuery();
 
-  if (isLoading) return <LoaderSpinner />
-  if (error) return <div>Error loading project details</div>
+  if (isLoading) return <LoaderSpinner />;
+  if (error) return (
+    <div className="text-center p-5">
+      <IconifyIcon icon="solar:danger-broken" className="text-danger fs-48 mb-3" />
+      <h4 className="text-dark">Error loading project details</h4>
+      <p className="text-muted">Please check if the project ID is correct or try again later.</p>
+    </div>
+  );
 
   const getWarehouseName = (id) => {
     const warehouse = warehousesData?.find(w => w._id === id);
@@ -26,57 +32,168 @@ const ProjectDetails = () => {
     return seller ? seller.name : id;
   };
 
-  return <Col lg={12}>
-    <Card>
-      <CardHeader>
-        <CardTitle as={'h4'}>Project Details</CardTitle>
-      </CardHeader>
-      <CardBody>
-        <div>
-          <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
-            <li>
-              <span className="fw-medium text-dark">Name</span>
-              <span className="mx-2">:</span>{data?.name}
-            </li>
-            <li>
-              <span className="fw-medium text-dark">Channel</span>
-              <span className="mx-2">:</span>{data?.channel}
-            </li>
-            <li>
-              <span className="fw-medium text-dark">Warehouses</span>
-              <span className="mx-2">:</span>
-              {data?.warehouses?.length > 0 ? (
-                <ul>
-                  {data.warehouses.map((id, idx) => (
-                    <li key={idx}>{getWarehouseName(id)}</li>
-                  ))}
-                </ul>
-              ) : 'None'}
-            </li>
-            <li>
-              <span className="fw-medium text-dark">Sellers</span>
-              <span className="mx-2">:</span>
-              {data?.sellers?.length > 0 ? (
-                <ul>
-                  {data.sellers.map((id, idx) => (
-                    <li key={idx}>{getSellerName(id)}</li>
-                  ))}
-                </ul>
-              ) : 'None'}
-            </li>
-            <li>
-              <span className="fw-medium text-dark">Status</span>
-              <span className="mx-2">:</span>
-              {data?.isActive ? (
-                <span className="badge bg-success">Active</span>
-              ) : (
-                <span className="badge bg-danger">Inactive</span>
-              )}
-            </li>
-          </ul>
-        </div>
-      </CardBody>
-    </Card>
-  </Col>;
+  return (
+    <Row>
+      <Col xs={12}>
+        {/* Header Card */}
+        <Card className="border-0 shadow-sm mb-4">
+          <CardBody className="p-4">
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div>
+                <h2 className="mb-1 text-dark fw-bold">{data?.name}</h2>
+                <div className="d-flex align-items-center gap-2">
+                  <Badge bg={data?.isActive ? 'success' : 'danger'} className="text-uppercase px-3 py-1 fs-12">
+                    {data?.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
+                  <span className="text-muted fs-14">•</span>
+                  <span className="text-muted fs-14">Channel: <span className="text-dark fw-medium">{data?.channel || 'N/A'}</span></span>
+                </div>
+              </div>
+              <div>
+                <Link to={`/admin/projects/edit/${projectId}`} className="btn btn-soft-primary d-flex align-items-center gap-1">
+                  <IconifyIcon icon="solar:pen-2-broken" className="fs-18" /> Edit Project
+                </Link>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </Col>
+
+      <Col lg={8}>
+        {/* Warehouses Section */}
+        <Card className="border-0 shadow-sm mb-4">
+          <CardHeader className="bg-transparent border-bottom">
+            <div className="d-flex align-items-center gap-2">
+              <div className="avatar-sm bg-primary-subtle text-primary rounded d-flex align-items-center justify-content-center">
+                <IconifyIcon icon="solar:buildings-2-bold-duotone" className="fs-20" />
+              </div>
+              <h5 className="mb-0 text-dark fw-bold">Associated Warehouses</h5>
+            </div>
+          </CardHeader>
+          <CardBody>
+            <div className="table-responsive">
+              <Table hover className="mb-0 align-middle">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="text-muted text-uppercase fs-12" style={{ width: '50px' }}>#</th>
+                    <th className="text-muted text-uppercase fs-12">Warehouse Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.warehouses?.length > 0 ? (
+                    data.warehouses.map((id, idx) => (
+                      <tr key={idx}>
+                        <td>{idx + 1}</td>
+                        <td className="fw-medium text-dark">{getWarehouseName(id)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" className="text-center py-4 text-muted">No warehouses associated</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Sellers Section */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="bg-transparent border-bottom">
+            <div className="d-flex align-items-center gap-2">
+              <div className="avatar-sm bg-info-subtle text-info rounded d-flex align-items-center justify-content-center">
+                <IconifyIcon icon="solar:users-group-two-rounded-bold-duotone" className="fs-20" />
+              </div>
+              <h5 className="mb-0 text-dark fw-bold">Assigned Sellers</h5>
+            </div>
+          </CardHeader>
+          <CardBody>
+            <div className="table-responsive">
+              <Table hover className="mb-0 align-middle">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="text-muted text-uppercase fs-12" style={{ width: '50px' }}>#</th>
+                    <th className="text-muted text-uppercase fs-12">Seller Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.sellers?.length > 0 ? (
+                    data.sellers.map((id, idx) => (
+                      <tr key={idx}>
+                        <td>{idx + 1}</td>
+                        <td className="fw-medium text-dark">{getSellerName(id)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="2" className="text-center py-4 text-muted">No sellers assigned</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </div>
+          </CardBody>
+        </Card>
+      </Col>
+
+      <Col lg={4}>
+        {/* Quick Info Card */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="bg-transparent border-bottom">
+            <h5 className="mb-0 text-dark fw-bold">Project Summary</h5>
+          </CardHeader>
+          <CardBody>
+            <div className="d-flex flex-column gap-3">
+              <div className="d-flex align-items-start gap-3">
+                <div className="avatar-sm flex-shrink-0 bg-light-subtle rounded d-flex align-items-center justify-content-center text-primary border">
+                  <IconifyIcon icon="solar:info-square-bold-duotone" className="fs-24" />
+                </div>
+                <div>
+                  <h6 className="mb-1 text-muted fs-13 text-uppercase">Project Name</h6>
+                  <p className="mb-0 fw-bold text-dark">{data?.name}</p>
+                </div>
+              </div>
+
+              <div className="d-flex align-items-start gap-3">
+                <div className="avatar-sm flex-shrink-0 bg-light-subtle rounded d-flex align-items-center justify-content-center text-primary border">
+                  <IconifyIcon icon="solar:tv-bold-duotone" className="fs-24" />
+                </div>
+                <div>
+                  <h6 className="mb-1 text-muted fs-13 text-uppercase">Channel</h6>
+                  <Badge bg="secondary" className="fs-12">{data?.channel || 'Default'}</Badge>
+                </div>
+              </div>
+
+              <div className="d-flex align-items-start gap-3">
+                <div className="avatar-sm flex-shrink-0 bg-light-subtle rounded d-flex align-items-center justify-content-center text-primary border">
+                  <IconifyIcon icon="solar:checklist-bold-duotone" className="fs-24" />
+                </div>
+                <div>
+                  <h6 className="mb-1 text-muted fs-13 text-uppercase">Statistics</h6>
+                  <p className="mb-0 fs-14 fw-medium text-dark">
+                    <span className="text-primary">{data?.warehouses?.length || 0}</span> Warehouses
+                  </p>
+                  <p className="mb-0 fs-14 fw-medium text-dark">
+                    <span className="text-primary">{data?.sellers?.length || 0}</span> Sellers
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <hr className="my-4" />
+
+            <div className="text-center">
+              <p className="text-muted fs-13 mb-0">Project status is currently</p>
+              <h4 className={`fw-bold ${data?.isActive ? 'text-success' : 'text-danger'}`}>
+                {data?.isActive ? 'ACTIVE' : 'INACTIVE'}
+              </h4>
+            </div>
+          </CardBody>
+        </Card>
+      </Col>
+    </Row>
+  );
 };
+
 export default ProjectDetails;
