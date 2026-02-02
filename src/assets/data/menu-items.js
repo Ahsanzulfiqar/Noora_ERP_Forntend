@@ -70,6 +70,12 @@ export const MENU_ITEMS = [
         url: '/products/product-add',
         parentKey: 'products',
       },
+      {
+        key: 'product-variant-list',
+        label: 'Product Variant',
+        url: '/product-varient-list',
+        parentKey: 'products',
+      },
     ],
   },
 
