@@ -51,30 +51,36 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
   return (
     <>
       <Row>
-        <Col lg={12}>
-          <Card>
-            <CardBody>
-              <Row className="g-3 pb-4">
-                <Col lg={6}>
-                  {/* Left column empty or for other content */}
-                </Col>
-                <Col lg={6}>
-                  <Box className="gap-1 hstack justify-content-end">
+        <Col xs={12}>
+          {/* Header Card */}
+          <Card className="border-0 shadow-sm mb-4">
+            <CardBody className="p-4">
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                  <h4 className="mb-1 text-dark fw-bold">Invoice #{saleData?.invoiceNo}</h4>
+                  <div className="d-flex align-items-center gap-2">
+                    <span className="text-muted fs-14">Status:</span>
+                    <span className={`badge py-1 px-3 text-uppercase fs-12 bg-${saleData?.status === 'completed' ? 'success' : saleData?.status === 'pending' ? 'warning' : 'info'}`}>
+                      {saleData?.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="d-flex align-items-center gap-2">
+                  <div className="hstack gap-2">
                     {(saleData?.status === 'draft' || saleData?.status === 'DRAFT') ? (
-                      <Link to={`/sales/sales-edit/${saleData?._id}`} className="btn btn-light btn-sm">
-                        <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
+                      <Link to={`/sales/sales-edit/${saleData?._id}`} className="btn btn-soft-primary btn-sm d-flex align-items-center gap-1">
+                        <IconifyIcon icon="solar:pen-2-broken" className="fs-16" /> Edit Order
                       </Link>
                     ) : (
-                      <button className="btn btn-light btn-sm" disabled style={{ cursor: 'not-allowed', opacity: 0.6 }}>
-                        <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
+                      <button className="btn btn-light btn-sm d-flex align-items-center gap-1" disabled style={{ cursor: 'not-allowed', opacity: 0.6 }}>
+                        <IconifyIcon icon="solar:pen-2-broken" className="fs-16" /> Edit
                       </button>
                     )}
-                    {/* <Link to="" className="btn btn-danger btn-sm">
-                      <IconifyIcon icon="solar:trash-bin-minimalistic-2-broken" className="align-middle fs-18" />
-                    </Link> */}
+
                     {(role === ROLES.ADMIN || role === ROLES.MANAGER) && (
                       <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic" className="d-flex align-items-center gap-1 arrow-none" style={{ borderRadius: '10px' }}>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic" className="btn-sm d-flex align-items-center gap-1 arrow-none">
                           Actions <IconifyIcon icon="solar:alt-arrow-down-bold" />
                         </Dropdown.Toggle>
 
@@ -90,118 +96,161 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                         </Dropdown.Menu>
                       </Dropdown>
                     )}
-                  </Box>
-                </Col>
-              </Row>
-              <Row className="g-3">
-                <Col lg={8} className="border-end">
-                  <div>
-                    <div className="d-flex align-items-center gap-2 mb-2 justify-content-between">
-                      <h4 className="mb-1">Invoice #{saleData?.invoiceNo}</h4>
-                      <p className="mb-1">
-                        <span className={`badge py-1 px-2 text-capitalize bg-${saleData?.status === 'completed' ? 'success' : saleData?.status === 'pending' ? 'warning' : 'info'}`}>
-                          {saleData?.status}
-                        </span>
-                      </p>
-                    </div>
-                    <div className="mt-3">
-                      <div className="d-flex align-items-center gap-2 mb-2">
-                        <div className="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                          <IconifyIcon icon="solar:user-bold-duotone" className="fs-20 text-primary" />
-                        </div>
-                        <p className="mb-0 fs-15">Seller: {saleData?.seller}</p>
-                      </div>
-                      <div className="d-flex align-items-center gap-2 mb-2">
-                        <div className="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                          <IconifyIcon icon="solar:box-bold-duotone" className="fs-20 text-primary" />
-                        </div>
-                        <p className="mb-0 fs-15">Warehouse: {saleData?.warehouse}</p>
-                      </div>
-                      <div className="d-flex align-items-center gap-2 mb-2">
-                        <div className="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                          <IconifyIcon icon="solar:delivery-bold-duotone" className="fs-20 text-primary" />
-                        </div>
-                        <p className="mb-0 fs-15">Courier: {saleData?.courierName || 'N/A'}</p>
-                      </div>
-                      <div className="d-flex align-items-center gap-2">
-                        <div className="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                          <IconifyIcon icon="solar:map-point-bold-duotone" className="fs-20 text-primary" />
-                        </div>
-                        <p className="mb-0 fs-15">Tracking: {saleData?.trackingNo || 'N/A'}</p>
-                      </div>
-                    </div>
                   </div>
-                </Col>
-                <Col lg={4}>
-                  <CardTitle as={'h4'}>Order Summary</CardTitle>
-                  <Row className="text-center g-2 mt-2">
-                    <Col lg={12} xs={12}>
-                      <div className="bg-body p-2 rounded">
-                        <h5 className="mb-1">${saleData?.totalAmount?.toFixed(2) || '0.00'}</h5>
-                        <p className="text-muted mb-0">Total Amount</p>
-                      </div>
-                    </Col>
-                    <Col lg={12} xs={12}>
-                      <div className="bg-body p-2 rounded">
-                        <h5 className="mb-1">{saleData?.items?.length || 0}</h5>
-                        <p className="text-muted mb-0">Total Items</p>
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              <hr className="my-4" />
-              <CardTitle as={'h4'} className="mb-3">
-                Order Items
-              </CardTitle>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col lg={8}>
+          {/* Order Items */}
+          <Card className="border-0 shadow-sm mb-4">
+            <CardBody className="p-0 overflow-hidden">
+              <div className="p-3 bg-light-subtle border-bottom">
+                <h5 className="mb-0 text-dark fw-bold">Order Items</h5>
+              </div>
               <div className="table-responsive">
-                <table className="table table-bordered">
-                  <thead>
+                <table className="table table-hover table-nowrap align-middle mb-0">
+                  <thead className="bg-light">
                     <tr>
-                      <th>Product</th>
-                      <th>Variant</th>
-                      <th>Quantity</th>
-                      <th>Sale Price</th>
-                      <th>Line Total</th>
+                      <th className="text-muted text-uppercase fs-12">Product</th>
+                      <th className="text-muted text-uppercase fs-12">Variant</th>
+                      <th className="text-muted text-uppercase fs-12 text-center">Qty</th>
+                      <th className="text-muted text-uppercase fs-12">Price</th>
+                      <th className="text-muted text-uppercase fs-12 text-end">Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {saleData?.items?.map((item, index) => (
                       <tr key={index}>
-                        <td>{item.productName}</td>
+                        <td>
+                          <div className="d-flex align-items-center gap-2">
+                            <div className="avatar-sm bg-light rounded d-flex align-items-center justify-content-center">
+                              <IconifyIcon icon="solar:box-minimalistic-bold-duotone" className="fs-20 text-dark" />
+                            </div>
+                            <span className="text-dark fw-medium">{item.productName}</span>
+                          </div>
+                        </td>
                         <td>{item.variant || 'N/A'}</td>
-                        <td>{item.quantity}</td>
+                        <td className="text-center">{item.quantity}</td>
                         <td>${item.salePrice?.toFixed(2)}</td>
-                        <td>${item.lineTotal?.toFixed(2)}</td>
+                        <td className="text-end fw-bold text-dark">${item.lineTotal?.toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              {saleData?.statusHistory && saleData.statusHistory.length > 0 && (
-                <>
-                  <hr className="my-4" />
-                  <CardTitle as={'h4'} className="mb-3">
-                    Status History
-                  </CardTitle>
-                  <div className="timeline">
-                    {saleData.statusHistory.map((history, index) => (
-                      <div key={index} className="mb-3">
-                        <div className="d-flex gap-2">
-                          <div className="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                            <IconifyIcon icon="solar:history-bold-duotone" className="fs-20 text-primary" />
-                          </div>
-                          <div>
-                            <p className="mb-0 fw-medium text-capitalize">{history.status}</p>
-                            <small className="text-muted">{new Date(history.at).toLocaleString()}</small>
-                            {history.note && <p className="mb-0 mt-1">{history.note}</p>}
-                          </div>
+            </CardBody>
+          </Card>
+
+          {/* Status History */}
+          {saleData?.statusHistory && saleData.statusHistory.length > 0 && (
+            <Card className="border-0 shadow-sm mt-4">
+              <CardBody className="p-4">
+                <h5 className="mb-4 text-dark fw-bold">Status History</h5>
+                <div className="position-relative">
+                  {saleData.statusHistory.map((history, index) => (
+                    <div key={index} className="d-flex gap-4 mb-4 position-relative">
+                      <div className="flex-shrink-0">
+                        <div className="avatar-md bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center border border-white shadow-sm">
+                          <IconifyIcon icon="solar:history-broken" className="fs-24" />
                         </div>
                       </div>
-                    ))}
+                      <div className="flex-grow-1">
+                        <h6 className="mb-1 text-dark fw-bold text-capitalize fs-15">{history.status.replace(/_/g, ' ')}</h6>
+                        <p className="mb-2 text-muted fs-13">{new Date(history.at).toLocaleString()}</p>
+                        {history.note && (
+                          <div className="p-3 bg-light-subtle rounded-3 text-dark fs-14 border-0 lh-base">
+                            {history.note}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardBody>
+            </Card>
+          )}
+        </Col>
+
+        <Col lg={4}>
+          {/* Order Summary */}
+          <Card className="border-0 shadow-sm mb-4">
+            <CardBody>
+              <h5 className="mb-3 text-dark fw-bold">Order Summary</h5>
+              <div className="table-responsive">
+                <table className="table table-sm table-borderless mb-0">
+                  <tbody>
+                    <tr>
+                      <td className="text-muted">Total Items</td>
+                      <td className="text-end fw-medium text-dark">{saleData?.items?.length || 0}</td>
+                    </tr>
+                    <tr>
+                      <td className="text-muted">Subtotal</td>
+                      <td className="text-end fw-medium text-dark">${saleData?.totalAmount?.toFixed(2) || '0.00'}</td>
+                    </tr>
+                    <tr className="border-top">
+                      <td className="pt-3 fw-bold text-dark fs-16">Total Amount</td>
+                      <td className="pt-3 text-end fw-bold text-primary fs-16">${saleData?.totalAmount?.toFixed(2) || '0.00'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* Logistics Info */}
+          <Card className="border-0 shadow-sm mb-4">
+            <CardBody>
+              <h5 className="mb-3 text-dark fw-bold">Delivery Info</h5>
+              <div className="d-flex flex-column gap-3">
+                <div className="d-flex align-items-center gap-3">
+                  <div className="avatar-sm bg-light-subtle text-primary rounded d-flex align-items-center justify-content-center">
+                    <IconifyIcon icon="solar:delivery-bold-duotone" className="fs-24" />
                   </div>
-                </>
-              )}
+                  <div>
+                    <p className="mb-0 text-muted fs-13">Courier Service</p>
+                    <h6 className="mb-0 text-dark fw-medium">{saleData?.courierName || 'N/A'}</h6>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="avatar-sm bg-light-subtle text-primary rounded d-flex align-items-center justify-content-center">
+                    <IconifyIcon icon="solar:map-point-bold-duotone" className="fs-24" />
+                  </div>
+                  <div>
+                    <p className="mb-0 text-muted fs-13">Tracking Number</p>
+                    <h6 className="mb-0 text-dark fw-medium">{saleData?.trackingNo || 'N/A'}</h6>
+                  </div>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* Source Info */}
+          <Card className="border-0 shadow-sm">
+            <CardBody>
+              <h5 className="mb-3 text-dark fw-bold">Source Details</h5>
+              <div className="d-flex flex-column gap-3">
+                <div className="d-flex align-items-center gap-3">
+                  <div className="avatar-sm bg-light-subtle text-info rounded d-flex align-items-center justify-content-center">
+                    <IconifyIcon icon="solar:shop-bold-duotone" className="fs-24" />
+                  </div>
+                  <div>
+                    <p className="mb-0 text-muted fs-13">Seller</p>
+                    <h6 className="mb-0 text-dark fw-medium">{saleData?.seller || 'N/A'}</h6>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="avatar-sm bg-light-subtle text-info rounded d-flex align-items-center justify-content-center">
+                    <IconifyIcon icon="solar:box-bold-duotone" className="fs-24" />
+                  </div>
+                  <div>
+                    <p className="mb-0 text-muted fs-13">Warehouse</p>
+                    <h6 className="mb-0 text-dark fw-medium">{saleData?.warehouse || 'N/A'}</h6>
+                  </div>
+                </div>
+              </div>
             </CardBody>
           </Card>
         </Col>

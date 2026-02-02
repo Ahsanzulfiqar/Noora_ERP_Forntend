@@ -1,159 +1,119 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { currency } from '@/context/constants';
 import clsx from 'clsx';
-import { useState } from 'react';
-import { Card, CardBody, CardFooter, Carousel, CarouselItem, Col, Row, CardHeader, CardTitle } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+import { Card, CardBody, Col, Row, Table } from 'react-bootstrap';
+import product1 from '@/assets/images/product/noimage.png';
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 const ProductDetails = ({ variant, productvarientId }) => {
-  const images = variant?.images?.length ? variant.images.map(img => img.url) : [];
-  const [activeIndex, setActiveIndex] = useState(0);
-  console.log('variant', variant);
-
-  const handleSelect = (selectedIndex) => {
-    setActiveIndex(selectedIndex);
-  };
-
-  const handleThunkSelect = (index) => {
-    setActiveIndex(index);
-  };
-
   if (!variant) return null;
+
+  // Image handling
+  const [mainImage, setMainImage] = useState(variant?.images?.[0]?.url || '');
+
+  // Update main image if variant changes
+  useEffect(() => {
+    if (variant?.images?.length > 0) {
+      setMainImage(variant.images[0].url);
+    }
+  }, [variant]);
+
+  const images = variant?.images || [];
 
   return (
     <Row>
-      <Col lg={12} >
-        <Box sx={{ backgroundColor: '#fff', p: 2, mb: 2, borderRadius: 2 }}>
-          <CardHeader >
-            <CardTitle >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
-                <Typography variant='h6'>Product Detail</Typography>
-                <Link to={`/products/product-edit/${productvarientId}`} className="btn btn-sm btn-primary">
-                  Edit Product
-                </Link>
-              </Box>
-            </CardTitle>
-          </CardHeader>
-        </Box>
-      </Col>
-      <Col lg={4}>
-        <Card>
-
+      <Col xs={12}>
+        <Card className="border-0 shadow-sm">
           <CardBody>
-            <div id="carouselExampleFade" className="carousel slide carousel-fade" data-bs-ride="carousel">
-              <Carousel activeIndex={activeIndex} onSelect={handleSelect} indicators={false} className="carousel-inner" role="listbox">
-                {images.length > 0 ? (
-                  images.map((item, idx) => (
-                    <CarouselItem key={idx}>
-                      <img src={item} alt="productImg" className="img-fluid bg-light rounded" />
-                    </CarouselItem>
-                  ))
-                ) : (
-                  <CarouselItem>
-                    <div className="bg-light rounded p-5 text-center">No Image Available</div>
-                  </CarouselItem>
+            <Row>
+              <Col lg={4}>
+                <div className="p-2 border rounded bg-light text-center">
+                  <img
+                    src={mainImage || product1}
+                    alt={variant.name}
+                    className="img-fluid rounded"
+                    style={{ maxHeight: '350px', objectFit: 'contain' }}
+                  />
+                </div>
+                {images.length > 1 && (
+                  <div className="d-flex gap-2 mt-2 overflow-auto no-scrollbar py-2">
+                    {images.map((img, idx) => (
+                      <div
+                        key={idx}
+                        className={`border rounded p-1 cursor-pointer ${mainImage === img.url ? 'border-primary' : 'border-light'}`}
+                        onClick={() => setMainImage(img.url)}
+                        style={{ width: '60px', height: '60px', flexShrink: 0, cursor: 'pointer' }}
+                      >
+                        <img src={img.url || product1} alt="" className="img-fluid rounded" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ))}
+                  </div>
                 )}
-              </Carousel>
-              <div className="carousel-indicators m-0 mt-2 d-lg-flex d-none position-static h-100">
-                {images.map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => handleThunkSelect(idx)}
-                    className={clsx('w-auto h-auto rounded bg-light', {
-                      active: activeIndex === idx,
-                    })}
-                  >
-                    <img src={item} className="d-block avatar-xl" alt="indicator-img" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </CardBody>
+              </Col>
 
-        </Card>
-      </Col>
-      <Col lg={8}>
-        <Card>
-          <CardBody>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
-              <p>
-                <Link to="" className="fs-24 text-dark fw-medium">
-                  {variant.name}
-                </Link>
-              </p>
-              <h4 className="badge bg-success text-light fs-14 py-1 px-2">{variant.isActive ? 'Active' : 'Inactive'}</h4>
+              <Col lg={8}>
+                <div className="ps-lg-3 mt-3 mt-lg-0">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h4 className="badge bg-success text-light fs-14 py-1 px-2 mb-0">{variant.isActive ? 'Active' : 'Inactive'}</h4>
+                    <Link to={`/products/product-edit/${productvarientId}`} className="btn btn-sm btn-soft-primary">
+                      <IconifyIcon icon="solar:pen-new-square-broken" className="me-1 fs-16" /> Edit Product
+                    </Link>
+                  </div>
 
-            </Box>
+                  <h2 className="mb-2 fw-bold text-dark">{variant.name}</h2>
 
-            <div className="table-responsive  ">
-              <table className="table table-sm table-bordered align-middle mb-0">
-                <thead className="bg-light">
-                  <tr>
-                    <th className="py-2">Price & Specifications</th>
-                    <th className="py-2">Details</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="text-muted py-1" style={{ width: '180px' }}>Sale Price</td>
-                    <td className="py-1">
-                      <h3 className="text-primary fw-bold mb-0">{currency}{variant.salePrice}</h3>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-muted py-1">Purchase Price</td>
-                    <td className="py-1">
-                      <span className="text-muted  fs-18">{currency}{variant.purchasePrice}</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-muted py-1">Net Weight</td>
-                    <td className="py-1 fw-medium text-dark fs-16">{variant.netWeight || 'N/A'}</td>
-                  </tr>
-                  <tr>
-                    <td className="text-muted py-1">Pack Size</td>
-                    <td className="py-1 fw-medium text-dark fs-16">{variant.packSize || 'N/A'}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                  <div className="d-flex align-items-center gap-2 mb-3">
+                    <span className="text-muted fs-14">SKU: <span className="text-dark fw-medium">{variant.sku || 'N/A'}</span></span>
+                    <span className="text-muted fs-14">•</span>
+                    <span className="text-muted fs-14">Barcode: <span className="text-dark fw-medium">{variant.barcode || 'N/A'}</span></span>
+                  </div>
 
-            <div className="table-responsive mt-3">
-              <table className="table table-sm table-bordered align-middle mb-0">
-                <thead className="bg-light">
-                  <tr>
-                    <th className="py-2">Attribute</th>
-                    <th className="py-2">Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {variant.attributes?.map((attr, idx) => (
-                    <tr key={idx}>
-                      <td className="text-muted py-1" style={{ width: '140px' }}>{attr.name}</td>
-                      <td className="py-1 fw-medium text-dark fs-16">{attr.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  <div className="mb-4">
+                    <h3 className="fw-bold text-primary mb-0">{currency}{variant.salePrice ? Number(variant.salePrice).toFixed(2) : '0.00'}</h3>
+                    {variant.purchasePrice && <p className="text-muted fs-13 mb-0">Purchase Price: {currency}{Number(variant.purchasePrice).toFixed(2)}</p>}
+                  </div>
 
+                  <div className="mt-4">
+                    <h4 className="mb-3 text-dark">Specifications</h4>
+                    <div className="table-responsive">
+                      <Table hover className="mb-0 table-nowrap table-borderless">
+                        <tbody>
+                          <tr>
+                            <th scope="row" style={{ width: '200px' }} className="text-muted">Net Weight</th>
+                            <td>{variant.netWeight || 'N/A'}</td>
+                          </tr>
+                          <tr>
+                            <th scope="row" className="text-muted">Pack Size</th>
+                            <td>{variant.packSize || 'N/A'}</td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    </div>
+                  </div>
 
-            <ul className="d-flex flex-column gap-2 list-unstyled fs-15 my-3">
-              <li>
-                <IconifyIcon icon="bx:check" className="text-success" /> SKU: {variant.sku}
-              </li>
-              <li>
-                <IconifyIcon icon="bx:check" className="text-success" /> Barcode: {variant.barcode}
-              </li>
+                  {variant.attributes && variant.attributes.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="mb-3 text-dark">Attributes</h4>
+                      <div className="table-responsive">
+                        <Table hover className="mb-0 table-nowrap table-borderless">
+                          <tbody>
+                            {variant.attributes.map((attr, idx) => (
+                              <tr key={idx}>
+                                <th scope="row" style={{ width: '200px' }} className="text-muted">{attr.name}</th>
+                                <td>{attr.value}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </div>
+                    </div>
+                  )}
 
-            </ul>
-            {/* <h4 className="text-dark fw-medium">Description :</h4> */}
-            {/* <p className="text-muted">
-              This is a variant of product ID: {variant.product}.
-              It has a sale price of {currency}{variant.salePrice} and is currently {variant.isActive ? 'active' : 'inactive'}.
-            </p> */}
+                </div>
+              </Col>
+            </Row>
           </CardBody>
         </Card>
       </Col>
