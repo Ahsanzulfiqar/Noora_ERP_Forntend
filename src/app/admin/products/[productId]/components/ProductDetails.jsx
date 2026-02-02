@@ -8,7 +8,7 @@ import { Col, Card, CardBody, Spinner, Alert, Row, CardHeader, CardTitle, Table,
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-import { categoryOptions } from '../../product-add/utils';
+import { categoryOptions, subCategoryOptions } from '../../product-add/utils';
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -74,178 +74,109 @@ const ProductDetails = () => {
 
   // Try to find label, otherwise use value or default
   const categoryLabel = categoryOptions?.find(opt => opt.value === category)?.label || category || 'Category';
+  const subCategoryLabel = subCategoryOptions?.find(opt => opt.value === subCategory)?.label || subCategory || 'N/A';
 
   return (
-    <Col xl={12} lg={12}>
-      <Card>
-        <CardHeader >
-          <CardTitle >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
-              <Typography variant='h6'>Product Detail</Typography>
-              <Link to={`/products/product-edit/${productId}`} className="btn btn-sm btn-primary">
-                Edit Product
-              </Link>
-            </Box>
-          </CardTitle>
-        </CardHeader>
-        <CardBody>
-          <Row>
-            <Col xl={4} lg={4} md={4} sm={12} xs={12}>
-              <img
-                src={mainImage}
-                alt={product?.images.find(img => img.url === mainImage)?.alt || "product"}
-                className="img-fluid rounded bg-light"
-                style={{ width: '100%', height: '300px', objectFit: 'cover' }}
-              />
-
-              {product?.images?.length > 2 && (
-                <div className="d-flex align-items-center mt-2 position-relative">
-                  <button
-                    onClick={() => scroll('left')}
-                    className="btn btn-sm btn-light border p-0 d-flex align-items-center justify-content-center me-1"
-                    style={{ width: '25px', height: '50px', zIndex: 1, marginRight: '12px' }}
-                  >
-                    <IconifyIcon icon="material-symbols:chevron-left" width={20} />
-                  </button>
-
-                  <div
-                    ref={scrollRef}
-                    className="d-flex flex-nowrap gap-2 overflow-auto no-scrollbar"
-                    style={{
-                      scrollbarWidth: 'none',
-                      msOverflowStyle: 'none',
-                      WebkitOverflowScrolling: 'touch',
-                    }}
-                  >
-                    <style>
-                      {`
-                  .no-scrollbar::-webkit-scrollbar {
-                    display: none;
-                  }
-                `}
-                    </style>
+    <Row>
+      <Col xs={12}>
+        <Card className="border-0 shadow-sm">
+          <CardBody>
+            <Row>
+              <Col lg={4}>
+                <div className="p-2 border rounded bg-light text-center">
+                  <img
+                    src={mainImage}
+                    alt={name}
+                    className="img-fluid rounded"
+                    style={{ maxHeight: '350px', objectFit: 'contain' }}
+                  />
+                </div>
+                {images.length > 1 && (
+                  <div className="d-flex gap-2 mt-2 overflow-auto no-scrollbar py-2">
                     {images.map((img, idx) => (
                       <div
                         key={idx}
-                        role="button"
+                        className={`border rounded p-1 cursor-pointer ${mainImage === img.url ? 'border-primary' : 'border-light'}`}
                         onClick={() => setMainImage(img.url)}
-                        className={`rounded border p-1 flex-shrink-0 ${mainImage === img.url ? 'border-primary' : 'border-light'}`}
-                        style={{ cursor: 'pointer' }}
+                        style={{ width: '60px', height: '60px', flexShrink: 0, cursor: 'pointer' }}
                       >
-                        <img
-                          src={img.url}
-                          alt={img.alt || `product-${idx}`}
-                          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                          className="rounded"
-                        />
+                        <img src={img.url || product1} alt="" className="img-fluid rounded" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                     ))}
                   </div>
+                )}
+              </Col>
 
-                  <button
-                    onClick={() => scroll('right')}
-                    className="btn btn-sm btn-light border p-0 d-flex align-items-center justify-content-center ms-1"
-                    style={{ width: '25px', height: '50px', zIndex: 1, marginLeft: '12px' }}
-                  >
-                    <IconifyIcon icon="material-symbols:chevron-right" width={20} />
-                  </button>
-                </div>
-              )}
-            </Col>
-            <Col xl={8} lg={8} md={8} sm={12} xs={12}>
-              <div className="ps-lg-2">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h3 className="text-dark fw-bold mb-0 text-capitalize">{name || 'Product Name'}</h3>
-                  <Badge bg={isActive ? 'success' : 'danger'} className="fs-13 px-3 py-2">
-                    {isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
+              <Col lg={8}>
+                <div className="ps-lg-3 mt-3 mt-lg-0">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <Badge bg={isActive ? 'success' : 'danger'} className="text-uppercase px-3 py-1 fs-12">
+                      {isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <Link to={`/products/product-edit/${productId}`} className="btn btn-sm btn-soft-primary">
+                      <IconifyIcon icon="solar:pen-new-square-broken" className="me-1 fs-16" /> Edit Product
+                    </Link>
+                  </div>
 
-                <div className="table-responsive mb-4">
-                  <Table bordered className="mb-0">
-                    <thead className="bg-light-subtle">
-                      <tr>
-                        <th className="text-muted fw-bold" style={{ width: '40%' }}>Price & Specifications</th>
-                        <th className="text-muted fw-bold">Details</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="text-muted py-2">Sale Price</td>
-                        <td className="py-2">
-                          {currency}{salePrice || '0.00'}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-muted py-2">Purchase Price</td>
-                        <td className="py-2 text-dark">{currency}{purchasePrice || '0.00'}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-muted py-2">Net Weight</td>
-                        <td className="py-2 text-dark">{product?.netWeight || 'N/A'}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-muted py-2">Pack Size</td>
-                        <td className="py-2 text-dark">{product?.packSize || 'N/A'}</td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div>
+                  <h2 className="mb-2 fw-bold text-dark">{name}</h2>
+                  <div className="d-flex align-items-center gap-2 mb-3">
+                    <span className="text-muted fs-14">Brand: <span className="text-dark fw-medium">{brand || 'N/A'}</span></span>
+                    <span className="text-muted fs-14">•</span>
+                    <span className="text-muted fs-14">SKU: <span className="text-dark fw-medium">{sku || 'N/A'}</span></span>
+                  </div>
 
-                {attributes.length > 0 && attributes[0].name !== '' && (
-                  <div className="table-responsive mb-4">
-                    <Table bordered className="mb-0">
-                      <thead className="bg-light-subtle">
-                        <tr>
-                          <th className="text-muted fw-bold" style={{ width: '40%' }}>Attribute</th>
-                          <th className="text-muted fw-bold">Value</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {attributes.map((attr, idx) => (
-                          <tr key={idx}>
-                            <td className="text-muted py-2">{attr.name}</td>
-                            <td className="py-2 text-dark">{attr.value}</td>
+                  <div className="mb-4">
+                    <h3 className="fw-bold text-primary mb-0">{currency}{salePrice ? Number(salePrice).toFixed(2) : '0.00'}</h3>
+                    {purchasePrice && <p className="text-muted fs-13 mb-0">Purchase Price: {currency}{Number(purchasePrice).toFixed(2)}</p>}
+                  </div>
+
+                  <div className="mt-4">
+                    <h4 className="mb-3 text-dark">Specifications</h4>
+                    <div className="table-responsive">
+                      <Table hover className="mb-0 table-nowrap table-borderless">
+                        <tbody>
+                          <tr>
+                            <th scope="row" style={{ width: '200px' }} className="text-muted">Category</th>
+                            <td>{categoryLabel}</td>
                           </tr>
-                        ))}
-                      </tbody>
-                    </Table>
+                          <tr>
+                            <th scope="row" className="text-muted">Sub Category</th>
+                            <td>{subCategoryLabel}</td>
+                          </tr>
+                          <tr>
+                            <th scope="row" className="text-muted">Barcode</th>
+                            <td>{barcode || 'N/A'}</td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    </div>
                   </div>
-                )}
 
-                <div className="mt-3">
-                  {sku && (
-                    <div className="d-flex align-items-center gap-2 mb-2">
-                      <IconifyIcon icon="solar:check-circle-broken" className="text-success fs-18" />
-                      <span className="text-muted">SKU: <span className="text-dark">{sku}</span></span>
+                  {attributes && attributes.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="mb-3 text-dark">Product Attributes</h4>
+                      <div className="table-responsive">
+                        <Table hover className="mb-0 table-nowrap table-borderless">
+                          <tbody>
+                            {attributes.map((attr, idx) => (
+                              <tr key={idx}>
+                                <th scope="row" style={{ width: '200px' }} className="text-muted">{attr.name}</th>
+                                <td>{attr.value}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </div>
                     </div>
                   )}
-                  {barcode && (
-                    <div className="d-flex align-items-center gap-2">
-                      <IconifyIcon icon="solar:check-circle-broken" className="text-success fs-18" />
-                      <span className="text-muted">Barcode: <span className="text-dark">{barcode}</span></span>
-                    </div>
-                  )}
+
                 </div>
-
-                {description && (
-                  <div className="mt-4 border-top pt-3">
-                    <h5 className="text-dark mb-2">Description :</h5>
-                    <div className="text-muted">
-                      {description}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Col>
-          </Row>
-
-
-
-        </CardBody>
-      </Card>
-    </Col>
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+      </Col>
+    </Row>
   );
 };
-
 export default ProductDetails;
