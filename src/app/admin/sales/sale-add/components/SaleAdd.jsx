@@ -12,6 +12,7 @@ import { useGetAllWarehousesQuery } from '../../../../../services/authenticateen
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
 import { useGetAllCouriersQuery } from '../../../../../services/authenticateendpoint/courier';
+import { Country, City } from 'country-state-city';
 
 // Reusable Components
 import FormikTextField from '@/components/formikfield/FormikTextField';
@@ -59,6 +60,17 @@ const SaleAdd = () => {
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.name, sku: p.sku, salePrice: p.salePrice })) || [];
   const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
+
+  // Get all countries from country-state-city package
+  const countryOptions = Country.getAllCountries().map(country => ({
+    value: country.name,
+    label: country.name,
+    isoCode: country.isoCode
+  }));
+
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedCountryIsoCode, setSelectedCountryIsoCode] = useState('');
+  const [cityOptions, setCityOptions] = useState([]);
   const [showItemForm, setShowItemForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
 
@@ -77,6 +89,8 @@ const SaleAdd = () => {
     invoiceNo: saleData?.invoiceNo || '',
     customerName: saleData?.customerName || '',
     customerPhone: saleData?.customerPhone || '',
+    country: saleData?.country || '',
+    city: saleData?.city || '',
     address: saleData?.address || '',
     status: saleData?.status || 'draft',
     courier: saleData?.courier || '',
@@ -99,6 +113,20 @@ const SaleAdd = () => {
     taxAmount: saleData?.taxAmount || 0,
     totalAmount: saleData?.totalAmount || 0,
   };
+
+  // Initialize cities when editing existing sale with country
+  useEffect(() => {
+    if (saleData?.country) {
+      setSelectedCountry(saleData.country);
+      // Find the country's ISO code
+      const country = Country.getAllCountries().find(c => c.name === saleData.country);
+      if (country) {
+        setSelectedCountryIsoCode(country.isoCode);
+        const cities = City.getCitiesOfCountry(country.isoCode);
+        setCityOptions(cities?.map(city => ({ value: city.name, label: city.name })) || []);
+      }
+    }
+  }, [saleData]);
 
 
 
@@ -148,6 +176,8 @@ const SaleAdd = () => {
         invoiceNo: values.invoiceNo,
         customerName: values.customerName,
         customerPhone: values.customerPhone,
+        country: values.country,
+        city: values.city,
         address: values.address,
         items: values.items.map(item => ({
           productId: item.product,        // maps product field
@@ -273,6 +303,52 @@ const SaleAdd = () => {
                         name="customerPhone"
                         placeholder="Enter Customer Phone"
                       />
+                    </Col>
+                    <Col lg={4}>
+                      <Field name="country">
+                        {({ field }) => (
+                          <ChoicesSearchFormInput
+                            label="Country"
+                            labelClassName="form-label fw-bold"
+                            className="form-control"
+                            id="country"
+                            {...field}
+                            options={countryOptions}
+                            onChange={(value) => {
+                              setFieldValue('country', value);
+                              setFieldValue('city', ''); // Reset city when country changes
+                              setSelectedCountry(value);
+
+                              // Find the selected country's ISO code
+                              const country = countryOptions.find(c => c.value === value);
+                              if (country) {
+                                setSelectedCountryIsoCode(country.isoCode);
+                                // Get cities for this country using ISO code
+                                const cities = City.getCitiesOfCountry(country.isoCode);
+                                setCityOptions(cities?.map(city => ({ value: city.name, label: city.name })) || []);
+                              }
+                            }}
+                            placeholder="Select Country"
+                          />
+                        )}
+                      </Field>
+                    </Col>
+                    <Col lg={4}>
+                      <Field name="city">
+                        {({ field }) => (
+                          <ChoicesSearchFormInput
+                            label="City"
+                            labelClassName="form-label fw-bold"
+                            className="form-control"
+                            id="city"
+                            {...field}
+                            options={cityOptions}
+                            onChange={(value) => setFieldValue('city', value)}
+                            placeholder={selectedCountry ? "Select City" : "Select Country First"}
+                            disabled={!selectedCountry}
+                          />
+                        )}
+                      </Field>
                     </Col>
 
                     {(role === 'Admin' || role === 'ADMIN') && (
