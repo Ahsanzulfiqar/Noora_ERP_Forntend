@@ -28,7 +28,7 @@ const ProductCard = ({ product }) => {
             <img src={images?.[0]?.url || ''} alt={images?.[0]?.alt || 'product'} className="avatar-md" />
           </div> */}
           <div>
-            <Link to="" className="text-dark fw-medium fs-15">
+            <Link to={`/products/product-details/${_id}`} className="text-dark fw-medium fs-15">
               {name}
             </Link>
           </div>

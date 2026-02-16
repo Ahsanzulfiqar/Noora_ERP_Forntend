@@ -63,14 +63,8 @@ export const productsAPI = api.injectEndpoints({
                   url
                   alt
                 }
-                categoryInfo {
-                  _id
-                  name
-                }
-                subCategoryInfo {
-                  _id
-                  name
-                }
+                createdAt
+                updatedAt
               }
             }
           `,
