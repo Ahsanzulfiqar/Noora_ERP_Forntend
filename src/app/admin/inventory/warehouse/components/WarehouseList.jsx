@@ -7,7 +7,7 @@ import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
-import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/stock';
+import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/warehouse';
 
 const WarehouseList = () => {
   const [page, setPage] = useState(1);
@@ -36,6 +36,7 @@ const WarehouseList = () => {
   });
 
   const warehouseStock = data?.data || [];
+  const totalItems = data?.total || 0;
   const totalPages = data?.totalPages || 1;
 
 
@@ -60,7 +61,7 @@ const WarehouseList = () => {
       <Card>
         <div className="d-flex card-header justify-content-between align-items-center">
           <div>
-            <CardTitle as={'h4'}>Warehouse Inventory Stock{warehouseStock.length}</CardTitle>
+            <CardTitle as={'h4'}>Warehouse Inventory Stock ({totalItems})</CardTitle>
           </div>
           <div className="d-flex gap-2 align-items-center">
             <Form.Group className="mb-0">
@@ -161,13 +162,13 @@ const WarehouseList = () => {
                         </div>
                       </td>
                       {/* <td>{item._id}</td> */}
-                      <td>{item.warehouse || 'N/A'}</td>
-                      <td>{item.product || 'N/A'}</td>
-                      <td>{item.variant || 'N/A'}</td>
-                      <td>{item.quantity || 'N/A'}</td>
-                      <td>{item.reserved || 'N/A'}</td>
-                      <td>{item.reorderLevel || 'N/A'}</td>
-                      <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+                      <td>{item.warehouseName || 'N/A'}</td>
+                      <td>{item.productName || 'N/A'}</td>
+                      <td>{item.variantName || 'N/A'}</td>
+                      <td>{item.quantity || '0'}</td>
+                      <td>{item.reserved || '0'}</td>
+                      <td>{item.reorderLevel || '0'}</td>
+                      <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}</td>
                       <td>
                         <div className="d-flex gap-2">
                           <Link to={`/inventory/warehouse-detail/${item._id}`} className="btn btn-light btn-sm">

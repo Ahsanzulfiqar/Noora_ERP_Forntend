@@ -125,9 +125,11 @@ export const warehousesAPI = api.injectEndpoints({
               GetWarehouseStock(filter: $filter, page: $page, limit: $limit) {
                 data {
                   _id
-                  warehouse
+                  warehouseName
                   product
+                  productName
                   variant
+                  variantName
                   quantity
                   reserved
                   reorderLevel
