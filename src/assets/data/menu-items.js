@@ -1008,25 +1008,6 @@ export const MENU_ITEMS = [
   //   ],
   // },
   // {
-  //   key: 'maps',
-  //   label: 'Maps',
-  //   icon: 'solar:streets-map-point-bold-duotone',
-  //   children: [
-  //     {
-  //       key: 'google',
-  //       label: 'Google Maps',
-  //       url: '/maps/google',
-  //       parentKey: 'maps',
-  //     },
-  //     {
-  //       key: 'vector',
-  //       label: 'Vector Maps',
-  //       url: '/maps/vector',
-  //       parentKey: 'maps',
-  //     },
-  //   ],
-  // },
-  // {
   //   key: 'badge-menu',
   //   label: 'Badge Menu',
   //   badge: {

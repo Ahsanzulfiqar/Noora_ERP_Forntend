@@ -177,8 +177,6 @@ const Radar = lazy(() => import('@/app/(admin)/charts/radar/page'))
 const RadialBar = lazy(() => import('@/app/(admin)/charts/radialBar/page'))
 const Scatter = lazy(() => import('@/app/(admin)/charts/scatter/page'))
 const Polar = lazy(() => import('@/app/(admin)/charts/polar/page'))
-const GoogleMaps = lazy(() => import('@/app/(admin)/maps/google/page'))
-const VectorMaps = lazy(() => import('@/app/(admin)/maps/vector/page'))
 
 // Forms Routes
 const Basic = lazy(() => import('@/app/(admin)/forms/basic/page'))
@@ -518,16 +516,6 @@ const chartsNMapsRoutes = [
     name: 'Polar Area',
     path: '/charts/polar',
     element: <Polar />,
-  },
-  {
-    name: 'Google',
-    path: '/maps/google',
-    element: <GoogleMaps />,
-  },
-  {
-    name: 'Vector',
-    path: '/maps/vector',
-    element: <VectorMaps />,
   },
 ]
 const formsRoutes = [
