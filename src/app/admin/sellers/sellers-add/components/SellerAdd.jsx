@@ -48,16 +48,16 @@ const SellerAdd = () => {
   });
 
   const sellerTypeOptions = [
-    { value: 'reseller', label: 'Reseller' },
-    { value: 'affiliate', label: 'Affiliate' },
-    { value: 'internal', label: 'Internal' },
-    { value: 'distributor', label: 'Distributor' },
+    { value: 'RESELLER', label: 'Reseller' },
+    { value: 'AFFILIATE', label: 'Affiliate' },
+    { value: 'INTERNAL', label: 'Internal' },
+    { value: 'DISTRIBUTOR', label: 'Distributor' },
   ];
 
   const commissionTypeOptions = [
-    { value: 'percentage', label: 'Percentage' },
-    { value: 'fixed', label: 'Fixed Amount' },
-    { value: 'none', label: 'None' },
+    { value: 'PERCENTAGE', label: 'Percentage' },
+    { value: 'FIXED', label: 'Fixed Amount' },
+    { value: 'NONE', label: 'None' },
   ];
 
 
