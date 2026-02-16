@@ -154,6 +154,14 @@ export const userManagementAPI = api.injectEndpoints({
                 isActive
                 assignedProjects
                 assignedWarehouses
+                assignedWarehouseDetails {
+                  _id
+                  name
+                }
+                assignedProjectDetails {
+                  _id
+                  name
+                }
               }
             }
           `,
