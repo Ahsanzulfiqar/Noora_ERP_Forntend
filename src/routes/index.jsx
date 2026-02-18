@@ -149,22 +149,6 @@ const Scrollbar = lazy(() => import('@/app/(admin)/advanced-ul/scrollbar/page'))
 const Toastify = lazy(() => import('@/app/(admin)/advanced-ul/toastify/page'))
 
 // Charts and Maps Routes
-const Area = lazy(() => import('@/app/(admin)/charts/area/page'))
-const Bar = lazy(() => import('@/app/(admin)/charts/bar/page'))
-const Bubble = lazy(() => import('@/app/(admin)/charts/bubble/page'))
-const Candlestick = lazy(() => import('@/app/(admin)/charts/candlestick/page'))
-const Column = lazy(() => import('@/app/(admin)/charts/column/page'))
-const Heatmap = lazy(() => import('@/app/(admin)/charts/heatmap/page'))
-const Line = lazy(() => import('@/app/(admin)/charts/line/page'))
-const Mixed = lazy(() => import('@/app/(admin)/charts/mixed/page'))
-const Timeline = lazy(() => import('@/app/(admin)/charts/timeline/page'))
-const Boxplot = lazy(() => import('@/app/(admin)/charts/boxplot/page'))
-const Treemap = lazy(() => import('@/app/(admin)/charts/treemap/page'))
-const Pie = lazy(() => import('@/app/(admin)/charts/pie/page'))
-const Radar = lazy(() => import('@/app/(admin)/charts/radar/page'))
-const RadialBar = lazy(() => import('@/app/(admin)/charts/radialBar/page'))
-const Scatter = lazy(() => import('@/app/(admin)/charts/scatter/page'))
-const Polar = lazy(() => import('@/app/(admin)/charts/polar/page'))
 
 
 // // Form Routes
@@ -385,88 +369,6 @@ const advancedUIRoutes = [
     name: 'Toastify',
     path: '/advanced-ul/toastify',
     element: <Toastify />,
-  },
-]
-const chartsNMapsRoutes = [
-  {
-    name: 'Area',
-    path: '/charts/area',
-    element: <Area />,
-  },
-  {
-    name: 'Bar',
-    path: '/charts/bar',
-    element: <Bar />,
-  },
-  {
-    name: 'Bubble',
-    path: '/charts/bubble',
-    element: <Bubble />,
-  },
-  {
-    name: 'Candle Stick',
-    path: '/charts/candlestick',
-    element: <Candlestick />,
-  },
-  {
-    name: 'Column',
-    path: '/charts/column',
-    element: <Column />,
-  },
-  {
-    name: 'Heatmap',
-    path: '/charts/heatmap',
-    element: <Heatmap />,
-  },
-  {
-    name: 'Line',
-    path: '/charts/line',
-    element: <Line />,
-  },
-  {
-    name: 'Mixed',
-    path: '/charts/mixed',
-    element: <Mixed />,
-  },
-  {
-    name: 'Timeline',
-    path: '/charts/timeline',
-    element: <Timeline />,
-  },
-  {
-    name: 'Boxplot',
-    path: '/charts/boxplot',
-    element: <Boxplot />,
-  },
-  {
-    name: 'Treemap',
-    path: '/charts/treemap',
-    element: <Treemap />,
-  },
-  {
-    name: 'Pie',
-    path: '/charts/pie',
-    element: <Pie />,
-  },
-  {
-    name: 'Radar',
-    path: '/charts/radar',
-    element: <Radar />,
-  },
-  {
-    name: 'Radial Bar',
-    path: '/charts/radialBar',
-    element: <RadialBar />,
-  },
-  {
-    name: 'Scatter',
-    path: '/charts/scatter',
-    element: <Scatter />,
-  },
-  {
-    name: 'Polar Area',
-    path: '/charts/polar',
-    element: <Polar />,
   },
 ]
 const tableRoutes = [
@@ -904,7 +806,6 @@ export const appRoutes = [
   ...customRoutes,
   ...baseUIRoutes,
   ...advancedUIRoutes,
-  ...chartsNMapsRoutes,
   ...tableRoutes,
   ...iconRoutes,
   ...productRoutes,
