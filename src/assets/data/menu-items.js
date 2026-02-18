@@ -397,25 +397,6 @@ export const MENU_ITEMS = [
   //   isTitle: true,
   // },
   // {
-  //   key: 'coupons',
-  //   label: 'Coupons',
-  //   icon: 'solar:leaf-bold-duotone',
-  //   children: [
-  //     {
-  //       key: 'coupons-list',
-  //       label: 'List',
-  //       url: '/coupons/coupons-list',
-  //       parentKey: 'coupons',
-  //     },
-  //     {
-  //       key: 'coupons-add',
-  //       label: 'Add',
-  //       url: '/coupons/coupons-add',
-  //       parentKey: 'coupons',
-  //     },
-  //   ],
-  // },
-  // {
   //   key: 'review',
   //   label: 'Review',
   //   icon: 'solar:chat-square-like-bold-duotone',

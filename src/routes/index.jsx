@@ -137,9 +137,6 @@ const SellerDetails = lazy(() => import('@/app/(admin)/seller/seller-details/pag
 const SellerEdit = lazy(() => import('@/app/(admin)/seller/seller-edit/page'))
 const SellerAdd = lazy(() => import('@/app/(admin)/seller/seller-add/page'))
 
-// Coupons Routes
-const CouponsList = lazy(() => import('@/app/(admin)/coupons/coupons-list/page'))
-const CouponsAdd = lazy(() => import('@/app/(admin)/coupons/coupons-add/page'))
 
 // // Advanced UI Routes
 const Ratings = lazy(() => import('@/app/(admin)/advanced-ul/rating/page'))
@@ -745,18 +742,6 @@ const SellerRoutes = [
     element: <SellerAdd />,
   },
 ]
-const CouponRoutes = [
-  {
-    name: 'Coupons List',
-    path: '/coupons/coupons-list',
-    element: <CouponsList />,
-  },
-  {
-    name: 'Coupons Add',
-    path: '/coupons/coupons-add',
-    element: <CouponsAdd />,
-  },
-]
 export const authRoutes = [
   {
     name: 'Sign In',
@@ -821,7 +806,6 @@ export const appRoutes = [
   ...InvoiceRoutes,
   ...RoleRoutes,
   ...SellerRoutes,
-  ...CouponRoutes,
   ...SellersRoutes,
   ...SalesRoutes,
 ]
