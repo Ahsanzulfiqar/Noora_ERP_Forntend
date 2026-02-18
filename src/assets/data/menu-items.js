@@ -287,31 +287,6 @@ export const MENU_ITEMS = [
     ],
   },
   // {
-  //   key: 'attributes',
-  //   label: 'Attributes',
-  //   icon: 'solar:confetti-minimalistic-bold-duotone',
-  //   children: [
-  //     {
-  //       key: 'attributes-list',
-  //       label: 'List',
-  //       url: '/attributes/attributes-list',
-  //       parentKey: 'attributes',
-  //     },
-  //     {
-  //       key: 'attributes-edit',
-  //       label: 'Edit',
-  //       url: '/attributes/attributes-edit',
-  //       parentKey: 'attributes',
-  //     },
-  //     {
-  //       key: 'attributes-add',
-  //       label: 'Create',
-  //       url: '/attributes/attributes-add',
-  //       parentKey: 'attributes',
-  //     },
-  //   ],
-  // },
-  // {
   //   key: 'invoice',
   //   label: 'Invoices',
   //   icon: 'solar:bill-list-bold-duotone',
@@ -383,25 +358,6 @@ export const MENU_ITEMS = [
   //   label: 'Permissions',
   //   icon: 'solar:checklist-minimalistic-bold-duotone',
   //   url: '/permissions',
-  // },
-  // {
-  //   key: 'customer',
-  //   label: 'Customers',
-  //   icon: 'solar:users-group-two-rounded-bold-duotone',
-  //   children: [
-  //     {
-  //       key: 'customer-list',
-  //       label: 'List',
-  //       url: '/customer/customer-list',
-  //       parentKey: 'customer',
-  //     },
-  //     {
-  //       key: 'customer-detail',
-  //       label: 'Details',
-  //       url: '/customer/customer-detail',
-  //       parentKey: 'customer',
-  //     },
-  //   ],
   // },
 
   // {

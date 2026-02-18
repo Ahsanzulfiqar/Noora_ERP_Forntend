@@ -115,14 +115,7 @@ const RoleAdd = lazy(() => import('../app/admin/role/role-add/page'))
 const RoleView = lazy(() => import('../app/admin/role/role-view/page'))
 // Permissions Routes
 const Permissions = lazy(() => import('../app/admin/permissions/page'))
-// Customer Routes
-const CustomerList = lazy(() => import('../app/admin/customer/customer-list/page'))
-const CustomerDetails = lazy(() => import('../app/admin/customer/customer-detail/page'))
 
-// Attributes Routes
-const AttributeList = lazy(() => import('@/app/(admin)/attributes/attributes-list/page'))
-const AttributeEdit = lazy(() => import('@/app/(admin)/attributes/attributes-edit/page'))
-const AttributeAdd = lazy(() => import('@/app/(admin)/attributes/attributes-add/page'))
 
 // Invoice Routes
 const InvoiceList = lazy(() => import('@/app/(admin)/invoice/invoice-list/page'))
@@ -858,23 +851,6 @@ const SalesRoutes = [
     element: <SalesDetail />,
   },
 ]
-const AttributeRoutes = [
-  {
-    name: 'Attributes List',
-    path: '/attributes/attributes-list',
-    element: <AttributeList />,
-  },
-  {
-    name: 'Attributes Edit',
-    path: '/attributes/attributes-edit',
-    element: <AttributeEdit />,
-  },
-  {
-    name: 'Attributes Add',
-    path: '/attributes/attributes-add',
-    element: <AttributeAdd />,
-  },
-]
 const InvoiceRoutes = [
   {
     name: 'Invoice List',
@@ -912,18 +888,6 @@ const RoleRoutes = [
     name: 'Role Add',
     path: '/role/role-add',
     element: <RoleAdd />,
-  },
-]
-const CustomerRoutes = [
-  {
-    name: 'Customer List',
-    path: '/customer/customer-list',
-    element: <CustomerList />,
-  },
-  {
-    name: 'Customer Detail',
-    path: '/customer/customer-detail',
-    element: <CustomerDetails />,
   },
 ]
 const SellerRoutes = [
@@ -1022,11 +986,9 @@ export const appRoutes = [
   ...CategoryRoutes,
   ...InventoryRoutes,
   ...OrdersRoutes,
-  ...AttributeRoutes,
   ...PurchaseRoutes,
   ...InvoiceRoutes,
   ...RoleRoutes,
-  ...CustomerRoutes,
   ...SellerRoutes,
   ...CouponRoutes,
   ...SellersRoutes,
