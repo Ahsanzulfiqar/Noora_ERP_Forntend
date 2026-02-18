@@ -166,18 +166,6 @@ const RadialBar = lazy(() => import('@/app/(admin)/charts/radialBar/page'))
 const Scatter = lazy(() => import('@/app/(admin)/charts/scatter/page'))
 const Polar = lazy(() => import('@/app/(admin)/charts/polar/page'))
 
-// Forms Routes
-const Basic = lazy(() => import('@/app/(admin)/forms/basic/page'))
-const Checkbox = lazy(() => import('@/app/(admin)/forms/checkbox/page'))
-const Select = lazy(() => import('@/app/(admin)/forms/select/page'))
-const Clipboard = lazy(() => import('@/app/(admin)/forms/clipboard/page'))
-const FlatPicker = lazy(() => import('@/app/(admin)/forms/flat-picker/page'))
-const Validation = lazy(() => import('@/app/(admin)/forms/validation/page'))
-const Wizard = lazy(() => import('@/app/(admin)/forms/wizard/page'))
-const FileUploads = lazy(() => import('@/app/(admin)/forms/file-uploads/page'))
-const Editors = lazy(() => import('@/app/(admin)/forms/editors/page'))
-const InputMask = lazy(() => import('@/app/(admin)/forms/input-mask/page'))
-const Slider = lazy(() => import('@/app/(admin)/forms/range-slider/page'))
 
 // // Form Routes
 const BasicTable = lazy(() => import('@/app/(admin)/tables/basic/page'))
@@ -479,63 +467,6 @@ const chartsNMapsRoutes = [
     name: 'Polar Area',
     path: '/charts/polar',
     element: <Polar />,
-  },
-]
-const formsRoutes = [
-  {
-    name: 'Basic Elements',
-    path: '/forms/basic',
-    element: <Basic />,
-  },
-  {
-    name: 'Checkbox & Radio',
-    path: '/forms/checkbox',
-    element: <Checkbox />,
-  },
-  {
-    name: 'Choice Select',
-    path: '/forms/select',
-    element: <Select />,
-  },
-  {
-    name: 'Clipboard',
-    path: '/forms/clipboard',
-    element: <Clipboard />,
-  },
-  {
-    name: 'Flat Picker',
-    path: '/forms/flat-picker',
-    element: <FlatPicker />,
-  },
-  {
-    name: 'Validation',
-    path: '/forms/validation',
-    element: <Validation />,
-  },
-  {
-    name: 'Wizard',
-    path: '/forms/wizard',
-    element: <Wizard />,
-  },
-  {
-    name: 'File Uploads',
-    path: '/forms/file-uploads',
-    element: <FileUploads />,
-  },
-  {
-    name: 'Editors',
-    path: '/forms/editors',
-    element: <Editors />,
-  },
-  {
-    name: 'Input Mask',
-    path: '/forms/input-mask',
-    element: <InputMask />,
-  },
-  {
-    name: 'Slider',
-    path: '/forms/range-slider',
-    element: <Slider />,
   },
 ]
 const tableRoutes = [
@@ -974,7 +905,6 @@ export const appRoutes = [
   ...baseUIRoutes,
   ...advancedUIRoutes,
   ...chartsNMapsRoutes,
-  ...formsRoutes,
   ...tableRoutes,
   ...iconRoutes,
   ...productRoutes,
