@@ -17,16 +17,11 @@ const ComingSoon = lazy(() => import('@/app/(other)/coming-soon/page'))
 const TimelinePage = lazy(() => import('@/app/(admin)/pages/timeline/page'))
 const Pricing = lazy(() => import('@/app/(admin)/pages/pricing/page'))
 const Maintenance = lazy(() => import('@/app/(other)/maintenance/page'))
-const Widgets = lazy(() => import('@/app/(admin)/widgets/page'))
 const NotFound = lazy(() => import('@/app/(other)/pages-404/page'))
 const Pages404Alt = lazy(() => import('@/app/(admin)/pages/pages-404-alt/page'))
-const Settings = lazy(() => import('@/app/(admin)/settings/page'))
 // const Profile = lazy(() => import('@/app/(admin)/profile/page'))
 // const Permissions = lazy(() => import('@/app/(admin)/permissions/page'))
 const Review = lazy(() => import('@/app/(admin)/review/page'))
-const HelpCenter = lazy(() => import('@/app/(admin)/support/help-center/page'))
-const Faqs = lazy(() => import('@/app/(admin)/support/faqs/page'))
-const PrivacyPolicy = lazy(() => import('@/app/(admin)/support/privacy-policy/page'))
 
 // Base UI Routes
 const Accordions = lazy(() => import('@/app/(admin)/base-ui/accordion/page'))
@@ -262,16 +257,6 @@ const customRoutes = [
     element: <Pages404Alt />,
   },
   {
-    name: 'Widgets',
-    path: '/widgets',
-    element: <Widgets />,
-  },
-  {
-    name: 'Settings',
-    path: '/settings',
-    element: <Settings />,
-  },
-  {
     name: 'Profile',
     path: '/profile',
     element: <Profile />,
@@ -285,21 +270,6 @@ const customRoutes = [
     name: 'Review',
     path: '/review',
     element: <Review />,
-  },
-  {
-    name: 'Help Center',
-    path: '/support/help-center',
-    element: <HelpCenter />,
-  },
-  {
-    name: 'Faqs',
-    path: '/support/faqs',
-    element: <Faqs />,
-  },
-  {
-    name: 'Privacy Policy',
-    path: '/support/privacy-policy',
-    element: <PrivacyPolicy />,
   },
 ]
 const baseUIRoutes = [

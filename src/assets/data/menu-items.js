@@ -336,12 +336,6 @@ export const MENU_ITEMS = [
   //     },
   //   ],
   // },
-  // {
-  //   key: 'settings',
-  //   label: 'Settings',
-  //   icon: 'solar:settings-bold-duotone',
-  //   url: '/settings',
-  // },
   {
     key: 'users',
     label: 'USERS',
@@ -501,29 +495,6 @@ export const MENU_ITEMS = [
   //   url: '/apps/todo',
   // },
   // {
-  //   key: 'support',
-  //   label: 'SUPPORT',
-  //   isTitle: true,
-  // },
-  // {
-  //   key: 'help-center',
-  //   label: 'Help-Center',
-  //   icon: 'solar:help-bold-duotone',
-  //   url: '/support/help-center',
-  // },
-  // {
-  //   key: 'faqs',
-  //   label: 'FAQs',
-  //   icon: 'solar:question-circle-bold-duotone',
-  //   url: '/support/faqs',
-  // },
-  // {
-  //   key: 'privacy-policy',
-  //   label: 'Privacy Policy',
-  //   icon: 'solar:document-text-bold-duotone',
-  //   url: '/support/privacy-policy',
-  // },
-  // {
   //   key: 'custom',
   //   label: 'CUSTOM',
   //   isTitle: true,
@@ -607,16 +578,6 @@ export const MENU_ITEMS = [
   //       parentKey: 'auth',
   //     },
   //   ],
-  // },
-  // {
-  //   key: 'widgets',
-  //   label: 'Widgets',
-  //   badge: {
-  //     text: '9+',
-  //     variant: 'info',
-  //   },
-  //   icon: 'solar:atom-bold-duotone',
-  //   url: '/widgets',
   // },
   // {
   //   key: 'components',
