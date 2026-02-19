@@ -11,13 +11,10 @@ const Todo = lazy(() => import('@/app/(admin)/apps/todo/page'))
 const Calendar = lazy(() => import('@/app/(admin)/apps/calendar/page'))
 
 // Pages Routes
-const Welcome = lazy(() => import('@/app/(admin)/pages/welcome/page'))
 const ComingSoon = lazy(() => import('@/app/(other)/coming-soon/page'))
-const TimelinePage = lazy(() => import('@/app/(admin)/pages/timeline/page'))
-const Pricing = lazy(() => import('@/app/(admin)/pages/pricing/page'))
 const Maintenance = lazy(() => import('@/app/(other)/maintenance/page'))
 const NotFound = lazy(() => import('@/app/(other)/pages-404/page'))
-const Pages404Alt = lazy(() => import('@/app/(admin)/pages/pages-404-alt/page'))
+
 // const Profile = lazy(() => import('@/app/(admin)/profile/page'))
 // const Permissions = lazy(() => import('@/app/(admin)/permissions/page'))
 const Review = lazy(() => import('@/app/(admin)/review/page'))
@@ -174,26 +171,7 @@ const appsRoutes = [
   },
 ]
 const customRoutes = [
-  {
-    name: 'Welcome',
-    path: '/pages/welcome',
-    element: <Welcome />,
-  },
-  {
-    name: 'Timeline',
-    path: '/pages/timeline',
-    element: <TimelinePage />,
-  },
-  {
-    name: 'Pricing',
-    path: '/pages/pricing',
-    element: <Pricing />,
-  },
-  {
-    name: 'Error 404 Alt',
-    path: '/pages/pages-404-alt',
-    element: <Pages404Alt />,
-  },
+
   {
     name: 'Profile',
     path: '/profile',
