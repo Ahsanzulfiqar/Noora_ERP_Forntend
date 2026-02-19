@@ -286,31 +286,6 @@ export const MENU_ITEMS = [
       },
     ],
   },
-  // {
-  //   key: 'invoice',
-  //   label: 'Invoices',
-  //   icon: 'solar:bill-list-bold-duotone',
-  //   children: [
-  //     {
-  //       key: 'invoice-list',
-  //       label: 'List',
-  //       url: '/invoice/invoice-list',
-  //       parentKey: 'invoice',
-  //     },
-  //     {
-  //       key: 'invoice-details',
-  //       label: 'Details',
-  //       url: '/invoice/invoice-details',
-  //       parentKey: 'invoice',
-  //     },
-  //     {
-  //       key: 'invoice-add',
-  //       label: 'Create',
-  //       url: '/invoice/invoice-add',
-  //       parentKey: 'invoice',
-  //     },
-  //   ],
-  // },
   {
     key: 'users',
     label: 'USERS',

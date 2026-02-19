@@ -117,10 +117,6 @@ const RoleView = lazy(() => import('../app/admin/role/role-view/page'))
 const Permissions = lazy(() => import('../app/admin/permissions/page'))
 
 
-// Invoice Routes
-const InvoiceList = lazy(() => import('@/app/(admin)/invoice/invoice-list/page'))
-const InvoiceDetails = lazy(() => import('@/app/(admin)/invoice/invoice-details/page'))
-const InvoiceAdd = lazy(() => import('@/app/(admin)/invoice/invoice-add/page'))
 
 // Role Routes
 // const RoleList = lazy(() => import('@/app/(admin)/role/role-list/page'))
@@ -681,23 +677,6 @@ const SalesRoutes = [
     element: <SalesDetail />,
   },
 ]
-const InvoiceRoutes = [
-  {
-    name: 'Invoice List',
-    path: '/invoice/invoice-list',
-    element: <InvoiceList />,
-  },
-  {
-    name: 'Invoice Details',
-    path: '/invoice/invoice-details',
-    element: <InvoiceDetails />,
-  },
-  {
-    name: 'Invoice Add',
-    path: '/invoice/invoice-add',
-    element: <InvoiceAdd />,
-  },
-]
 const RoleRoutes = [
   {
     name: 'Role List',
@@ -803,7 +782,6 @@ export const appRoutes = [
   ...InventoryRoutes,
   ...OrdersRoutes,
   ...PurchaseRoutes,
-  ...InvoiceRoutes,
   ...RoleRoutes,
   ...SellerRoutes,
   ...SellersRoutes,
