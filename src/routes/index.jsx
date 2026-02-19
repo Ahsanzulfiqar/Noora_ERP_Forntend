@@ -2,7 +2,6 @@ import { lazy } from 'react'
 import { Navigate } from 'react-router-dom'
 
 // Dashboard Routes
-const Dashboard = lazy(() => import('@/app/(admin)/dashboard/page'))
 
 // Apps Routes
 
@@ -134,12 +133,6 @@ const SellerEdit = lazy(() => import('@/app/(admin)/seller/seller-edit/page'))
 const SellerAdd = lazy(() => import('@/app/(admin)/seller/seller-add/page'))
 
 
-// // Advanced UI Routes
-const Ratings = lazy(() => import('@/app/(admin)/advanced-ul/rating/page'))
-const SweetAlerts = lazy(() => import('@/app/(admin)/advanced-ul/sweet-alert/page'))
-const Swiper = lazy(() => import('@/app/(admin)/advanced-ul/swiper-slider/page'))
-const Scrollbar = lazy(() => import('@/app/(admin)/advanced-ul/scrollbar/page'))
-const Toastify = lazy(() => import('@/app/(admin)/advanced-ul/toastify/page'))
 
 // Charts and Maps Routes
 
@@ -161,16 +154,10 @@ const initialRoutes = [
   {
     path: '/',
     name: 'root',
-    element: <Navigate to="/dashboard" />,
+    element: <Navigate to="/warehouses/warehouse-list" />,
   },
 ]
-const generalRoutes = [
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    element: <Dashboard />,
-  },
-]
+const generalRoutes = []
 const appsRoutes = [
   {
     name: 'Chat',
@@ -337,33 +324,7 @@ const baseUIRoutes = [
     element: <Tooltips />,
   },
 ]
-const advancedUIRoutes = [
-  {
-    name: 'Ratings',
-    path: '/advanced-ul/rating',
-    element: <Ratings />,
-  },
-  {
-    name: 'Sweet Alert',
-    path: '/advanced-ul/sweet-alert',
-    element: <SweetAlerts />,
-  },
-  {
-    name: 'Swiper Slider',
-    path: '/advanced-ul/swiper-slider',
-    element: <Swiper />,
-  },
-  {
-    name: 'Scrollbar',
-    path: '/advanced-ul/scrollbar',
-    element: <Scrollbar />,
-  },
-  {
-    name: 'Toastify',
-    path: '/advanced-ul/toastify',
-    element: <Toastify />,
-  },
-]
+
 const tableRoutes = [
   {
     name: 'Basic Tables',
@@ -769,7 +730,6 @@ export const appRoutes = [
   ...appsRoutes,
   ...customRoutes,
   ...baseUIRoutes,
-  ...advancedUIRoutes,
   ...tableRoutes,
   ...iconRoutes,
   ...productRoutes,
