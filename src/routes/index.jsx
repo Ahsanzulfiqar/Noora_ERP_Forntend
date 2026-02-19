@@ -85,11 +85,7 @@ const ReceivedOrders = lazy(() => import('@/app/admin/inventory/received-orders/
 const WarehouseInventoryDetail = lazy(() => import('@/app/admin/inventory/warehouse-inventory-detail/page'))
 
 
-// Orders Routes
-const OrdersList = lazy(() => import('@/app/(admin)/orders/orders-list/page'))
-const OrdersDetail = lazy(() => import('@/app/(admin)/orders/order-detail/page'))
-const OrdersCart = lazy(() => import('@/app/(admin)/orders/order-cart/page'))
-const OrdersCheckout = lazy(() => import('@/app/(admin)/orders/order-checkout/page'))
+// Purchases Routes
 
 // Purchases Routes
 const PurchaseList = lazy(() => import('@/app/admin/purchases/purchase-returns/page'))
@@ -526,28 +522,7 @@ const InventoryRoutes = [
     element: <WarehouseInventoryDetail />,
   },
 ]
-const OrdersRoutes = [
-  {
-    name: 'List',
-    path: '/orders/orders-list',
-    element: <OrdersList />,
-  },
-  {
-    name: 'Detail',
-    path: '/orders/order-detail',
-    element: <OrdersDetail />,
-  },
-  {
-    name: 'Cart',
-    path: '/orders/order-cart',
-    element: <OrdersCart />,
-  },
-  {
-    name: 'Checkout',
-    path: '/orders/order-checkout',
-    element: <OrdersCheckout />,
-  },
-]
+
 const PurchaseRoutes = [
   {
     name: 'Purchase List',
@@ -725,7 +700,6 @@ export const appRoutes = [
   ...CourierRoutes,
   ...CategoryRoutes,
   ...InventoryRoutes,
-  ...OrdersRoutes,
   ...PurchaseRoutes,
   ...RoleRoutes,
   ...SellerRoutes,
