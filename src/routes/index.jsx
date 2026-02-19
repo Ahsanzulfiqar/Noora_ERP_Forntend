@@ -141,9 +141,6 @@ const SellerAdd = lazy(() => import('@/app/(admin)/seller/seller-add/page'))
 const BasicTable = lazy(() => import('@/app/(admin)/tables/basic/page'))
 const GridjsTable = lazy(() => import('@/app/(admin)/tables/gridjs/page'))
 
-// Icon Routes
-const BoxIcons = lazy(() => import('@/app/(admin)/icons/boxicons/page'))
-const SolarIcons = lazy(() => import('@/app/(admin)/icons/solaricons/page'))
 
 // Auth Routes
 const SignIn = lazy(() => import('@/app/(other)/auth/sign-in/page'))
@@ -337,18 +334,7 @@ const tableRoutes = [
     element: <GridjsTable />,
   },
 ]
-const iconRoutes = [
-  {
-    name: 'Boxicons',
-    path: '/icons/boxicons',
-    element: <BoxIcons />,
-  },
-  {
-    name: 'SolarIcon',
-    path: '/icons/solaricons',
-    element: <SolarIcons />,
-  },
-]
+
 const productRoutes = [
   {
     name: 'product-list',
@@ -731,7 +717,6 @@ export const appRoutes = [
   ...customRoutes,
   ...baseUIRoutes,
   ...tableRoutes,
-  ...iconRoutes,
   ...productRoutes,
   ...productVarientRoutes,
   ...postToStockRoutes,
