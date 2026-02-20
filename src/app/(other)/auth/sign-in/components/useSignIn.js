@@ -59,7 +59,7 @@ const useSignIn = () => {
           variant: 'success'
         });
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } catch (e) {
       const msg = e?.message || e?.data?.errors?.[0]?.message || 'Invalid email or password';
       setErrorMessage(msg);
