@@ -5,10 +5,7 @@ import { Navigate } from 'react-router-dom'
 
 // Apps Routes
 
-const Chat = lazy(() => import('@/app/(admin)/apps/chat/page'))
-const Email = lazy(() => import('@/app/(admin)/apps/email/page'))
-const Todo = lazy(() => import('@/app/(admin)/apps/todo/page'))
-const Calendar = lazy(() => import('@/app/(admin)/apps/calendar/page'))
+
 
 // Pages Routes
 const ComingSoon = lazy(() => import('@/app/(other)/coming-soon/page'))
@@ -17,7 +14,7 @@ const NotFound = lazy(() => import('@/app/(other)/pages-404/page'))
 
 // const Profile = lazy(() => import('@/app/(admin)/profile/page'))
 // const Permissions = lazy(() => import('@/app/(admin)/permissions/page'))
-const Review = lazy(() => import('@/app/(admin)/review/page'))
+
 
 // Ware House  Routes
 const WareHouseList = lazy(() => import('@/app/admin/warehouse/warehouse-list/page'))
@@ -62,7 +59,7 @@ const WarehouseInventoryDetail = lazy(() => import('@/app/admin/inventory/wareho
 // Purchases Routes
 
 // Purchases Routes
-const PurchaseList = lazy(() => import('@/app/admin/purchases/purchase-returns/page'))
+const PurchaseList = lazy(() => import('@/app/admin/purchases/purchase-list/page'))
 const PurchaseOrder = lazy(() => import('@/app/admin/purchases/purchase-order/page'))
 const PurchaseReturns = lazy(() => import('@/app/admin/purchases/purchase-returns/page'))
 const PurchaseAdd = lazy(() => import('../app/admin/purchases/purchase-invoice-add/AddPurchase'))
@@ -97,10 +94,7 @@ const Permissions = lazy(() => import('../app/admin/permissions/page'))
 // const CustomerDetails = lazy(() => import('@/app/(admin)/customer/customer-detail/page'))
 
 // Seller Routes
-const SellerList = lazy(() => import('@/app/(admin)/seller/seller-list/page'))
-const SellerDetails = lazy(() => import('@/app/(admin)/seller/seller-details/page'))
-const SellerEdit = lazy(() => import('@/app/(admin)/seller/seller-edit/page'))
-const SellerAdd = lazy(() => import('@/app/(admin)/seller/seller-add/page'))
+
 
 
 
@@ -108,8 +102,7 @@ const SellerAdd = lazy(() => import('@/app/(admin)/seller/seller-add/page'))
 
 
 // // Form Routes
-const BasicTable = lazy(() => import('@/app/(admin)/tables/basic/page'))
-const GridjsTable = lazy(() => import('@/app/(admin)/tables/gridjs/page'))
+
 
 
 // Auth Routes
@@ -125,28 +118,7 @@ const initialRoutes = [
   },
 ]
 const generalRoutes = []
-const appsRoutes = [
-  {
-    name: 'Chat',
-    path: '/apps/chat',
-    element: <Chat />,
-  },
-  {
-    name: 'Email',
-    path: '/apps/email',
-    element: <Email />,
-  },
-  {
-    name: 'Calendar',
-    path: '/apps/calendar',
-    element: <Calendar />,
-  },
-  {
-    name: 'Todo',
-    path: '/apps/todo',
-    element: <Todo />,
-  },
-]
+const appsRoutes = []
 const customRoutes = [
 
   {
@@ -159,24 +131,9 @@ const customRoutes = [
     path: '/permissions',
     element: <Permissions />,
   },
-  {
-    name: 'Review',
-    path: '/review',
-    element: <Review />,
-  },
+
 ]
-const tableRoutes = [
-  {
-    name: 'Basic Tables',
-    path: '/tables/basic',
-    element: <BasicTable />,
-  },
-  {
-    name: 'Grid JS',
-    path: '/tables/gridjs',
-    element: <GridjsTable />,
-  },
-]
+const tableRoutes = []
 
 const productRoutes = [
   {
@@ -468,28 +425,7 @@ const RoleRoutes = [
     element: <RoleAdd />,
   },
 ]
-const SellerRoutes = [
-  {
-    name: 'Seller List',
-    path: '/seller/seller-list',
-    element: <SellerList />,
-  },
-  {
-    name: 'Seller Details',
-    path: '/seller/seller-details',
-    element: <SellerDetails />,
-  },
-  {
-    name: 'Seller Edit',
-    path: '/seller/seller-edit',
-    element: <SellerEdit />,
-  },
-  {
-    name: 'Seller Add',
-    path: '/seller/seller-add',
-    element: <SellerAdd />,
-  },
-]
+const SellerRoutes = []
 export const authRoutes = [
   {
     name: 'Sign In',
