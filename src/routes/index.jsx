@@ -19,29 +19,6 @@ const NotFound = lazy(() => import('@/app/(other)/pages-404/page'))
 // const Permissions = lazy(() => import('@/app/(admin)/permissions/page'))
 const Review = lazy(() => import('@/app/(admin)/review/page'))
 
-// Base UI Routes
-const Accordions = lazy(() => import('@/app/(admin)/base-ui/accordion/page'))
-const Alerts = lazy(() => import('@/app/(admin)/base-ui/alerts/page'))
-const Avatars = lazy(() => import('@/app/(admin)/base-ui/avatar/page'))
-const Badges = lazy(() => import('@/app/(admin)/base-ui/badge/page'))
-const Breadcrumb = lazy(() => import('@/app/(admin)/base-ui/breadcrumb/page'))
-const Buttons = lazy(() => import('@/app/(admin)/base-ui/buttons/page'))
-const Cards = lazy(() => import('@/app/(admin)/base-ui/cards/page'))
-const Carousel = lazy(() => import('@/app/(admin)/base-ui/carousel/page'))
-const Collapse = lazy(() => import('@/app/(admin)/base-ui/collapse/page'))
-const Dropdown = lazy(() => import('@/app/(admin)/base-ui/dropdown/page'))
-const ListGroup = lazy(() => import('@/app/(admin)/base-ui/list-group/page'))
-const Modals = lazy(() => import('@/app/(admin)/base-ui/modals/page'))
-const Tabs = lazy(() => import('@/app/(admin)/base-ui/tabs/page'))
-const Offcanvas = lazy(() => import('@/app/(admin)/base-ui/offcanvas/page'))
-const Pagination = lazy(() => import('@/app/(admin)/base-ui/pagination/page'))
-const Placeholders = lazy(() => import('@/app/(admin)/base-ui/placeholders/page'))
-const Popovers = lazy(() => import('@/app/(admin)/base-ui/popovers/page'))
-const Progress = lazy(() => import('@/app/(admin)/base-ui/progress/page'))
-const Spinners = lazy(() => import('@/app/(admin)/base-ui/spinners/page'))
-const Toasts = lazy(() => import('@/app/(admin)/base-ui/toasts/page'))
-const Tooltips = lazy(() => import('@/app/(admin)/base-ui/tooltips/page'))
-
 // Ware House  Routes
 const WareHouseList = lazy(() => import('@/app/admin/warehouse/warehouse-list/page'))
 const WareHouseBatchList = lazy(() => import('@/app/admin/warehouse/warehouse-batch-list/page'))
@@ -188,114 +165,6 @@ const customRoutes = [
     element: <Review />,
   },
 ]
-const baseUIRoutes = [
-  {
-    name: 'Accordions',
-    path: '/base-ui/accordion',
-    element: <Accordions />,
-  },
-  {
-    name: 'Alerts',
-    path: '/base-ui/alerts',
-    element: <Alerts />,
-  },
-  {
-    name: 'Avatars',
-    path: '/base-ui/avatar',
-    element: <Avatars />,
-  },
-  {
-    name: 'Badges',
-    path: '/base-ui/badge',
-    element: <Badges />,
-  },
-  {
-    name: 'Breadcrumb',
-    path: '/base-ui/breadcrumb',
-    element: <Breadcrumb />,
-  },
-  {
-    name: 'Buttons',
-    path: '/base-ui/buttons',
-    element: <Buttons />,
-  },
-  {
-    name: 'Cards',
-    path: '/base-ui/cards',
-    element: <Cards />,
-  },
-  {
-    name: 'Carousel',
-    path: '/base-ui/carousel',
-    element: <Carousel />,
-  },
-  {
-    name: 'Collapse',
-    path: '/base-ui/collapse',
-    element: <Collapse />,
-  },
-  {
-    name: 'Dropdowns',
-    path: '/base-ui/dropdown',
-    element: <Dropdown />,
-  },
-  {
-    name: 'List Group',
-    path: '/base-ui/list-group',
-    element: <ListGroup />,
-  },
-  {
-    name: 'Modals',
-    path: '/base-ui/modals',
-    element: <Modals />,
-  },
-  {
-    name: 'Tabs',
-    path: '/base-ui/tabs',
-    element: <Tabs />,
-  },
-  {
-    name: 'Offcanvas',
-    path: '/base-ui/offcanvas',
-    element: <Offcanvas />,
-  },
-  {
-    name: 'Pagination',
-    path: '/base-ui/pagination',
-    element: <Pagination />,
-  },
-  {
-    name: 'Placeholders',
-    path: '/base-ui/placeholders',
-    element: <Placeholders />,
-  },
-  {
-    name: 'Popovers',
-    path: '/base-ui/popovers',
-    element: <Popovers />,
-  },
-  {
-    name: 'Progress',
-    path: '/base-ui/progress',
-    element: <Progress />,
-  },
-  {
-    name: 'Spinners',
-    path: '/base-ui/spinners',
-    element: <Spinners />,
-  },
-  {
-    name: 'Toasts',
-    path: '/base-ui/toasts',
-    element: <Toasts />,
-  },
-  {
-    name: 'Tooltips',
-    path: '/base-ui/tooltips',
-    element: <Tooltips />,
-  },
-]
-
 const tableRoutes = [
   {
     name: 'Basic Tables',
@@ -668,7 +537,6 @@ export const appRoutes = [
   ...generalRoutes,
   ...appsRoutes,
   ...customRoutes,
-  ...baseUIRoutes,
   ...tableRoutes,
   ...productRoutes,
   ...productVarientRoutes,
