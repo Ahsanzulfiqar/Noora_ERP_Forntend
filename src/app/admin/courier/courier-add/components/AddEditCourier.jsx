@@ -38,10 +38,20 @@ const AddEditCourier = () => {
                         initialValues={{
                             name: data?.name || '',
                             isActive: data?.isActive !== undefined ? data.isActive : true,
+                            charges: {
+                                baseCharge: data?.charges?.baseCharge || 0,
+                                codCharge: data?.charges?.codCharge || 0,
+                                returnCharge: data?.charges?.returnCharge || 0,
+                            }
                         }}
                         validationSchema={Yup.object({
                             name: Yup.string().required('Required'),
                             isActive: Yup.boolean(),
+                            charges: Yup.object({
+                                baseCharge: Yup.number().min(0, 'Must be positive').required('Required'),
+                                codCharge: Yup.number().min(0, 'Must be positive').required('Required'),
+                                returnCharge: Yup.number().min(0, 'Must be positive').required('Required'),
+                            })
                         })}
 
 
@@ -74,6 +84,33 @@ const AddEditCourier = () => {
                                             <FormikToggleSwitch
                                                 name="isActive"
                                                 label="Active Status"
+                                            />
+                                        </Col>
+                                    </Row>
+
+                                    <Row className="mt-3">
+                                        <Col lg={4}>
+                                            <FormikTextField
+                                                name="charges.baseCharge"
+                                                label="Base Charge"
+                                                type="number"
+                                                placeholder="0.00"
+                                            />
+                                        </Col>
+                                        <Col lg={4}>
+                                            <FormikTextField
+                                                name="charges.codCharge"
+                                                label="COD Charge"
+                                                type="number"
+                                                placeholder="0.00"
+                                            />
+                                        </Col>
+                                        <Col lg={4}>
+                                            <FormikTextField
+                                                name="charges.returnCharge"
+                                                label="Return Charge"
+                                                type="number"
+                                                placeholder="0.00"
                                             />
                                         </Col>
                                     </Row>
