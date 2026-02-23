@@ -19,8 +19,10 @@ export const salesAPI = api.injectEndpoints({
               seller
               warehouse
               totalAmount
-              courierName
-              trackingNo
+              courier {
+                courierName
+                trackingNo
+              }
               createdAt
             }
             total
@@ -69,8 +71,12 @@ export const salesAPI = api.injectEndpoints({
                 status
                 seller
                 warehouse
-                courierName
-                trackingNo
+                totalAmount
+                courier {
+                  courierName
+                  trackingNo
+                  trackingUrl
+                }
                 shippedAt
                 items {
                   product
@@ -115,9 +121,11 @@ export const salesAPI = api.injectEndpoints({
                 subTotal
                 taxAmount
                 totalAmount
-                courierName
-                trackingNo
-                trackingUrl
+                courier {
+                  courierName
+                  trackingNo
+                  trackingUrl
+                }
                 deliveryNotes
                 createdAt
               }
@@ -145,9 +153,11 @@ export const salesAPI = api.injectEndpoints({
                 status
                 status
                 totalAmount
-                courierName
-                trackingNo
-                trackingUrl
+                courier {
+                  courierName
+                  trackingNo
+                  trackingUrl
+                }
                 deliveryNotes
               }
             }
@@ -203,10 +213,17 @@ export const salesAPI = api.injectEndpoints({
               MarkOutForDelivery(saleId: $saleId, data: $data) {
                 _id
                 status
-                courierName
-                trackingNo
-                trackingUrl
-                shippedAt
+                courier {
+                  courierId
+                  courierName
+                  trackingNo
+                  trackingUrl
+                  charges {
+                    baseCharge
+                    codCharge
+                    returnCharge
+                  }
+                }
                 statusTimestamps {
                   outForDeliveryAt
                 }

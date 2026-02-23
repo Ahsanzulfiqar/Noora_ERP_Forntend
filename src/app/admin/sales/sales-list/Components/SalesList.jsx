@@ -154,10 +154,10 @@ const SalesList = () => {
                             {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
                           </td>
                           <td className="fw-semibold">
-                            {item.courierName || 'Unknown Customer'}
+                            {item.courier?.courierName || 'N/A'}
                           </td>
                           <td>
-                            {item.trackingNo || 'No Phone'}
+                            {item.courier?.trackingNo || 'N/A'}
                           </td>
                           <td>
                             <Badge bg={getStatusColor(item.status || 'draft')} className="text-capitalize px-2 py-1">

@@ -93,10 +93,10 @@ const SaleAdd = () => {
     city: saleData?.city || '',
     address: saleData?.address || '',
     status: saleData?.status || 'draft',
-    courier: saleData?.courier || '',
-    courierName: saleData?.courierName || '',
-    trackingNo: saleData?.trackingNo || '',
-    trackingUrl: saleData?.trackingUrl || '',
+    courier: saleData?.courier?.courierId || '',
+    courierName: saleData?.courier?.courierName || '',
+    trackingNo: saleData?.courier?.trackingNo || '',
+    trackingUrl: saleData?.courier?.trackingUrl || '',
     deliveryNotes: saleData?.deliveryNotes || '',
     notes: saleData?.notes || '',
     items: saleData?.items?.map(item => ({
@@ -119,7 +119,8 @@ const SaleAdd = () => {
     if (saleData?.country) {
       setSelectedCountry(saleData.country);
       // Find the country's ISO code
-      const country = Country.getAllCountries().find(c => c.name === saleData.country);
+      const allCountries = Country.getAllCountries();
+      const country = allCountries.find(c => c.name === saleData.country);
       if (country) {
         setSelectedCountryIsoCode(country.isoCode);
         const cities = City.getCitiesOfCountry(country.isoCode);
@@ -196,9 +197,11 @@ const SaleAdd = () => {
         const updatePayload = {
           ...payload,
           status: values.status,
-          courierName: values.courierName || '',
-          trackingNo: values.trackingNo || '',
-          trackingUrl: values.trackingUrl || '',
+          courier: {
+            courierName: values.courierName || '',
+            trackingNo: values.trackingNo || '',
+            trackingUrl: values.trackingUrl || '',
+          },
           deliveryNotes: values.deliveryNotes || '',
         };
         await updateSale({ id: salesId, data: updatePayload }).unwrap();
@@ -316,7 +319,7 @@ const SaleAdd = () => {
                             options={countryOptions}
                             onChange={(value) => {
                               setFieldValue('country', value);
-                              setFieldValue('city', ''); // Reset city when country changes
+                              setFieldValue('city', ''); // Reset city in Formik
                               setSelectedCountry(value);
 
                               // Find the selected country's ISO code
@@ -326,6 +329,9 @@ const SaleAdd = () => {
                                 // Get cities for this country using ISO code
                                 const cities = City.getCitiesOfCountry(country.isoCode);
                                 setCityOptions(cities?.map(city => ({ value: city.name, label: city.name })) || []);
+                              } else {
+                                setSelectedCountryIsoCode('');
+                                setCityOptions([]);
                               }
                             }}
                             placeholder="Select Country"

@@ -13,13 +13,14 @@ const OutForDeliveryModal = ({ show, onHide, saleId }) => {
     const { data: couriersData } = useGetAllCouriersQuery();
     const [error, setError] = useState('');
 
-    const courierOptions = couriersData?.map(c => ({ value: c.name, label: c.name })) || [];
+    const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
 
     const initialValues = {
-        courierName: '',
+        courierId: '',
         trackingNo: '',
         trackingUrl: '',
-        deliveryNotes: ''
+        deliveryNotes: '',
+        isCOD: false
     };
 
     const handleSubmit = async (values) => {
@@ -57,16 +58,16 @@ const OutForDeliveryModal = ({ show, onHide, saleId }) => {
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Form id="out-for-delivery-form">
                         <div className="mb-3">
-                            <Field name="courierName">
+                            <Field name="courierId">
                                 {({ field }) => (
                                     <ChoicesSearchFormInput
                                         label="Courier Name"
                                         labelClassName="form-label fw-bold"
                                         className="form-control"
-                                        id="courierName"
+                                        id="courierId"
                                         {...field}
                                         options={courierOptions}
-                                        onChange={(value) => setFieldValue('courierName', value)}
+                                        onChange={(value) => setFieldValue('courierId', value)}
                                         placeholder="Select Courier"
                                     />
                                 )}
@@ -88,6 +89,15 @@ const OutForDeliveryModal = ({ show, onHide, saleId }) => {
                             placeholder="Enter Delivery Notes"
                             rows={3}
                         />
+                        <div className="mb-3 form-check">
+                            <Field
+                                type="checkbox"
+                                name="isCOD"
+                                id="isCOD"
+                                className="form-check-input"
+                            />
+                            <label htmlFor="isCOD" className="form-check-label fw-bold">Is Cash on Delivery (COD)?</label>
+                        </div>
                     </Form>
                 </ActionModal>
             )}

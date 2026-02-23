@@ -7,6 +7,8 @@ export const SalesValidationSchema = Yup.object().shape({
   invoiceNo: Yup.string().required('Invoice number is required'),
   customerName: Yup.string().required('Customer name is required'),
   customerPhone: Yup.string().required('Customer phone is required'),
+  country: Yup.string().required('Country is required'),
+  city: Yup.string().required('City is required'),
   address: Yup.string().required('Address is required'),
   status: Yup.string().oneOf(['draft', 'confirmed', 'out_for_delivery', 'delivered', 'cancelled', 'returned']),
   // subCategory: Yup.string().required('Sub category is required'),

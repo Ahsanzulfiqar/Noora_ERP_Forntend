@@ -211,7 +211,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                   </div>
                   <div>
                     <p className="mb-0 text-muted fs-13">Courier Service</p>
-                    <h6 className="mb-0 text-dark fw-medium">{saleData?.courierName || 'N/A'}</h6>
+                    <h6 className="mb-0 text-dark fw-medium">{saleData?.courier?.courierName || 'N/A'}</h6>
                   </div>
                 </div>
                 <div className="d-flex align-items-center gap-3">
@@ -220,7 +220,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                   </div>
                   <div>
                     <p className="mb-0 text-muted fs-13">Tracking Number</p>
-                    <h6 className="mb-0 text-dark fw-medium">{saleData?.trackingNo || 'N/A'}</h6>
+                    <h6 className="mb-0 text-dark fw-medium">{saleData?.courier?.trackingNo || 'N/A'}</h6>
                   </div>
                 </div>
               </div>
