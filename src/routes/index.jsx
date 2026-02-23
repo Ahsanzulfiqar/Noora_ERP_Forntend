@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { Navigate } from 'react-router-dom'
 
 // Dashboard Routes
+const DashboardPage = lazy(() => import('@/app/admin/dashboard/page'))
 
 // Apps Routes
 
@@ -135,6 +136,13 @@ const customRoutes = [
 ]
 const tableRoutes = []
 
+const DashboardRoutes = [
+  {
+    name: 'Dashboard',
+    path: '/dashboard',
+    element: <DashboardPage />,
+  },
+]
 const productRoutes = [
   {
     name: 'product-list',
@@ -471,6 +479,7 @@ export const authRoutes = [
 export const appRoutes = [
   ...initialRoutes,
   ...generalRoutes,
+  ...DashboardRoutes,
   ...appsRoutes,
   ...customRoutes,
   ...tableRoutes,

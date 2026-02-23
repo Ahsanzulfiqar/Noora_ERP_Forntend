@@ -5,6 +5,12 @@ export const MENU_ITEMS = [
     isTitle: true,
   },
   {
+    key: 'dashboard',
+    label: 'Dashboard',
+    icon: 'solar:widget-2-bold-duotone',
+    url: '/dashboard',
+  },
+  {
     key: 'warehouses',
     label: 'warehouses',
     icon: 'solar:buildings-2-bold-duotone',
