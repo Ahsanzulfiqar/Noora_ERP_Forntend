@@ -27,7 +27,10 @@ const OutForDeliveryModal = ({ show, onHide, saleId }) => {
         try {
             await markOutForDelivery({
                 saleId,
-                data: { ...values, shippedAt: new Date().toISOString() }
+                data: {
+                    ...values,
+                    shippedAt: new Date().toISOString()
+                }
             }).unwrap();
             onHide();
         } catch (err) {
