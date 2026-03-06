@@ -287,6 +287,43 @@ export const MENU_ITEMS = [
     ],
   },
   {
+    key: 'accounts',
+    label: 'Accounts',
+    icon: 'solar:bill-list-bold-duotone',
+    children: [
+      {
+        key: 'chart-of-accounts',
+        label: 'Chart of Accounts',
+        url: '/accounts',
+        parentKey: 'accounts',
+      },
+      {
+        key: 'journal-entry',
+        label: 'Journal Entry',
+        url: '/accounts/journal/new',
+        parentKey: 'accounts',
+      },
+      {
+        key: 'vouchers',
+        label: 'Vouchers',
+        url: '/accounts/vouchers',
+        parentKey: 'accounts',
+      },
+      {
+        key: 'ledger',
+        label: 'Ledger',
+        url: '/accounts/ledger',
+        parentKey: 'accounts',
+      },
+      {
+        key: 'trial-balance',
+        label: 'Trial Balance',
+        url: '/accounts/trial-balance',
+        parentKey: 'accounts',
+      },
+    ],
+  },
+  {
     key: 'users',
     label: 'USERS',
     isTitle: true,
