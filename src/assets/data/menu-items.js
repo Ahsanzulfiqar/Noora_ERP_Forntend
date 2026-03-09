@@ -248,6 +248,26 @@ export const MENU_ITEMS = [
 
     ],
   },
+    {
+    key: 'gcc-sale',
+    icon: 'solar:cart-3-bold-duotone',
+    label: 'GCC SALE',
+    children: [
+      {
+        key: 'gcc-sale-list',
+        label: 'List',
+        url: '/sales/sales-list',
+        parentKey: 'sales',
+      },
+      {
+        key: 'gcc-sale-create',
+        label: 'Create',
+        url: '/sales/sales-add',
+        parentKey: 'sales',
+      },
+
+    ],
+  },
   {
     key: 'courier',
     label: 'Courier',
