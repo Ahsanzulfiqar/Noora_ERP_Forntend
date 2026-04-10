@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useGetProductByIdQuery } from '../../../../../services/authenticateendpoint/product';
+import { useFilterCategoriesQuery, useFilterSubCategoriesQuery } from '../../../../../services/authenticateendpoint/category';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import product1 from '@/assets/images/product/noimage.png';
 import { currency } from '@/context/constants';
-import { Col, Card, CardBody, Spinner, Alert, Row, CardHeader, CardTitle, Table, Badge } from 'react-bootstrap';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-
-import { categoryOptions, subCategoryOptions } from '../../product-add/utils';
+import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
+import { Col, Card, CardBody, Spinner, Alert, Row, CardHeader, Table, Badge } from 'react-bootstrap';
 
 const ProductDetails = () => {
   const { productId } = useParams();
   const { data, isLoading, error } = useGetProductByIdQuery(productId);
+  const { data: categoriesData } = useFilterCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 });
+  const { data: subCategoriesData } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 });
 
   const [mainImage, setMainImage] = useState(product1);
 
@@ -35,6 +35,40 @@ const ProductDetails = () => {
     createdAt,
     updatedAt,
   } = product || {};
+
+  const categoryOptions = useMemo(() => {
+    if (!categoriesData?.data) return [];
+    return categoriesData.data.map((cat) => ({
+      value: cat._id,
+      label: cat.name,
+    }));
+  }, [categoriesData]);
+
+  const allSubCategoryOptions = useMemo(() => {
+    if (!subCategoriesData?.data) return [];
+    return subCategoriesData.data.map((subCat) => ({
+      value: subCat._id,
+      label: subCat.name,
+      categoryId: subCat.category,
+    }));
+  }, [subCategoriesData]);
+
+  const filteredSubCategoryOptions = useMemo(() => {
+    if (!category) return [];
+    return allSubCategoryOptions.filter((subCat) => subCat.categoryId === category);
+  }, [allSubCategoryOptions, category]);
+  const hasSubCategoryOptions = filteredSubCategoryOptions.length > 0;
+
+  const categoryName = categoryOptions.find((opt) => opt.value === category)?.label || category || 'N/A';
+  const selectedSubCategory = filteredSubCategoryOptions.find((opt) => opt.value === subCategory)
+    || allSubCategoryOptions.find((opt) => opt.value === subCategory);
+
+  const formatDateTime = (value) => {
+    if (!value) return 'N/A';
+    const normalizedValue = /^\d+$/.test(String(value)) ? Number(value) : value;
+    const date = new Date(normalizedValue);
+    return Number.isNaN(date.getTime()) ? 'N/A' : date.toLocaleString();
+  };
 
   useEffect(() => {
     if (images && images.length > 0) {
@@ -156,11 +190,31 @@ const ProductDetails = () => {
                       <tbody>
                         <tr className="mb-2">
                           <td className="ps-0 py-2 text-muted" style={{ width: '150px' }}>Category</td>
-                          <td className="py-2 fw-semibold text-dark">{categoryOptions?.find(opt => opt.value === category)?.label || category || 'N/A'}</td>
+                          <td className="py-2 fw-semibold text-dark">{categoryName}</td>
                         </tr>
                         <tr>
                           <td className="ps-0 py-2 text-muted">Sub-Category</td>
-                          <td className="py-2 fw-semibold text-dark">{subCategoryOptions?.find(opt => opt.value === subCategory)?.label || subCategory || 'N/A'}</td>
+                          <td className="py-2 fw-semibold text-dark">
+                            <div style={{ minWidth: '240px', maxWidth: '320px' }}>
+                              <ChoicesSearchFormInput
+                                className="form-control"
+                                id="product-details-subcategory"
+                                options={hasSubCategoryOptions
+                                  ? filteredSubCategoryOptions
+                                  : [
+                                    {
+                                      value: '',
+                                      label: 'No sub category available',
+                                    },
+                                  ]}
+                                value={selectedSubCategory?.value || ''}
+                                onChange={() => { }}
+                                placeholder={hasSubCategoryOptions ? 'Select sub category' : 'No sub category available'}
+                                config={{ searchEnabled: false, removeItemButton: false }}
+                                disabled={!hasSubCategoryOptions}
+                              />
+                            </div>
+                          </td>
                         </tr>
                         <tr>
                           <td className="ps-0 py-2 text-muted">Barcode</td>
@@ -168,11 +222,11 @@ const ProductDetails = () => {
                         </tr>
                         <tr>
                           <td className="ps-0 py-2 text-muted">Created At</td>
-                          <td className="py-2 text-dark">{createdAt ? new Date(createdAt).toLocaleString() : 'N/A'}</td>
+                          <td className="py-2 text-dark">{formatDateTime(createdAt)}</td>
                         </tr>
                         <tr>
                           <td className="ps-0 py-2 text-muted">Last Updated</td>
-                          <td className="py-2 text-dark">{updatedAt ? new Date(updatedAt).toLocaleString() : 'N/A'}</td>
+                          <td className="py-2 text-dark">{formatDateTime(updatedAt)}</td>
                         </tr>
                       </tbody>
                     </Table>

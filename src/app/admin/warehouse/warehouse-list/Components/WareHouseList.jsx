@@ -128,7 +128,7 @@ const WareHouseList = () => {
               <th>Country</th>
               <th>City</th>
               <th>Main</th>
-              <th>Main ID</th>
+              <th>WareHouse Name</th>
               <th>Contact</th>
               <th style={{ textAlign: 'center' }}>Actions</th>
             </tr>
@@ -147,7 +147,7 @@ const WareHouseList = () => {
                 <td>{item?.country}</td>
                 <td>{item?.city}</td>
                 <td>{item?.ismain ? <span className="badge bg-success">Main</span> : <span className="badge bg-danger">Not Main</span>}</td>
-                <td>{item?.mainId === 'null' ? "N/A" : item?.mainId}</td>
+                <td>{item?.name || "N/A"}</td>
                 <td>{item?.contact}</td>
                 <td style={{ textAlign: 'center', gap: '10px', display: 'flex', justifyContent: 'center' }} >
                   <IconButton

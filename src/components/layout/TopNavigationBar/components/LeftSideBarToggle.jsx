@@ -10,7 +10,8 @@ const LeftSideBarToggle = () => {
     changeMenu: {
       size: changeMenuSize
     },
-    toggleBackdrop
+    toggleBackdrop,
+    closeBackdrop
   } = useLayoutContext();
   const pathname = useLocation();
   const isFirstRender = useRef(true);
@@ -22,7 +23,7 @@ const LeftSideBarToggle = () => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
     } else if (size === 'hidden') {
-      toggleBackdrop();
+      closeBackdrop();
     }
   }, [pathname]);
   return <div className="topbar-item">

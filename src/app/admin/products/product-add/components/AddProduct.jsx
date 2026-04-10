@@ -55,6 +55,11 @@ const AddProduct = () => {
     }))
   }, [subCategoriesData])
 
+  const getSubCategoryOptionsByCategory = React.useCallback((categoryId) => {
+    if (!categoryId) return []
+    return allSubCategoryOptions.filter(subCat => subCat.categoryId === categoryId)
+  }, [allSubCategoryOptions])
+
   return (
     <>
       <StatusAlert
@@ -87,7 +92,10 @@ const AddProduct = () => {
           barcode: Yup.string().required('Required'),
           description: Yup.string().required('Required'),
           category: Yup.string().required('Required'),
-          subCategory: Yup.string().required('Required'),
+          subCategory: Yup.string().when('category', ([category], schema) => {
+            const hasSubCategories = getSubCategoryOptionsByCategory(category).length > 0
+            return hasSubCategories ? schema.required('Required') : schema.notRequired()
+          }),
           purchasePrice: Yup.number().required('Required'),
           salePrice: Yup.number().required('Required'),
           isActive: Yup.boolean().required('Required'),
@@ -132,6 +140,9 @@ const AddProduct = () => {
           }
         }}>
         {({ values, errors, setFieldValue }) => {
+          const filteredSubCategoryOptions = getSubCategoryOptionsByCategory(values.category)
+          const hasSubCategories = filteredSubCategoryOptions.length > 0
+
           console.log('errors', errors)
           console.log('values', values)
           return (
@@ -186,12 +197,6 @@ const AddProduct = () => {
                     <Col lg={6}>
                       <Field name="category">
                         {({ field, form }) => {
-                          // Filter subcategories based on selected category
-                          const filteredSubCategoryOptions = React.useMemo(() => {
-                            if (!form.values.category) return []
-                            return allSubCategoryOptions.filter(subCat => subCat.categoryId === form.values.category)
-                          }, [form.values.category, allSubCategoryOptions])
-
                           return (
                             <ChoicesSearchFormInput
                               label="Category"
@@ -202,7 +207,6 @@ const AddProduct = () => {
                               options={categoryOptions}
                               onChange={(val) => {
                                 form.setFieldValue('category', val)
-                                // Clear subcategory when category changes
                                 form.setFieldValue('subCategory', '')
                               }}
                               placeholder="Select category"
@@ -215,12 +219,6 @@ const AddProduct = () => {
                     <Col lg={6}>
                       <Field name="subCategory">
                         {({ field, form }) => {
-                          // Filter subcategories based on selected category
-                          const filteredSubCategoryOptions = React.useMemo(() => {
-                            if (!form.values.category) return []
-                            return allSubCategoryOptions.filter(subCat => subCat.categoryId === form.values.category)
-                          }, [form.values.category])
-
                           return (
                             <ChoicesSearchFormInput
                               label="Sub Category"
@@ -230,8 +228,14 @@ const AddProduct = () => {
                               {...field}
                               options={filteredSubCategoryOptions}
                               onChange={(val) => form.setFieldValue('subCategory', val)}
-                              placeholder="Select sub category"
-                              disabled={!form.values.category}
+                              placeholder={
+                                !form.values.category
+                                  ? 'Select category first'
+                                  : hasSubCategories
+                                    ? 'Select sub category'
+                                    : 'No sub category available'
+                              }
+                              disabled={!form.values.category || !hasSubCategories}
                             />
                           )
                         }}

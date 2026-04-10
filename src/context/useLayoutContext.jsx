@@ -106,6 +106,17 @@ const LayoutProvider = ({
       showBackdrop: !offcanvasStates.showBackdrop
     });
   }, [offcanvasStates.showBackdrop]);
+
+  // close backdrop
+  const closeBackdrop = useCallback(() => {
+    setOffcanvasStates(prev => {
+      if (prev.showBackdrop) {
+        document.getElementsByTagName('html')[0].classList.remove('sidebar-enable');
+        return { ...prev, showBackdrop: false };
+      }
+      return prev;
+    });
+  }, []);
   useEffect(() => {
     const {
       layout_theme,
@@ -155,6 +166,7 @@ const LayoutProvider = ({
     themeCustomizer,
     activityStream,
     toggleBackdrop,
+    closeBackdrop,
     resetSettings
   }), [settings, offcanvasStates])}>
       {children}

@@ -15,6 +15,7 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
   const [confirmPurchase, { isLoading: isConfirming, isSuccess: isConfirmSuccess, error: confirmError }] = useConfirmPurchaseMutation();
   const [showPostConfirm, setShowPostConfirm] = useState(false);
   const [showConfirmPurchase, setShowConfirmPurchase] = useState(false);
+  const totalAmount = purchaseData?.totalAmount ?? purchaseData?.items?.reduce((sum, item) => sum + (Number(item?.lineTotal) || 0), 0) ?? 0;
 
   const handlePostToStockClick = () => {
     setShowPostConfirm(true);
@@ -220,6 +221,12 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                     </tr>
                   )}
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan="6" className="text-end fw-bold">Total Amount</td>
+                    <td className="fw-bold">{totalAmount}</td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           </div>

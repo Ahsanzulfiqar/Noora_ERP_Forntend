@@ -1,12 +1,8 @@
-// React form with Formik
-// Reusable Components
-
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { Link, useParams } from 'react-router-dom'
 import FormikTextField from '@/components/formikfield/FormikTextField'
-import FormikSelectField from '@/components/formikfield/FormikSelectField'
 import { useCreateWarehouseMutation, useGetAllWarehousesQuery, useGetWarehouseByIdQuery, useUpdateWarehouseMutation } from '../../../../../services/authenticateendpoint/warehouse'
 import Button from '@mui/material/Button'
 import StatusAlert from '../../../../../components/StatusAlert'
@@ -22,10 +18,9 @@ const AddWareHouse = () => {
   const { warehouseId } = useParams();
 
   const { data } = useGetWarehouseByIdQuery(warehouseId, { skip: !warehouseId })
-  console.log(data)
   const { data: allWarehouses } = useGetAllWarehousesQuery()
   const warehouseOptions = allWarehouses
-    ?.filter((w) => w._id !== warehouseId) // Filter out the current warehouse if editing
+    ?.filter((w) => w._id !== warehouseId)
     ?.map((w) => ({
       value: w._id,
       label: w.name,
@@ -52,7 +47,7 @@ const AddWareHouse = () => {
               country: data?.country || '',
               city: data?.city || '',
               ismain: data?.ismain ?? true,
-              mainId: data?.mainId || "null",
+              mainId: data?.mainId && data.mainId !== 'null' ? data.mainId : '',
               contact: data?.contact || '',
             }}
             validationSchema={Yup.object({
@@ -88,15 +83,73 @@ const AddWareHouse = () => {
                 console.error('Operation failed:', err)
               }
             }}
-
           >
+            {({ values, setFieldValue }) => {
+              const handleMainWarehouseSelect = (selectedId) => {
+                setFieldValue('mainId', selectedId)
+                const selectedWarehouse = allWarehouses?.find(w => w._id === selectedId)
+                if (selectedWarehouse) {
+                  setFieldValue('name', selectedWarehouse.name || '')
+                  setFieldValue('country', selectedWarehouse.country || '')
+                  setFieldValue('city', selectedWarehouse.city || '')
+                  setFieldValue('contact', selectedWarehouse.contact || '')
+                }
+              }
+        const handleToggleChange = (newValue) => {
+                setFieldValue('ismain', newValue)
+                if (!newValue) {
+                  const firstOption = warehouseOptions[0]
+                  if (firstOption) {
+                    const firstWarehouse = allWarehouses?.find(w => w._id === firstOption.value)
+                    if (firstWarehouse) {
+                      setFieldValue('mainId', firstWarehouse._id)
+                      setFieldValue('name', firstWarehouse.name || '')
+                      setFieldValue('country', firstWarehouse.country || '')
+                      setFieldValue('city', firstWarehouse.city || '')
+                      setFieldValue('contact', firstWarehouse.contact || '')
+                    }
+                  }
+                } else {
+                  setFieldValue('mainId', '')
+                  setFieldValue('name', '')
+                  setFieldValue('country', '')
+                  setFieldValue('city', '')
+                  setFieldValue('contact', '')
+                }
+              }
 
-            {({ values, errors, touched }) => {
-              console.log("values", values);
-              console.log("errors", errors);
               return (
                 <Form>
                   <Row>
+                    <Col lg={12}>
+                      <FormikToggleSwitch
+                        name="ismain"
+                        label="Is WareHouse Main"
+                        inline
+                        onChange={handleToggleChange}
+                      />
+                    </Col>
+
+                    {!values.ismain && (
+                      <Col lg={6}>
+                        <Field name="mainId">
+                          {({ field }) => (
+                            <ChoicesSearchFormInput
+                              label="Main Warehouse"
+                              labelClassName="form-label fw-bold"
+                              className="form-control"
+                              id="mainId"
+                              {...field}
+                              value={values.mainId || ''}
+                              options={warehouseOptions}
+                              onChange={handleMainWarehouseSelect}
+                              placeholder="Select Main Warehouse"
+                            />
+                          )}
+                        </Field>
+                      </Col>
+                    )}
+
                     <Col lg={6}>
                       <FormikTextField name="name" label="Name" placeholder="Enter WareHouse Name" />
                     </Col>
@@ -116,49 +169,15 @@ const AddWareHouse = () => {
                           />
                         )}
                       </Field>
-                      {/* <ChoicesSearchFormInput
-                        name="country"
-                        label="Country"
-                        options={countries} 
-                      />*/}
-
                     </Col>
 
                     <Col lg={6}>
                       <FormikTextField name="city" label="City" placeholder="Enter City Name" />
                     </Col>
 
-
-                    <Col lg={6}>
-                      <FormikToggleSwitch
-                        name="ismain"
-                        label="Is WareHouse Main "
-                      />
-
-                    </Col>
-
                     <Col lg={6}>
                       <FormikTextField name="contact" label="Contact" placeholder="Enter Contact" />
                     </Col>
-                    {!values.ismain && (
-                      <Col lg={6}>
-                        <Field name="mainId">
-                          {({ field, form }) => (
-                            <ChoicesSearchFormInput
-                              label="Main Warehouse"
-                              labelClassName="form-label fw-bold"
-                              className="form-control"
-                              id="mainId"
-                              {...field}
-                              options={warehouseOptions}
-                              onChange={(val) => form.setFieldValue('mainId', val)}
-                              placeholder="Select Main Warehouse"
-                            />
-                          )}
-                        </Field>
-                      </Col>
-                    )}
-
                   </Row>
 
                   <div className="p-3 bg-light mt-4 rounded">

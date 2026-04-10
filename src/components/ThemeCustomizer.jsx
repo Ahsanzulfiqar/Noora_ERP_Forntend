@@ -66,23 +66,11 @@ const SidebarSize = () => {
   const sizes = [{
     name: 'Default',
     size: 'default'
-  }, {
-    name: 'Condensed',
-    size: 'condensed'
-  }, {
-    name: 'Hidden',
-    size: 'hidden'
-  }, {
-    name: 'Small Hover Active',
-    size: 'sm-hover-active'
-  }, {
-    name: 'Small Hover',
-    size: 'sm-hover'
   }];
   return <div>
       <h5 className="my-3 font-16 fw-semibold">Sidebar Size</h5>
       {sizes.map((size, idx) => <div key={size.size + idx} className="form-check mb-2">
-          <input className="form-check-input" type="radio" name="data-menu-size" id={`leftbar-size-${size.size}`} onChange={() => changeMenuSize(size.size)} checked={menuSize === size.size} />
+          <input className="form-check-input" type="radio" name="data-menu-size" id={`leftbar-size-${size.size}`} onChange={() => changeMenuSize(size.size)} checked={true} readOnly />
           <label className="form-check-label" htmlFor={`leftbar-size-${size.size}`}>
             {size.name}
           </label>
