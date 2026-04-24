@@ -1,3 +1,4 @@
+
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
@@ -89,10 +90,8 @@ const AddWareHouse = () => {
                 setFieldValue('mainId', selectedId)
                 const selectedWarehouse = allWarehouses?.find(w => w._id === selectedId)
                 if (selectedWarehouse) {
-                  setFieldValue('name', selectedWarehouse.name || '')
                   setFieldValue('country', selectedWarehouse.country || '')
                   setFieldValue('city', selectedWarehouse.city || '')
-                  setFieldValue('contact', selectedWarehouse.contact || '')
                 }
               }
         const handleToggleChange = (newValue) => {
@@ -103,12 +102,12 @@ const AddWareHouse = () => {
                     const firstWarehouse = allWarehouses?.find(w => w._id === firstOption.value)
                     if (firstWarehouse) {
                       setFieldValue('mainId', firstWarehouse._id)
-                      setFieldValue('name', firstWarehouse.name || '')
                       setFieldValue('country', firstWarehouse.country || '')
                       setFieldValue('city', firstWarehouse.city || '')
-                      setFieldValue('contact', firstWarehouse.contact || '')
                     }
                   }
+                  setFieldValue('name', '')
+                  setFieldValue('contact', '')
                 } else {
                   setFieldValue('mainId', '')
                   setFieldValue('name', '')
@@ -151,7 +150,7 @@ const AddWareHouse = () => {
                     )}
 
                     <Col lg={6}>
-                      <FormikTextField name="name" label="Name" placeholder="Enter WareHouse Name" />
+                      <FormikTextField name="name" label={values.ismain ? "Name" : "Sub Warehouse"} placeholder={values.ismain ? "Enter Warehouse Name" : "Enter Sub Warehouse Name"} />
                     </Col>
 
                     <Col lg={6}>

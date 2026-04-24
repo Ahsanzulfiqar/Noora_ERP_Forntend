@@ -12,7 +12,7 @@ const ConfirmSaleModal = ({ show, onHide, saleId }) => {
             await confirmSale(saleId).unwrap();
             onHide();
         } catch (err) {
-            setError(err?.data?.errors?.[0]?.message || 'Failed to confirm sale');
+            setError(err?.data?.errors?.[0]?.message || err?.errors?.[0]?.message || err?.message || 'Failed to confirm sale');
         }
     };
 

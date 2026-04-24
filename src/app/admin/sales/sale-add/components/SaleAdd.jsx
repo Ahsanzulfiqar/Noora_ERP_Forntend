@@ -58,7 +58,7 @@ const SaleAdd = () => {
 
   const sellerOptions = sellersData?.data?.map(s => ({ value: s._id, label: s.name })) || [];
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
-  const productOptions = productsData?.map(p => ({ value: p._id, label: p.name, sku: p.sku, salePrice: p.salePrice })) || [];
+  const productOptions = productsData?.map(p => ({ value: p._id, label: p.sku ? `${p.name} (${p.sku})` : p.name, sku: p.sku, salePrice: p.salePrice })) || [];
   const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
 
   // Get all countries from country-state-city package

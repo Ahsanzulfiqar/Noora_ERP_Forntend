@@ -11,6 +11,8 @@ import DeliveredModal from './modals/DeliveredModal';
 import ReturnSaleModal from './modals/ReturnSaleModal';
 import CancelSaleModal from './modals/CancelSaleModal';
 import DraftSaleModal from './modals/DraftSaleModal';
+import { useGetSellerByIdQuery } from '@/services/authenticateendpoint/sellers';
+import { useGetWarehouseByIdQuery } from '@/services/authenticateendpoint/warehouse';
 
 const SalesDetail = ({ saleData, isLoadingSale }) => {
   const [activeModal, setActiveModal] = useState(null);
@@ -24,6 +26,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
     { value: 'RETURNED', label: 'Returned', modal: 'RETURN' },
   ];
 
+
   const handleActionClick = (modalType) => {
     setActiveModal(modalType);
   };
@@ -33,6 +36,9 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
   };
 
   const role = useUserRole();
+
+  const { data: sellerData } = useGetSellerByIdQuery(saleData?.seller, { skip: !saleData?.seller });
+  const { data: warehouseData } = useGetWarehouseByIdQuery(saleData?.warehouse, { skip: !saleData?.warehouse });
 
   if (isLoadingSale) {
     return (
@@ -85,7 +91,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          {statusOptions.map((option) => (
+                          {statusOptions.filter((option) => !saleData?.statusHistory?.some((h) => h.status?.toUpperCase() === option.value)).map((option) => (
                             <Dropdown.Item
                               key={option.value}
                               onClick={() => handleActionClick(option.modal)}
@@ -238,7 +244,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                   </div>
                   <div>
                     <p className="mb-0 text-muted fs-13">Seller</p>
-                    <h6 className="mb-0 text-dark fw-medium">{saleData?.seller || 'N/A'}</h6>
+                    <h6 className="mb-0 text-dark fw-medium">{sellerData?.name || 'N/A'}</h6>
                   </div>
                 </div>
                 <div className="d-flex align-items-center gap-3">
@@ -247,7 +253,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                   </div>
                   <div>
                     <p className="mb-0 text-muted fs-13">Warehouse</p>
-                    <h6 className="mb-0 text-dark fw-medium">{saleData?.warehouse || 'N/A'}</h6>
+                    <h6 className="mb-0 text-dark fw-medium">{warehouseData?.name || 'N/A'}</h6>
                   </div>
                 </div>
               </div>
