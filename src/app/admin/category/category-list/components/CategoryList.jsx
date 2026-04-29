@@ -3,6 +3,7 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardHeader, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Form, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import TableNoData from '@/components/TableNoData';
+import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useFilterCategoriesQuery, useDeleteCategoryMutation, useFilterSubCategoriesQuery } from '@/services/authenticateendpoint/category';
 import StatusAlert from '@/components/StatusAlert';
@@ -160,9 +161,7 @@ const CategoryList = () => {
                             </thead>
                             <tbody>
                                 {isLoading ? (
-                                    <tr>
-                                        <td colSpan={8} className="text-center">Loading...</td>
-                                    </tr>
+                                    <LoaderSpinner show={isLoading} colSpan={8} />
                                 ) : categories.length > 0 ? (
                                     categories.map((item) => (
                                         <tr key={item._id}>

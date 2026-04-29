@@ -6,6 +6,7 @@ import { useDeleteProductMutation, useGetAllProductsQuery } from '../../../../..
 import IconButton from '@mui/material/IconButton'
 import { useState } from 'react'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
+import LoaderSpinner from '@/components/loaders/LoaderSpinner'
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const [deleteProduct] = useDeleteProductMutation();
@@ -97,7 +98,6 @@ const ProductList = () => {
   const totalPages = Math.ceil(totalItems / limit)
   const currentData = productData?.slice((page - 1) * limit, page * limit) || []
 
-  console.log(productData)
   return (
     <Card>
       <CardHeader className="d-flex justify-content-between align-items-center gap-1">
@@ -146,13 +146,7 @@ const ProductList = () => {
               </tr>
             </thead>
             <tbody>
-              {isLoading && (
-                <tr>
-                  <td colSpan="11" className="text-center">
-                    Loading...
-                  </td>
-                </tr>
-              )}
+              {isLoading && <LoaderSpinner show={isLoading} colSpan={8} />}
               {error && (
                 <tr>
                   <td colSpan="11" className="text-center text-danger">

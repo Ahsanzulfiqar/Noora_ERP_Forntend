@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 // Endpoints
 import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/authenticateendpoint/sales';
 import { useGetSellersQuery } from '../../../../../services/authenticateendpoint/sellers';
+import { useGetProjectsBySellerQuery } from '../../../../../services/authenticateendpoint/project';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
@@ -32,6 +33,8 @@ const SaleAdd = () => {
 
   const { data: saleData, isLoading: isLoadingSale } = useGetSaleByIdQuery(salesId, { skip: !salesId });
   const { data: sellersData } = useGetSellersQuery({ limit: 100 });
+  const [selectedSellerId, setSelectedSellerId] = useState(saleData?.seller || '');
+  const { data: projectsBySellerData } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId });
   const { data: warehousesData } = useGetAllWarehousesQuery();
   const { data: productsData } = useGetAllProductsQuery();
   const { data: couriersData } = useGetAllCouriersQuery();
@@ -57,6 +60,7 @@ const SaleAdd = () => {
   ];
 
   const sellerOptions = sellersData?.data?.map(s => ({ value: s._id, label: s.name })) || [];
+  const projectOptions = projectsBySellerData?.map(p => ({ value: p._id, label: p.name })) || [];
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.sku ? `${p.name} (${p.sku})` : p.name, sku: p.sku, salePrice: p.salePrice })) || [];
   const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
@@ -85,6 +89,7 @@ const SaleAdd = () => {
 
   const initialValues = {
     seller: saleData?.seller || '',
+    project: saleData?.project || '',
     warehouse: saleData?.warehouse || '',
     invoiceNo: saleData?.invoiceNo || '',
     customerName: saleData?.customerName || '',
@@ -113,6 +118,12 @@ const SaleAdd = () => {
     taxAmount: saleData?.taxAmount || 0,
     totalAmount: saleData?.totalAmount || 0,
   };
+
+  useEffect(() => {
+    if (saleData?.seller) {
+      setSelectedSellerId(saleData.seller);
+    }
+  }, [saleData]);
 
   // Initialize cities when editing existing sale with country
   useEffect(() => {
@@ -264,12 +275,34 @@ const SaleAdd = () => {
                             id="seller"
                             {...field}
                             options={sellerOptions}
-                            onChange={(value) => setFieldValue('seller', value)}
+                            onChange={(value) => {
+                              setFieldValue('seller', value);
+                              setFieldValue('project', '');
+                              setSelectedSellerId(value);
+                            }}
                             placeholder="Select Seller"
                           />
                         )}
                       </Field>
                     </Col>
+                    {selectedSellerId && (
+                      <Col lg={4}>
+                        <Field name="project">
+                          {({ field }) => (
+                            <ChoicesSearchFormInput
+                              label="Projects"
+                              labelClassName="form-label fw-bold"
+                              className="form-control"
+                              id="project"
+                              {...field}
+                              options={projectOptions}
+                              onChange={(value) => setFieldValue('project', value)}
+                              placeholder="Select Project"
+                            />
+                          )}
+                        </Field>
+                      </Col>
+                    )}
                     <Col lg={4}>
                       <Field name="warehouse">
                         {({ field }) => (

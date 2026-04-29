@@ -8,6 +8,7 @@ import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/wareho
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
 import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/warehouse';
+import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 
 const WarehouseList = () => {
   const [page, setPage] = useState(1);
@@ -148,11 +149,8 @@ const WarehouseList = () => {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={10} className="text-center">Loading...</td>
-                  </tr>
-                ) : warehouseStock && warehouseStock.length > 0 ? (
+                {isLoading && <LoaderSpinner show={isLoading} colSpan={10} />}
+                {!isLoading && warehouseStock && warehouseStock.length > 0 ? (
                   warehouseStock.map((item, idx) => (
                     <tr key={item._id || idx}>
                       <td>

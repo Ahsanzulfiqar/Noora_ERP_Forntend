@@ -189,7 +189,11 @@ const PurchaseListPage = () => {
                   <tbody>
                     {isLoading && (
                       <tr>
-                        <td colSpan="10" className="text-center">Loading...</td>
+                        <td colSpan="10" className="text-center py-4">
+                          <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </td>
                       </tr>
                     )}
                     {isError && (

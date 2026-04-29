@@ -3,6 +3,16 @@ import ReactApexChart from 'react-apexcharts'
 import { Card, CardBody, CardFooter, CardTitle, Col, Row, Spinner } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useGetAdminDashboardQuery } from '@/services/authenticateendpoint/dashboard'
+import { useAuth } from '@/hooks/useAuth'
+
+const DUMMY_STATS = {
+  revenue: 0,
+  netProfit: 0,
+  stockValue: 0,
+  purchases: 0,
+  receivables: 0,
+  payables: 0,
+}
 
 const formatAmount = (val) => {
   if (val == null) return '—'
@@ -39,7 +49,15 @@ const StatsCard = ({ amount, icon, name }) => (
 )
 
 const Stats = ({ from, to, warehouseIds }) => {
-  const { data, isLoading } = useGetAdminDashboardQuery({ from, to, warehouseIds }, { refetchOnMountOrArgChange: true })
+  const { role } = useAuth()
+  const isAdmin = role?.toLowerCase() === 'admin'
+
+  const { data: realData, isLoading } = useGetAdminDashboardQuery(
+    { from, to, warehouseIds },
+    { refetchOnMountOrArgChange: true, skip: !isAdmin }
+  )
+
+  const data = isAdmin ? realData : DUMMY_STATS
 
   const statItems = [
     { name: 'Revenue', icon: 'bx:trending-up', amount: formatAmount(data?.revenue) },
