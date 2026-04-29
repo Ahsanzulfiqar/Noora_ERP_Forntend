@@ -1,11 +1,13 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { currency } from '@/context/constants';
-import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
+import { useState } from 'react';
+import { Card, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDeleteWarehouseMutation, useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { IconButton } from '@mui/material';
 import StatusAlert from '../../../../../components/StatusAlert';
 import LoaderSpinner from '../../../../../components/loaders/LoaderSpinner';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 const ProductCard = ({
   title,
   price,
@@ -77,11 +79,13 @@ const ProductCard = ({
 };
 const WareHouseList = () => {
   const { data, isLoading: isLoadingWarehouses, error } = useGetAllWarehousesQuery()
-
   const [deleteWarehouse, { isSuccess: isDeleteSuccess, error: isDeleteError }] = useDeleteWarehouseMutation();
-
-  console.log(';;;;;', data, isLoadingWarehouses, error)
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const navigate = useNavigate();
+
+  const totalPages = Math.ceil((data?.length || 0) / limit);
+  const paginatedData = data?.slice((page - 1) * limit, page * limit) || [];
 
   return <Card>
     < StatusAlert
@@ -135,7 +139,7 @@ const WareHouseList = () => {
           </thead>
           <tbody style={{ textAlign: 'left' }}>
             {isLoadingWarehouses && <LoaderSpinner show={isLoadingWarehouses} colSpan={8} />}
-            {!isLoadingWarehouses && data?.map((item) => (
+            {!isLoadingWarehouses && paginatedData.map((item) => (
               <tr key={item?._id}>
                 <td>
                   <div className="form-check ms-1">
@@ -184,37 +188,13 @@ const WareHouseList = () => {
         </table>
       </div>
     </div>
-    <CardFooter className="border-top">
-      <nav aria-label="Page navigation example">
-        <ul className="pagination justify-content-end mb-0">
-          <li className="page-item">
-            <Link className="page-link" to="">
-              Previous
-            </Link>
-          </li>
-          <li className="page-item active">
-            <Link className="page-link" to="">
-              1
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" to="">
-              2
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" to="">
-              3
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" to="">
-              Next
-            </Link>
-          </li>
-        </ul>
-      </nav>
-    </CardFooter>
+    <CustomTablePaginations
+      limit={limit}
+      setLimit={setLimit}
+      page={page}
+      setPage={setPage}
+      totalPages={totalPages}
+    />
   </Card>;
 };
 export default WareHouseList;

@@ -96,6 +96,30 @@ export const projectsAPI = api.injectEndpoints({
       invalidatesTags: (result, error, { id }) => ['Project', { type: 'Project', id }],
     }),
 
+    // GET PROJECTS BY SELLER
+    getProjectsBySeller: build.query({
+      query: (sellerId) => ({
+        method: 'POST',
+        body: {
+          query: `
+            query GetProjectsBySeller($sellerId: ID!) {
+              GetProjectsBySeller(sellerId: $sellerId) {
+                _id
+                name
+                channel
+                warehouses
+                sellers
+                isActive
+              }
+            }
+          `,
+          variables: { sellerId },
+        },
+      }),
+      transformResponse: (response) => response?.data?.GetProjectsBySeller || [],
+      providesTags: ['Project'],
+    }),
+
     // DELETE PROJECT
     deleteProject: build.mutation({
       query: (id) => ({
@@ -117,6 +141,7 @@ export const projectsAPI = api.injectEndpoints({
 export const {
   useGetAllProjectsQuery,
   useGetProjectByIdQuery,
+  useGetProjectsBySellerQuery,
   useCreateProjectMutation,
   useUpdateProjectMutation,
   useDeleteProjectMutation,

@@ -3,8 +3,9 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardHeader, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Form, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import TableNoData from '@/components/TableNoData';
+import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
-import { useFilterCategoriesQuery, useDeleteCategoryMutation } from '@/services/authenticateendpoint/category';
+import { useFilterCategoriesQuery, useDeleteCategoryMutation, useFilterSubCategoriesQuery } from '@/services/authenticateendpoint/category';
 import StatusAlert from '@/components/StatusAlert';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import ViewDetailModal from '../../components/ViewDetailModal';
@@ -31,6 +32,17 @@ const CategoryList = () => {
     });
 
     const [deleteCategory, { isSuccess: isDeleteSuccess, error: deleteError, isLoading: isDeleting }] = useDeleteCategoryMutation();
+
+    const { data: subCategoriesData } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 1000 });
+
+    const subCountByCategory = React.useMemo(() => {
+        const map = {};
+        (subCategoriesData?.data || []).forEach(sub => {
+            const catId = sub.category;
+            map[catId] = (map[catId] || 0) + 1;
+        });
+        return map;
+    }, [subCategoriesData]);
 
     const categories = data?.data || [];
     const totalPages = data?.totalPages || 1;
@@ -65,10 +77,14 @@ const CategoryList = () => {
     };
 
     const categoryFields = [
-        { label: 'Category ID', key: '_id', col: 12 },
-        { label: 'Name', key: 'name', className: 'text-capitalize' },
+        { label: 'Category Name', key: 'name', className: 'text-capitalize' },
         { label: 'Slug', key: 'slug', className: 'text-capitalize' },
         { label: 'Description', key: 'description', col: 12, className: 'text-capitalize' },
+        {
+            label: 'Sub Categories',
+            key: '_id',
+            render: (data) => subCountByCategory[data._id] || 0
+        },
         {
             label: 'Status',
             key: 'isActive',
@@ -137,6 +153,7 @@ const CategoryList = () => {
                                     <th>Name</th>
                                     <th>Slug</th>
                                     <th>Description</th>
+                                    <th>Sub Categories</th>
                                     <th>Status</th>
                                     <th>Created At</th>
                                     <th className="text-end">Action</th>
@@ -144,9 +161,7 @@ const CategoryList = () => {
                             </thead>
                             <tbody>
                                 {isLoading ? (
-                                    <tr>
-                                        <td colSpan={7} className="text-center">Loading...</td>
-                                    </tr>
+                                    <LoaderSpinner show={isLoading} colSpan={8} />
                                 ) : categories.length > 0 ? (
                                     categories.map((item) => (
                                         <tr key={item._id}>
@@ -158,6 +173,7 @@ const CategoryList = () => {
                                             <td className='text-capitalize'>{item.name}</td>
                                             <td className='text-capitalize'>{item.slug}</td>
                                             <td className='text-capitalize'>{item.description || 'N/A'}</td>
+                                            <td>{subCountByCategory[item._id] || 0}</td>
                                             <td>
                                                 <span className={`badge ${item.isActive ? 'bg-success' : 'bg-danger'}`}>
                                                     {item.isActive ? 'Active' : 'Inactive'}
@@ -180,7 +196,7 @@ const CategoryList = () => {
                                         </tr>
                                     ))
                                 ) : (
-                                    <TableNoData colSpan={7} />
+                                    <TableNoData colSpan={8} />
                                 )}
                             </tbody>
                         </table>

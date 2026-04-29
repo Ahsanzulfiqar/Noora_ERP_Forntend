@@ -110,20 +110,7 @@ export const MENU_ITEMS = [
     key: 'inventory',
     label: 'Inventory',
     icon: 'solar:box-bold-duotone',
-    children: [
-      {
-        key: 'warehouse',
-        label: 'Warehouse',
-        url: '/inventory/warehouse',
-        parentKey: 'inventory',
-      },
-      // {
-      //   key: 'received-orders',
-      //   label: 'Received Orders',
-      //   url: '/inventory/received-orders',
-      //   parentKey: 'inventory',
-      // },
-    ],
+    url: '/inventory/warehouse',
   },
   // {
   //   key: 'orders',

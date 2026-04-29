@@ -126,7 +126,6 @@ const AddProduct = () => {
               attributes: values.attributes.filter(attr => attr.name.trim() !== '' && attr.value.trim() !== ''),
               images: values.images,
             }
-
             if (productId) {
               await updateProduct({ id: productId, data: payload }).unwrap()
             } else {

@@ -34,7 +34,7 @@ const ManualAddStock = () => {
     const validationSchema = Yup.object({
         warehouseId: Yup.string().required('Required'),
         productId: Yup.string().required('Required'),
-        variantId: Yup.string().required('Required'),
+        variantId: Yup.string(),
         quantity: Yup.number().min(1, 'Must be at least 1').required('Required'),
         batchNo: Yup.string().required('Required'),
         expiryDate: Yup.date().required('Required'),
@@ -63,11 +63,11 @@ const ManualAddStock = () => {
                                 const data = {
                                     warehouseId: values.warehouseId,
                                     productId: values.productId,
-                                    variantId: values.variantId,
                                     quantity: values.quantity,
                                     batchNo: values.batchNo,
                                     expiryDate: new Date(values.expiryDate).toISOString(),
-                                    note: values.note
+                                    note: values.note,
+                                    ...(values.variantId && { variantId: values.variantId }),
                                 };
                                 await addManualStock(data).unwrap();
                             } catch (err) {

@@ -18,6 +18,7 @@ export const productsAPI = api.injectEndpoints({
                 subCategory
                 purchasePrice
                 salePrice
+                description
                 isActive
                 attributes {
                   name

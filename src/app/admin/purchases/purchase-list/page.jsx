@@ -1,8 +1,10 @@
 import PageTItle from '@/components/PageTItle'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAllPurchasesQuery, useDeletePurchaseMutation, usePostToStockMutation } from '@/services/authenticateendpoint/purchases'
-import { Card, CardBody, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Button } from 'react-bootstrap'
+import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse'
+import { Card, CardBody, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Button } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
+import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import StatusAlert from '@/components/StatusAlert'
 import { useState } from 'react'
 import DeleteConfirmModal from '../../../../components/DeleteConfirmModal'
@@ -11,8 +13,18 @@ import { formatDate } from '../../../../helpers/format'
 const PurchaseListPage = () => {
 
   const { data: purchases, isLoading, isError } = useGetAllPurchasesQuery()
+  const { data: warehousesData } = useGetAllWarehousesQuery()
+  const warehouseMap = (warehousesData || []).reduce((acc, w) => {
+    acc[w._id] = w.name
+    return acc
+  }, {})
   const [deletePurchase, { isLoading: isDeleting, isSuccess: isDeleteSuccess, error: deleteError }] = useDeletePurchaseMutation()
   const [postToStock, { isLoading: isPosting, isSuccess: isPostSuccess, error: postError }] = usePostToStockMutation()
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const totalPages = Math.ceil((purchases?.length || 0) / limit)
+  const paginatedPurchases = purchases?.slice((page - 1) * limit, page * limit) || []
+
   const [showConfirm, setShowConfirm] = useState(false)
   const [showPostConfirm, setShowPostConfirm] = useState(false)
   const [showEditConfirm, setShowEditConfirm] = useState(false)
@@ -177,7 +189,11 @@ const PurchaseListPage = () => {
                   <tbody>
                     {isLoading && (
                       <tr>
-                        <td colSpan="10" className="text-center">Loading...</td>
+                        <td colSpan="10" className="text-center py-4">
+                          <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </td>
                       </tr>
                     )}
                     {isError && (
@@ -191,7 +207,7 @@ const PurchaseListPage = () => {
                       </tr>
                     )}
 
-                    {purchases?.map((purchase, index) => (
+                    {paginatedPurchases.map((purchase, index) => (
                       <tr key={purchase._id || index}>
                         <td>
                           <div className="form-check">
@@ -201,7 +217,7 @@ const PurchaseListPage = () => {
                         </td>
                         <td>{purchase.supplierName}</td>
                         <td>{purchase.invoiceNo}</td>
-                        <td>{purchase.warehouse}</td>
+                        <td>{warehouseMap[purchase.warehouse] || purchase.warehouse}</td>
                         <td>{formatDate(purchase.purchaseDate)}</td>
                         <td>{purchase.status}</td>
                         <td>{purchase.subTotal}</td>
@@ -241,37 +257,13 @@ const PurchaseListPage = () => {
                 </table>
               </div>
             </CardBody>
-            <CardFooter className="border-top">
-              <nav aria-label="Page navigation example">
-                <ul className="pagination justify-content-end mb-0">
-                  <li className="page-item">
-                    <Link className="page-link" to="">
-                      Previous
-                    </Link>
-                  </li>
-                  <li className="page-item active">
-                    <Link className="page-link" to="">
-                      1
-                    </Link>
-                  </li>
-                  <li className="page-item">
-                    <Link className="page-link" to="">
-                      2
-                    </Link>
-                  </li>
-                  <li className="page-item">
-                    <Link className="page-link" to="">
-                      3
-                    </Link>
-                  </li>
-                  <li className="page-item">
-                    <Link className="page-link" to="">
-                      Next
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
-            </CardFooter>
+            <CustomTablePaginations
+              limit={limit}
+              setLimit={setLimit}
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+            />
           </Card>
         </Col>
       </Row>
