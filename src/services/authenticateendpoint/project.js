@@ -14,7 +14,7 @@ export const projectsAPI = api.injectEndpoints({
                 name
                 channel
                 warehouses
-                sellers
+                seller
                 isActive
                 createdAt
               }
@@ -38,7 +38,7 @@ export const projectsAPI = api.injectEndpoints({
                 name
                 channel
                 warehouses
-                sellers
+                seller
                 isActive
               }
             }
@@ -61,8 +61,8 @@ export const projectsAPI = api.injectEndpoints({
                 _id
                 name
                 channel
+                seller
                 warehouses
-                sellers
                 isActive
               }
             }
@@ -85,7 +85,7 @@ export const projectsAPI = api.injectEndpoints({
                 name
                 channel
                 warehouses
-                sellers
+                seller
                 isActive
               }
             }
@@ -108,7 +108,7 @@ export const projectsAPI = api.injectEndpoints({
                 name
                 channel
                 warehouses
-                sellers
+                seller
                 isActive
               }
             }

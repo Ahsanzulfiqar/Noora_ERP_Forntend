@@ -6,12 +6,16 @@ import { useGetSellersQuery } from '@/services/authenticateendpoint/sellers';
 import { Badge, Card, CardBody, Col, Row, Spinner, Table, Button, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'
+import { useAuth } from '@/hooks/useAuth';
 
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 
 const SalesList = () => {
+  const { role, id: userId } = useAuth();
+  const isSeller = role === 'SELLER';
+
   const [filter, setFilter] = useState({
-    sellerId: '',
+    sellerId: isSeller ? userId : '',
     status: '',
     search: ''
   });
@@ -34,8 +38,9 @@ const SalesList = () => {
   const totalPages = salesResponse?.totalPages || Math.ceil((salesResponse?.total || 0) / limit) || 1;
 
   const handleFilterChange = (key, value) => {
+    if (isSeller && key === 'sellerId') return;
     setFilter(prev => ({ ...prev, [key]: value }));
-    setPage(1); // Reset to first page on filter change
+    setPage(1);
   };
 
   const getStatusColor = (status) => {
@@ -99,19 +104,21 @@ const SalesList = () => {
                     onChange={(e) => handleFilterChange('search', e.target.value)}
                   />
                 </Col>
-                <Col md={4}>
-                  <Form.Select
-                    value={filter.sellerId}
-                    onChange={(e) => handleFilterChange('sellerId', e.target.value)}
-                  >
-                    <option value="">All Sellers</option>
-                    {sellers.map((seller) => (
-                      <option key={seller._id} value={seller._id}>
-                        {seller.name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Col>
+                {!isSeller && (
+                  <Col md={4}>
+                    <Form.Select
+                      value={filter.sellerId}
+                      onChange={(e) => handleFilterChange('sellerId', e.target.value)}
+                    >
+                      <option value="">All Sellers</option>
+                      {sellers.map((seller) => (
+                        <option key={seller._id} value={seller._id}>
+                          {seller.name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                )}
                 <Col md={4}>
                   <Form.Select
                     value={filter.status}

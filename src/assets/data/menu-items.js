@@ -195,26 +195,19 @@ export const MENU_ITEMS = [
   //   ],
   // },
 
-  {
-    key: 'sellers',
-    icon: 'solar:users-group-rounded-bold-duotone',
-    label: 'Sellers',
-    children: [
-      {
-        key: 'sellers-list',
-        label: 'List',
-        url: '/sellers/sellers-list',
-        parentKey: 'sellers',
-      },
-      {
-        key: 'sellers-create',
-        label: 'Create',
-        url: '/sellers/sellers-add',
-        parentKey: 'sellers',
-      },
-
-    ],
-  },
+  // {
+  //   key: 'sellers',
+  //   icon: 'solar:users-group-rounded-bold-duotone',
+  //   label: 'Sellers',
+  //   children: [
+  //     {
+  //       key: 'sellers-list',
+  //       label: 'List',
+  //       url: '/sellers/sellers-list',
+  //       parentKey: 'sellers',
+  //     },
+  //   ],
+  // },
   {
     key: 'sales',
     icon: 'solar:cart-3-bold-duotone',

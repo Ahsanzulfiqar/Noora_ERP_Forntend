@@ -4,7 +4,7 @@ import SellerAdd from './components/SellerAdd'
 const SellerAddPage = () => {
   return (
     <>
-      <PageTItle title="Creatzxzxzxze Seller" />
+      <PageTItle title="Create Seller" />
       <Row>
         <SellerAdd />
       </Row>

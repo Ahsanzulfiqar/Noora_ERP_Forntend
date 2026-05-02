@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 // Endpoints
 import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/authenticateendpoint/sales';
-import { useGetSellersQuery } from '../../../../../services/authenticateendpoint/sellers';
+import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
 import { useGetProjectsBySellerQuery } from '../../../../../services/authenticateendpoint/project';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
@@ -27,13 +27,14 @@ import { IconButton, Tooltip } from '@mui/material';
 const SaleAdd = () => {
   const navigate = useNavigate();
   const { salesId } = useParams();
-  const { role } = useAuth();
+  const { role, id: userId } = useAuth();
+  const isSeller = role === 'SELLER';
   const [createSale, { isLoading: isCreating, isSuccess: createSuccess, error: createError }] = useCreateSaleMutation();
   const [updateSale, { isLoading: isUpdating, isSuccess: updateSuccess, error: updateError }] = useUpdateSaleMutation();
 
   const { data: saleData, isLoading: isLoadingSale } = useGetSaleByIdQuery(salesId, { skip: !salesId });
-  const { data: sellersData } = useGetSellersQuery({ limit: 100 });
-  const [selectedSellerId, setSelectedSellerId] = useState(saleData?.seller || '');
+  const { data: usersData } = useGetAllUsersQuery();
+  const [selectedSellerId, setSelectedSellerId] = useState(isSeller ? userId : (saleData?.seller || ''));
   const { data: projectsBySellerData } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId });
   const { data: warehousesData } = useGetAllWarehousesQuery();
   const { data: productsData } = useGetAllProductsQuery();
@@ -59,7 +60,7 @@ const SaleAdd = () => {
     { value: 'cancelled', label: 'Cancelled' },
   ];
 
-  const sellerOptions = sellersData?.data?.map(s => ({ value: s._id, label: s.name })) || [];
+  const sellerOptions = usersData?.filter(u => u.role === 'SELLER')?.map(u => ({ value: u._id, label: u.name })) || [];
   const projectOptions = projectsBySellerData?.map(p => ({ value: p._id, label: p.name })) || [];
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.sku ? `${p.name} (${p.sku})` : p.name, sku: p.sku, salePrice: p.salePrice })) || [];
@@ -88,7 +89,7 @@ const SaleAdd = () => {
   }, [variantsData, newItem.product, newItem.variant]);
 
   const initialValues = {
-    seller: saleData?.seller || '',
+    seller: isSeller ? userId : (saleData?.seller || ''),
     project: saleData?.project || '',
     warehouse: saleData?.warehouse || '',
     invoiceNo: saleData?.invoiceNo || '',
@@ -120,10 +121,12 @@ const SaleAdd = () => {
   };
 
   useEffect(() => {
-    if (saleData?.seller) {
+    if (isSeller && userId) {
+      setSelectedSellerId(userId);
+    } else if (saleData?.seller) {
       setSelectedSellerId(saleData.seller);
     }
-  }, [saleData]);
+  }, [saleData, isSeller, userId]);
 
   // Initialize cities when editing existing sale with country
   useEffect(() => {
@@ -183,7 +186,8 @@ const SaleAdd = () => {
   const handleSubmit = async (values, { resetForm }) => {
     try {
       const payload = {
-        sellerId: values.seller,           // maps Formik field to mutation
+        sellerId: values.seller,
+        projectId: values.project,
         warehouseId: values.warehouse,
         invoiceNo: values.invoiceNo,
         customerName: values.customerName,
@@ -265,27 +269,29 @@ const SaleAdd = () => {
                 </CardHeader>
                 <CardBody>
                   <Row>
-                    <Col lg={4}>
-                      <Field name="seller">
-                        {({ field }) => (
-                          <ChoicesSearchFormInput
-                            label="Seller"
-                            labelClassName="form-label fw-bold"
-                            className="form-control"
-                            id="seller"
-                            {...field}
-                            options={sellerOptions}
-                            onChange={(value) => {
-                              setFieldValue('seller', value);
-                              setFieldValue('project', '');
-                              setSelectedSellerId(value);
-                            }}
-                            placeholder="Select Seller"
-                          />
-                        )}
-                      </Field>
-                    </Col>
-                    {selectedSellerId && (
+                    {!isSeller && (
+                      <Col lg={4}>
+                        <Field name="seller">
+                          {({ field }) => (
+                            <ChoicesSearchFormInput
+                              label="Seller"
+                              labelClassName="form-label fw-bold"
+                              className="form-control"
+                              id="seller"
+                              {...field}
+                              options={sellerOptions}
+                              onChange={(value) => {
+                                setFieldValue('seller', value);
+                                setFieldValue('project', '');
+                                setSelectedSellerId(value);
+                              }}
+                              placeholder="Select Seller"
+                            />
+                          )}
+                        </Field>
+                      </Col>
+                    )}
+                    {(selectedSellerId || isSeller) && (
                       <Col lg={4}>
                         <Field name="project">
                           {({ field }) => (
