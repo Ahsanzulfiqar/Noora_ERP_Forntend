@@ -9,10 +9,12 @@ import { useState } from 'react';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useAuth } from '../../../../../hooks/useAuth';
+import { ROLES } from '@/assets/data/roles';
 
 const ProjectList = () => {
   const { role, id: currentUserId, name: currentUserName } = useAuth();
   const isSeller = role === 'SELLER';
+  const isAdmin = role === ROLES.ADMIN;
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -120,17 +122,19 @@ const ProjectList = () => {
                     >
                       <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
                     </IconButton>
-                    <IconButton
-                      size="small"
-                      className="btn btn-soft-danger btn-sm"
-                      aria-label="delete"
-                      onClick={() => handleDeleteClick(item._id)}
-                    >
-                      <IconifyIcon
-                        icon="solar:trash-bin-minimalistic-2-broken"
-                        className="align-middle fs-18"
-                      />
-                    </IconButton>
+                    {isAdmin && (
+                      <IconButton
+                        size="small"
+                        className="btn btn-soft-danger btn-sm"
+                        aria-label="delete"
+                        onClick={() => handleDeleteClick(item._id)}
+                      >
+                        <IconifyIcon
+                          icon="solar:trash-bin-minimalistic-2-broken"
+                          className="align-middle fs-18"
+                        />
+                      </IconButton>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -9,8 +9,13 @@ import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product'
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
 import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/warehouse';
 import LoaderSpinner from '@/components/loaders/LoaderSpinner';
+import { useAuth } from '@/hooks/useAuth';
+import { ROLES } from '@/assets/data/roles';
 
 const WarehouseList = () => {
+  const { role } = useAuth();
+  const isSales = role === ROLES.SALES;
+  const isAdmin = role === ROLES.ADMIN;
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
     warehouseId: '',
@@ -108,9 +113,15 @@ const WarehouseList = () => {
               </Form.Select>
             </Form.Group>
 
-            <Link to="/inventory/warehouse-add" className="btn btn-sm btn-primary">
-              Add Inventory
-            </Link>
+            {isSales ? (
+              <button type="button" className="btn btn-sm btn-primary disabled" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
+                Add Inventory
+              </button>
+            ) : (
+              <Link to="/inventory/warehouse-add" className="btn btn-sm btn-primary">
+                Add Inventory
+              </Link>
+            )}
             <Dropdown>
               <DropdownToggle as={'a'} className="dropdown-toggle btn btn-sm btn-outline-light rounded content-none icons-center" data-bs-toggle="dropdown" aria-expanded="false">
                 <IconifyIcon className="me-1" width={16} height={16} icon="bx:dots-vertical-rounded" />
@@ -172,12 +183,16 @@ const WarehouseList = () => {
                           <Link to={`/inventory/warehouse-detail/${item._id}`} className="btn btn-light btn-sm">
                             <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
                           </Link>
-                          <Link to="" className="btn btn-soft-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                            <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
-                          </Link>
-                          <Link to="" className="btn btn-soft-danger btn-sm">
-                            <IconifyIcon icon="solar:trash-bin-minimalistic-2-broken" className="align-middle fs-18" />
-                          </Link>
+                          {isAdmin && (
+                            <>
+                              <Link to="" className="btn btn-soft-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
+                              </Link>
+                              <Link to="" className="btn btn-soft-danger btn-sm">
+                                <IconifyIcon icon="solar:trash-bin-minimalistic-2-broken" className="align-middle fs-18" />
+                              </Link>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

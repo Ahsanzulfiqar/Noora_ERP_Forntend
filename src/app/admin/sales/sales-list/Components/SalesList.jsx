@@ -13,6 +13,13 @@ import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 const SalesList = () => {
   const { role, id: userId } = useAuth();
   const isSeller = role === 'SELLER';
+  const isAdminOrManager = role === 'ADMIN' || role === 'MANAGER';
+  const canEditSale = (status) => {
+    const normalized = status?.toLowerCase();
+    if (normalized === 'draft') return true;
+    if (normalized === 'confirmed') return isAdminOrManager;
+    return false;
+  };
 
   const [filter, setFilter] = useState({
     sellerId: isSeller ? userId : '',
@@ -179,7 +186,7 @@ const SalesList = () => {
                               <Link to={`/sales/sales-detail/${item._id}`} className="btn btn-outline-primary btn-sm rounded-circle p-1 border-0 shadow-none">
                                 <IconifyIcon icon="solar:eye-broken" className="fs-18" />
                               </Link>
-                              {(item.status === 'draft' || item.status === 'DRAFT') ? (
+                              {canEditSale(item.status) ? (
                                 <Link to={`/sales/sales-edit/${item._id}`} className="btn btn-outline-info btn-sm rounded-circle p-1 border-0 shadow-none">
                                   <IconifyIcon icon="solar:pen-2-broken" className="fs-18" />
                                 </Link>

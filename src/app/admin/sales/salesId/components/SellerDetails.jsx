@@ -74,34 +74,49 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
 
                 <div className="d-flex align-items-center gap-2">
                   <div className="hstack gap-2">
-                    {(saleData?.status === 'draft' || saleData?.status === 'DRAFT') ? (
-                      <Link to={`/sales/sales-edit/${saleData?._id}`} className="btn btn-soft-primary btn-sm d-flex align-items-center gap-1">
-                        <IconifyIcon icon="solar:pen-2-broken" className="fs-16" /> Edit Order
-                      </Link>
-                    ) : (
-                      <button className="btn btn-light btn-sm d-flex align-items-center gap-1" disabled style={{ cursor: 'not-allowed', opacity: 0.6 }}>
-                        <IconifyIcon icon="solar:pen-2-broken" className="fs-16" /> Edit
-                      </button>
+                    {role !== ROLES.WAREHOUSE && (
+                      ['draft', 'DRAFT', 'confirmed', 'CONFIRMED'].includes(saleData?.status) ? (
+                        <Link to={`/sales/sales-edit/${saleData?._id}`} className="btn btn-soft-primary btn-sm d-flex align-items-center gap-1">
+                          <IconifyIcon icon="solar:pen-2-broken" className="fs-16" /> Edit Order
+                        </Link>
+                      ) : (
+                        <button className="btn btn-light btn-sm d-flex align-items-center gap-1" disabled style={{ cursor: 'not-allowed', opacity: 0.6 }}>
+                          <IconifyIcon icon="solar:pen-2-broken" className="fs-16" /> Edit
+                        </button>
+                      )
                     )}
 
-                    {(role === ROLES.ADMIN || role === ROLES.MANAGER) && (
-                      <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic" className="btn-sm d-flex align-items-center gap-1 arrow-none">
-                          Actions <IconifyIcon icon="solar:alt-arrow-down-bold" />
-                        </Dropdown.Toggle>
+                    {(role === ROLES.ADMIN || role === ROLES.MANAGER || role === ROLES.SALES || role === ROLES.WAREHOUSE) && (() => {
+                      const SALES_ACTIONS = ['CONFIRMED', 'CANCELLED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+                      const MANAGER_ACTIONS = ['CONFIRMED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+                      const WAREHOUSE_ACTIONS = ['OUT_FOR_DELIVERY', 'DELIVERED'];
+                      const dispatchedStatuses = ['OUT_FOR_DELIVERY', 'DELIVERED', 'RETURNED', 'CANCELLED'];
+                      const currentStatus = saleData?.status?.toUpperCase();
+                      const availableActions = statusOptions
+                        .filter((option) => !saleData?.statusHistory?.some((h) => h.status?.toUpperCase() === option.value))
+                        .filter((option) => role === ROLES.SALES ? SALES_ACTIONS.includes(option.value) : true)
+                        .filter((option) => role === ROLES.MANAGER ? MANAGER_ACTIONS.includes(option.value) : true)
+                        .filter((option) => role === ROLES.WAREHOUSE ? WAREHOUSE_ACTIONS.includes(option.value) : true)
+                        .filter((option) => option.value === 'CANCELLED' ? !dispatchedStatuses.includes(currentStatus) : true);
+                      return (
+                        <Dropdown>
+                          <Dropdown.Toggle variant="primary" id="dropdown-basic" className="btn-sm d-flex align-items-center gap-1 arrow-none">
+                            Actions <IconifyIcon icon="solar:alt-arrow-down-bold" />
+                          </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
-                          {statusOptions.filter((option) => !saleData?.statusHistory?.some((h) => h.status?.toUpperCase() === option.value)).map((option) => (
-                            <Dropdown.Item
-                              key={option.value}
-                              onClick={() => handleActionClick(option.modal)}
-                            >
-                              {option.label}
-                            </Dropdown.Item>
-                          ))}
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    )}
+                          <Dropdown.Menu>
+                            {availableActions.map((option) => (
+                              <Dropdown.Item
+                                key={option.value}
+                                onClick={() => handleActionClick(option.modal)}
+                              >
+                                {option.label}
+                              </Dropdown.Item>
+                            ))}
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

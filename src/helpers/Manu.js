@@ -1,5 +1,18 @@
 import { MENU_ITEMS } from '@/assets/data/menu-items';
 import { ROLES } from '@/assets/data/roles';
+import { isPathAllowedForRole } from '@/routes/roleAccess';
+
+const filterMenuByAllowedPaths = (items, role) =>
+  items
+    .map((item) => {
+      if (item.isTitle) return item;
+      if (item.children) {
+        const kids = filterMenuByAllowedPaths(item.children, role);
+        return kids.length ? { ...item, children: kids } : null;
+      }
+      return item.url && isPathAllowedForRole(role, item.url) ? item : null;
+    })
+    .filter(Boolean);
 
 export const getMenuItems = (role) => {
   if (role === ROLES.SELLER) {
@@ -12,7 +25,8 @@ export const getMenuItems = (role) => {
     return MENU_ITEMS.filter((item) => ['dashboard', 'projects', 'sales', 'inventory', 'purchases', 'sellers', 'report'].includes(item.key))
   }
   if (role === ROLES.WAREHOUSE) {
-    return MENU_ITEMS.filter((item) => ['dashboard', 'inventory', 'purchases', 'sales'].includes(item.key))
+    const withoutDuplicates = MENU_ITEMS.filter((item) => item.key !== 'gcc-sale');
+    return filterMenuByAllowedPaths(withoutDuplicates, role);
   }
   return MENU_ITEMS
 }

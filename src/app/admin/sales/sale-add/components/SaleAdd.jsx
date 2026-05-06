@@ -4,11 +4,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Formik, Form, FieldArray, Field } from 'formik';
 import { Icon } from '@iconify/react';
 import { useAuth } from '@/hooks/useAuth';
+import { ROLES } from '@/assets/data/roles';
 
 // Endpoints
 import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/authenticateendpoint/sales';
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
-import { useGetProjectsBySellerQuery } from '../../../../../services/authenticateendpoint/project';
+import { useGetProjectsBySellerQuery, useGetAllProjectsQuery } from '../../../../../services/authenticateendpoint/project';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
@@ -29,13 +30,15 @@ const SaleAdd = () => {
   const { salesId } = useParams();
   const { role, id: userId } = useAuth();
   const isSeller = role === 'SELLER';
+  const isSales = role === ROLES.SALES;
   const [createSale, { isLoading: isCreating, isSuccess: createSuccess, error: createError }] = useCreateSaleMutation();
   const [updateSale, { isLoading: isUpdating, isSuccess: updateSuccess, error: updateError }] = useUpdateSaleMutation();
 
   const { data: saleData, isLoading: isLoadingSale } = useGetSaleByIdQuery(salesId, { skip: !salesId });
   const { data: usersData } = useGetAllUsersQuery();
   const [selectedSellerId, setSelectedSellerId] = useState(isSeller ? userId : (saleData?.seller || ''));
-  const { data: projectsBySellerData } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId });
+  const { data: projectsBySellerData } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId || isSales });
+  const { data: allProjectsData } = useGetAllProjectsQuery(undefined, { skip: !isSales });
   const { data: warehousesData } = useGetAllWarehousesQuery();
   const { data: productsData } = useGetAllProductsQuery();
   const { data: couriersData } = useGetAllCouriersQuery();
@@ -61,7 +64,8 @@ const SaleAdd = () => {
   ];
 
   const sellerOptions = usersData?.filter(u => u.role === 'SELLER')?.map(u => ({ value: u._id, label: u.name })) || [];
-  const projectOptions = projectsBySellerData?.map(p => ({ value: p._id, label: p.name })) || [];
+  const projectsSource = isSales ? allProjectsData : projectsBySellerData;
+  const projectOptions = projectsSource?.map(p => ({ value: p._id, label: p.name })) || [];
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.sku ? `${p.name} (${p.sku})` : p.name, sku: p.sku, salePrice: p.salePrice })) || [];
   const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
@@ -269,7 +273,7 @@ const SaleAdd = () => {
                 </CardHeader>
                 <CardBody>
                   <Row>
-                    {!isSeller && (
+                    {!isSeller && !isSales && (
                       <Col lg={4}>
                         <Field name="seller">
                           {({ field }) => (
@@ -291,7 +295,7 @@ const SaleAdd = () => {
                         </Field>
                       </Col>
                     )}
-                    {(selectedSellerId || isSeller) && (
+                    {(selectedSellerId || isSeller || isSales) && (
                       <Col lg={4}>
                         <Field name="project">
                           {({ field }) => (
@@ -302,7 +306,13 @@ const SaleAdd = () => {
                               id="project"
                               {...field}
                               options={projectOptions}
-                              onChange={(value) => setFieldValue('project', value)}
+                              onChange={(value) => {
+                                setFieldValue('project', value);
+                                if (isSales) {
+                                  const proj = (allProjectsData || []).find(p => p._id === value);
+                                  if (proj?.seller) setFieldValue('seller', proj.seller);
+                                }
+                              }}
                               placeholder="Select Project"
                             />
                           )}
