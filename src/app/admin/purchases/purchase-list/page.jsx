@@ -9,8 +9,12 @@ import StatusAlert from '@/components/StatusAlert'
 import { useState } from 'react'
 import DeleteConfirmModal from '../../../../components/DeleteConfirmModal'
 import { formatDate } from '../../../../helpers/format'
+import { useAuth } from '@/hooks/useAuth'
+import { ROLES } from '@/assets/data/roles'
 
 const PurchaseListPage = () => {
+  const { role } = useAuth()
+  const isAdmin = role === ROLES.ADMIN
 
   const { data: purchases, isLoading, isError } = useGetAllPurchasesQuery()
   const { data: warehousesData } = useGetAllWarehousesQuery()
@@ -233,12 +237,14 @@ const PurchaseListPage = () => {
                             <Link to={`/purchases/purchase-detail/${purchase._id}`} className="btn btn-light btn-sm">
                               <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
                             </Link>
-                            <Button className="btn btn-light btn-sm" onClick={() => handleDeleteClick(purchase._id)} disabled={isDeleting}>
-                              <IconifyIcon
-                                icon="solar:trash-bin-minimalistic-2-broken"
-                                className="align-middle fs-18"
-                              />
-                            </Button>
+                            {isAdmin && (
+                              <Button className="btn btn-light btn-sm" onClick={() => handleDeleteClick(purchase._id)} disabled={isDeleting}>
+                                <IconifyIcon
+                                  icon="solar:trash-bin-minimalistic-2-broken"
+                                  className="align-middle fs-18"
+                                />
+                              </Button>
+                            )}
                             {/* {!purchase.postedToStock && (
                               <Button
                                 className="btn btn-soft-primary btn-sm"

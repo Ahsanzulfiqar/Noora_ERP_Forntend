@@ -1,9 +1,7 @@
-import PageTItle from '@/components/PageTItle';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { useGetSellersQuery } from '@/services/authenticateendpoint/sellers';
-import { Badge, Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Dropdown, DropdownMenu, DropdownToggle, ProgressBar, Row, Spinner } from 'react-bootstrap';
+import { useGetAllUsersQuery } from '@/services/authenticateendpoint/users';
+import { Badge, Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Row, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import zara from '@/assets/images/seller/zara.svg';
 
 const SellersCard = ({
   _id,
@@ -74,8 +72,8 @@ const SellersCard = ({
 };
 
 const SellerList = () => {
-  const { data: sellersResponse, isLoading, error } = useGetSellersQuery();
-  const sellersData = sellersResponse?.data || [];
+  const { data: usersData, isLoading, error } = useGetAllUsersQuery();
+  const sellersData = usersData?.filter(u => u.role === 'SELLER') || [];
 
   if (isLoading) {
     return (
@@ -95,11 +93,8 @@ const SellerList = () => {
 
   return <>
     <Card className="shadow-sm" style={{ boxShadow: '0 4px 15px rgba(255, 140, 0, 0.3)' }}>
-      <CardHeader className="d-flex justify-content-between align-items-center">
+      <CardHeader>
         <CardTitle as="h4">All Sellers</CardTitle>
-        <Link to="/sellers/sellers-add" className="btn btn-sm btn-primary">
-          <IconifyIcon icon="bx:plus" className="me-1" /> Add New Seller
-        </Link>
       </CardHeader>
       <CardBody>
         <Row>
@@ -108,9 +103,7 @@ const SellerList = () => {
               <SellersCard
                 _id={item._id}
                 title={item.name}
-                category={item.companyName}
                 email={item.email}
-                phone={item.phone}
                 isActive={item.isActive}
               />
             </Col>

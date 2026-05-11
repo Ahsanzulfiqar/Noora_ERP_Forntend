@@ -1,6 +1,3 @@
-// React form with Formik
-// Reusable Components
-
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
@@ -13,8 +10,12 @@ import Button from '@mui/material/Button'
 import StatusAlert from '../../../../../components/StatusAlert'
 import ChoicesSearchFormInput from '../../../../../components/formikfield/ChoicesSearchFormInput'
 import FormikToggleSwitch from '../../../../../components/formikfield/FormikToggleSwitch'
+import { useAuth } from '../../../../../hooks/useAuth'
 
 const AddEditproject = () => {
+  const { role, id: currentUserId } = useAuth()
+  const isAdmin = role === 'ADMIN'
+
   const [createProject, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] = useCreateProjectMutation()
   const [updateProject, { isLoading: isUpdating, error: updateError, isSuccess: updateSuccess }] = useUpdateProjectMutation()
 
@@ -22,8 +23,7 @@ const AddEditproject = () => {
   const { data: warehousesData } = useGetAllWarehousesQuery();
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
 
-  // Fetch Users (Sellers)
-  const { data: usersData } = useGetAllUsersQuery();
+  const { data: usersData } = useGetAllUsersQuery(undefined, { skip: !isAdmin });
   const sellerOptions = usersData
     ?.filter(u => u.role === 'SELLER')
     ?.map(u => ({ value: u._id, label: u.name })) || [];
@@ -53,14 +53,14 @@ const AddEditproject = () => {
               name: data?.name || '',
               channel: data?.channel || '',
               warehouse: data?.warehouses?.[0] || '',
-              // sellers: data?.sellers?.[0] || '',
+              sellerId: isAdmin ? (data?.seller || '') : currentUserId,
               isActive: data?.isActive !== undefined ? data.isActive : true,
             }}
             validationSchema={Yup.object({
               name: Yup.string().required('Required'),
               channel: Yup.string().required('Required'),
               warehouse: Yup.string().required('Required'),
-              // sellers: Yup.string().required('Required'),
+              sellerId: Yup.string().required('Required'),
               isActive: Yup.boolean(),
             })}
 
@@ -68,32 +68,25 @@ const AddEditproject = () => {
             onSubmit={async (values, { resetForm }) => {
               try {
                 const payload = {
-                  ...values,
+                  name: values.name,
+                  channel: values.channel,
                   warehouseIds: values.warehouse ? [values.warehouse] : [],
-                  // sellerIds: values.sellers ? [values.sellers] : [],
+                  sellerId: values.sellerId,
+                  isActive: values.isActive,
                 }
-                delete payload.warehouse;
-                // delete payload.sellers;
 
                 if (projectId) {
                   await updateProject({ id: projectId, data: payload }).unwrap()
-                  console.log('Project updated')
                 } else {
                   await createProject(payload).unwrap()
                   resetForm()
-                  console.log('Project created')
                 }
               } catch (err) {
                 console.error('Operation failed:', err)
               }
             }}
-
           >
-
-            {({ values, errors, touched, setFieldValue }) => {
-              console.log("values", values);
-              console.log("errors", errors);
-              return (
+            {({ values, setFieldValue }) => (
                 <Form>
                   <Row>
                     <Col lg={6}>
@@ -119,29 +112,26 @@ const AddEditproject = () => {
                       </Field>
                     </Col>
 
-                    {/* <Col lg={6}>
-                      <Field name="sellers">
+                  {isAdmin && (
+                    <Col lg={6}>
+                      <Field name="sellerId">
                         {({ field }) => (
                           <ChoicesSearchFormInput
                             {...field}
                             label="Seller"
                             options={sellerOptions}
                             placeholder="Select Seller"
-                            onChange={(val) => setFieldValue('sellers', val)}
-                            value={values.sellers}
+                            onChange={(val) => setFieldValue('sellerId', val)}
+                            value={values.sellerId}
                           />
                         )}
                       </Field>
-                    </Col> */}
-
-
-                    <Col lg={6}>
-                      <FormikToggleSwitch
-                        name="isActive"
-                        label="Active Status"
-                      />
                     </Col>
+                  )}
 
+                  <Col lg={6}>
+                    <FormikToggleSwitch name="isActive" label="Active Status" />
+                  </Col>
                   </Row>
 
                   <div className="p-3 bg-light mt-4 rounded">
@@ -167,7 +157,7 @@ const AddEditproject = () => {
                   </div>
                 </Form>
               )
-            }}
+            }
           </Formik>
         </CardBody>
       </Card>

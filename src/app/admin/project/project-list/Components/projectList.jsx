@@ -1,17 +1,32 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardHeader, CardTitle } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDeleteProjectMutation, useGetAllProjectsQuery } from '../../../../../services/authenticateendpoint/project';
+import { useDeleteProjectMutation, useGetAllProjectsQuery, useGetProjectsBySellerQuery } from '../../../../../services/authenticateendpoint/project';
+import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
 import { IconButton } from '@mui/material';
 import LoaderSpinner from '../../../../../components/loaders/LoaderSpinner';
 import { useState } from 'react';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
+import { useAuth } from '../../../../../hooks/useAuth';
+import { ROLES } from '@/assets/data/roles';
 
 const ProjectList = () => {
+  const { role, id: currentUserId, name: currentUserName } = useAuth();
+  const isSeller = role === 'SELLER';
+  const isAdmin = role === ROLES.ADMIN;
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { data, isLoading } = useGetAllProjectsQuery();
+
+  const { data: allProjects, isLoading: loadingAll } = useGetAllProjectsQuery(undefined, { skip: isSeller });
+  const { data: sellerProjects, isLoading: loadingSeller } = useGetProjectsBySellerQuery(currentUserId, { skip: !isSeller || !currentUserId });
+
+  const data = isSeller ? sellerProjects : allProjects;
+  const isLoading = isSeller ? loadingSeller : loadingAll;
+  const { data: usersData } = useGetAllUsersQuery();
+  const sellerMap = Object.fromEntries((usersData || []).filter((u) => u.role === 'SELLER').map((s) => [s._id, s.name]));
+
   const [deleteProject] = useDeleteProjectMutation();
   const navigate = useNavigate();
 
@@ -82,7 +97,7 @@ const ProjectList = () => {
                   <td>{item?.name}</td>
                   <td>{item?.channel}</td>
                   <td>{item?.warehouses?.length || 0}</td>
-                  <td>{item?.sellers?.length || 0}</td>
+                  <td>{sellerMap[item?.seller] || (item?.seller === currentUserId ? currentUserName : item?.seller) || '-'}</td>
                   <td>
                     {item?.isActive ? (
                       <span className="badge bg-success">Active</span>
@@ -107,17 +122,19 @@ const ProjectList = () => {
                     >
                       <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
                     </IconButton>
-                    <IconButton
-                      size="small"
-                      className="btn btn-soft-danger btn-sm"
-                      aria-label="delete"
-                      onClick={() => handleDeleteClick(item._id)}
-                    >
-                      <IconifyIcon
-                        icon="solar:trash-bin-minimalistic-2-broken"
-                        className="align-middle fs-18"
-                      />
-                    </IconButton>
+                    {isAdmin && (
+                      <IconButton
+                        size="small"
+                        className="btn btn-soft-danger btn-sm"
+                        aria-label="delete"
+                        onClick={() => handleDeleteClick(item._id)}
+                      >
+                        <IconifyIcon
+                          icon="solar:trash-bin-minimalistic-2-broken"
+                          className="align-middle fs-18"
+                        />
+                      </IconButton>
+                    )}
                   </td>
                 </tr>
               ))}

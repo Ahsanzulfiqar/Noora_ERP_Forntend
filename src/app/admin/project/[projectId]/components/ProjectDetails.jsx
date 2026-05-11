@@ -50,7 +50,7 @@ const ProjectDetails = () => {
                 </div>
               </div>
               <div>
-                <Link to={`/admin/projects/edit/${projectId}`} className="btn btn-soft-primary d-flex align-items-center gap-1">
+                <Link to={`/projects/project-edit/${projectId}`} className="btn btn-soft-primary d-flex align-items-center gap-1">
                   <IconifyIcon icon="solar:pen-2-broken" className="fs-18" /> Edit Project
                 </Link>
               </div>

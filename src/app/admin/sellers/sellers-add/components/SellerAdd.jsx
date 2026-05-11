@@ -6,7 +6,6 @@ import * as Yup from 'yup';
 
 // Endpoints
 import {
-  useCreateSellerMutation,
   useUpdateSellerMutation,
   useGetSellerByIdQuery
 } from '@/services/authenticateendpoint/sellers';
@@ -20,7 +19,6 @@ import StatusAlert from '@/components/StatusAlert';
 const SellerAdd = () => {
   const navigate = useNavigate();
   const { sellerId } = useParams();
-  const [createSeller, { isLoading: isCreating, isSuccess: createSuccess, error: createError }] = useCreateSellerMutation();
   const [updateSeller, { isLoading: isUpdating, isSuccess: updateSuccess, error: updateError }] = useUpdateSellerMutation();
 
   const { data: sellerData, isLoading: isLoadingSeller } = useGetSellerByIdQuery(sellerId, { skip: !sellerId });
@@ -61,16 +59,11 @@ const SellerAdd = () => {
   ];
 
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = async (values) => {
     try {
-      if (sellerId) {
-        await updateSeller({ id: sellerId, data: values }).unwrap();
-      } else {
-        await createSeller(values).unwrap();
-        resetForm();
-      }
+      await updateSeller({ id: sellerId, data: values }).unwrap();
     } catch (err) {
-      console.error('Failed to save seller:', err);
+      console.error('Failed to update seller:', err);
     }
   };
 
@@ -81,9 +74,9 @@ const SellerAdd = () => {
   return (
     <Col xl={12} lg={12}>
       <StatusAlert
-        isSuccess={createSuccess || updateSuccess}
-        error={createError || updateError}
-        message={sellerId ? 'Seller updated successfully' : 'Seller created successfully'}
+        isSuccess={updateSuccess}
+        error={updateError}
+        message="Seller updated successfully"
         path="/sellers/sellers-list"
         redirect={true}
       />
@@ -101,9 +94,7 @@ const SellerAdd = () => {
             <Form>
               <Card>
                 <CardHeader>
-                  <CardTitle as={'h4'}>
-                    {sellerId ? 'Edit Seller' : 'Seller Personal Information'}
-                  </CardTitle>
+                  <CardTitle as={'h4'}>Edit Seller</CardTitle>
                 </CardHeader>
                 <CardBody>
                   <Row>
@@ -213,11 +204,9 @@ const SellerAdd = () => {
                       type="submit"
                       variant="primary"
                       className="w-100"
-                      disabled={isCreating || isUpdating}
+                      disabled={isUpdating}
                     >
-                      {isCreating || isUpdating
-                        ? (sellerId ? 'Updating...' : 'Creating...')
-                        : (sellerId ? 'Update Seller' : 'Create Seller')}
+                      {isUpdating ? 'Updating...' : 'Update Seller'}
                     </Button>
                   </Col>
                 </Row>
