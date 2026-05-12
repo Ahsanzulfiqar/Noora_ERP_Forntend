@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Form } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import TableNoData from '@/components/TableNoData';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
@@ -16,6 +16,8 @@ const WarehouseList = () => {
   const { role } = useAuth();
   const isSales = role === ROLES.SALES;
   const isAdmin = role === ROLES.ADMIN;
+  const location = useLocation();
+  const isTransferStockView = location.pathname.startsWith('/inventory/transfer-stock');
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
     warehouseId: '',
@@ -113,14 +115,26 @@ const WarehouseList = () => {
               </Form.Select>
             </Form.Group>
 
-            {isSales ? (
-              <button type="button" className="btn btn-sm btn-primary disabled" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
-                Add Inventory
-              </button>
+            {isTransferStockView ? (
+              isSales ? (
+                <button type="button" className="btn btn-sm btn-primary disabled" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
+                  Transfer Stock
+                </button>
+              ) : (
+                <Link to="/inventory/transfer-stock/add" className="btn btn-sm btn-primary">
+                  Transfer Stock
+                </Link>
+              )
             ) : (
-              <Link to="/inventory/warehouse-add" className="btn btn-sm btn-primary">
-                Add Inventory
-              </Link>
+              isSales ? (
+                <button type="button" className="btn btn-sm btn-primary disabled" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
+                  Add Inventory
+                </button>
+              ) : (
+                <Link to="/inventory/warehouse-add" className="btn btn-sm btn-primary">
+                  Add Inventory
+                </Link>
+              )
             )}
             <Dropdown>
               <DropdownToggle as={'a'} className="dropdown-toggle btn btn-sm btn-outline-light rounded content-none icons-center" data-bs-toggle="dropdown" aria-expanded="false">

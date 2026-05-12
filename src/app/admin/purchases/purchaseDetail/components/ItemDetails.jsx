@@ -8,6 +8,7 @@ import { usePostToStockMutation } from '@/services/authenticateendpoint/purchase
 import { useConfirmPurchaseMutation } from '@/services/authenticateendpoint/purchases';
 import { useState } from 'react';
 import DeleteConfirmModal from '../../../../../components/DeleteConfirmModal';
+import PostToStockModal from './PostToStockModal';
 import StatusAlert from '@/components/StatusAlert';
 
 const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
@@ -21,9 +22,13 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
     setShowPostConfirm(true);
   };
 
-  const handleConfirmPostToStock = async () => {
+  const handleConfirmPostToStock = async ({ items, taxAmount }) => {
     try {
-      await postToStock(purchaseData?._id).unwrap();
+      await postToStock({
+        purchaseId: purchaseData?._id,
+        items,
+        taxAmount,
+      }).unwrap();
       setShowPostConfirm(false);
     } catch (err) {
       console.error('Failed to post to stock:', err);
@@ -66,13 +71,9 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
     <Col lg={12}>
       <StatusAlert isSuccess={isPostSuccess} message="Purchase posted to stock successfully" error={postError} />
       <StatusAlert isSuccess={isConfirmSuccess} message="Purchase confirmed successfully" error={confirmError} />
-      <DeleteConfirmModal
+      <PostToStockModal
         show={showPostConfirm}
-        title="Post to Stock"
-        message="Are you sure you want to post this purchase to stock?"
-        confirmText="Yes, Post"
-        cancelText="Cancel"
-        confirmVariant="primary"
+        items={purchaseData?.items || []}
         loading={isPosting}
         onConfirm={handleConfirmPostToStock}
         onCancel={handleCancelPostToStock}
@@ -207,7 +208,7 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                     purchaseData?.items.map((item, index) => (
                       <tr key={index}>
                         <td>{item.productName}</td>
-                        <td>{item.variantName}</td>
+                        <td>{item.variantName || 'N/A'}</td>
                         <td>{item.batchNo}</td>
                         <td>{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'N/A'}</td>
                         <td>{item.quantity}</td>
