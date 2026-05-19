@@ -23,6 +23,14 @@ export const salesAPI = api.injectEndpoints({
                 courierName
                 trackingNo
               }
+              payment {
+                status
+                mode
+                bankAccount
+                paidAmount
+                balanceAmount
+                paidAt
+              }
               createdAt
             }
             total
@@ -57,6 +65,44 @@ export const salesAPI = api.injectEndpoints({
     }),
 
 
+    // GET ADMIN SALES DASHBOARD (analytics: KPIs + charts)
+    getAdminSalesDashboard: build.query({
+      query: (filter = {}) => ({
+        method: 'POST',
+        auth: true,
+        body: {
+          query: `
+            query AdminSalesDashboard($filter: AdminSalesDashboardFilterInput) {
+              AdminSalesDashboard(filter: $filter) {
+                totalRevenue
+                netProfit
+                totalOrders
+                pendingOrders
+                deliveredOrders
+                cancelledOrders
+                returnedOrders
+                paidAmount
+                balanceAmount
+                codPending
+                averageOrderValue
+                deliveryRate
+                returnRate
+                cancellationRate
+                topSellers { seller sellerName revenue orders profit }
+                topProjects { project projectName revenue orders profit }
+                topProducts { product productName sku quantity revenue profit }
+                salesTrend { date revenue orders }
+                statusBreakdown { status orders revenue }
+              }
+            }
+          `,
+          variables: { filter },
+        },
+      }),
+      transformResponse: (response) => response?.data?.AdminSalesDashboard || null,
+      providesTags: ['Sales'],
+    }),
+
     // GET SALE BY ID
     getSaleById: build.query({
       query: (id) => ({
@@ -71,6 +117,14 @@ export const salesAPI = api.injectEndpoints({
                 status
                 seller
                 warehouse
+                project
+                customerName
+                customerPhone
+                country
+                city
+                address
+                subTotal
+                taxAmount
                 totalAmount
                 courier {
                   courierName
@@ -78,15 +132,25 @@ export const salesAPI = api.injectEndpoints({
                   trackingUrl
                 }
                 shippedAt
+                createdAt
                 items {
                   product
                   productName
                   variant
+                  variantName
+                  sku
                   quantity
                   salePrice
                   lineTotal
                 }
-                totalAmount
+                payment {
+                  status
+                  mode
+                  bankAccount
+                  paidAmount
+                  balanceAmount
+                  paidAt
+                }
                 statusHistory {
                   status
                   at
@@ -298,6 +362,42 @@ export const salesAPI = api.injectEndpoints({
       ],
     }),
 
+    // MARK SALE PAID
+    markSalePaid: build.mutation({
+      query: ({ saleId, payment }) => ({
+        method: 'POST',
+        auth: true,
+        body: {
+          query: `
+            mutation MarkSalePaid($saleId: ID!, $payment: PaymentInput!) {
+              MarkSalePaid(saleId: $saleId, payment: $payment) {
+                _id
+                invoiceNo
+                status
+                totalAmount
+                payment {
+                  status
+                  mode
+                  bankAccount
+                  paidAmount
+                  balanceAmount
+                  paidAt
+                }
+              }
+            }
+          `,
+          variables: {
+            saleId,
+            payment,
+          },
+        },
+      }),
+      invalidatesTags: (result, error, { saleId }) => [
+        'Sales',
+        { type: 'Sales', id: saleId },
+      ],
+    }),
+
     // CANCEL SALE
     cancelSale: build.mutation({
       query: (saleId) => ({
@@ -324,6 +424,7 @@ export const salesAPI = api.injectEndpoints({
 
 export const {
   useGetSalesQuery,
+  useGetAdminSalesDashboardQuery,
   useGetSaleByIdQuery,
   useCreateSaleMutation,
   useUpdateSaleMutation,
@@ -332,4 +433,5 @@ export const {
   useMarkDeliveredMutation,
   useReturnSaleMutation,
   useCancelSaleMutation,
+  useMarkSalePaidMutation,
 } = salesAPI
