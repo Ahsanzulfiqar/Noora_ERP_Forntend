@@ -1,239 +1,107 @@
-import PageTItle from '@/components/PageTItle';
-import { useState } from 'react';
-import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { useGetSalesQuery } from '@/services/authenticateendpoint/sales';
-import { useGetSellersQuery } from '@/services/authenticateendpoint/sellers';
-import { Badge, Card, CardBody, Col, Row, Spinner, Table, Button, Form } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'
-import { useAuth } from '@/hooks/useAuth';
+import { useMemo, useState } from 'react'
+import { Col, Row, Spinner } from 'react-bootstrap'
+import PageTItle from '@/components/PageTItle'
+import FilterBar from './FilterBar'
+import KpiGrid from './KpiGrid'
+import SalesTrendChart from './SalesTrendChart'
+import SalesByStatusDonut from './SalesByStatusDonut'
+import TopSellersChart from './TopSellersChart'
+import TopProjectsChart from './TopProjectsChart'
+import SalesTableExpanded from './SalesTableExpanded'
+import { useGetAdminSalesDashboardQuery } from '@/services/authenticateendpoint/sales'
+import { useAuth } from '@/hooks/useAuth'
+import { toIsoDate } from './formatters'
 
-import CustomTablePaginations from '@/components/table/CustomTablePaginations';
+const startOfMonth = () => {
+  const d = new Date()
+  return new Date(d.getFullYear(), d.getMonth(), 1)
+}
+
+const initialFilter = {
+  from: startOfMonth(),
+  to: new Date(),
+  projectId: '',
+  sellerId: '',
+  warehouseId: '',
+  status: '',
+  search: '',
+}
 
 const SalesList = () => {
-  const { role, id: userId } = useAuth();
-  const isSeller = role === 'SELLER';
-  const isAdminOrManager = role === 'ADMIN' || role === 'MANAGER';
-  const canEditSale = (status) => {
-    const normalized = status?.toLowerCase();
-    if (normalized === 'draft') return true;
-    if (normalized === 'confirmed') return isAdminOrManager;
-    return false;
-  };
+  const { role } = useAuth()
+  const isAdmin = role?.toLowerCase() === 'admin'
 
-  const [filter, setFilter] = useState({
-    sellerId: isSeller ? userId : '',
-    status: '',
-    search: ''
-  });
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [appliedFilter, setAppliedFilter] = useState(initialFilter)
 
+  const hasNonDateFilters = Boolean(
+    appliedFilter.projectId ||
+      appliedFilter.sellerId ||
+      appliedFilter.warehouseId ||
+      appliedFilter.status
+  )
 
+  const dashboardFilter = useMemo(() => {
+    const f = {}
+    const from = toIsoDate(appliedFilter.from)
+    const to = toIsoDate(appliedFilter.to)
+    if (from) f.dateFrom = from
+    if (to) f.dateTo = to
+    if (appliedFilter.projectId) f.projectId = appliedFilter.projectId
+    if (appliedFilter.sellerId) f.sellerId = appliedFilter.sellerId
+    if (appliedFilter.warehouseId) f.warehouseId = appliedFilter.warehouseId
+    return f
+  }, [appliedFilter])
 
-  const { data: salesResponse, isLoading, error } = useGetSalesQuery({ page, limit, filter }, { refetchOnMountOrArgChange: true });
-  const { data: sellersResponse } = useGetSellersQuery({ limit: 1000 });
-  const sellers = sellersResponse?.data || [];
+  const { data: dashboard, isLoading: dashboardLoading } = useGetAdminSalesDashboardQuery(
+    dashboardFilter,
+    { refetchOnMountOrArgChange: true, skip: !isAdmin }
+  )
 
-  console.log('salesResponse', salesResponse);
-  const salesData = salesResponse?.data || [];
-
-  // Assuming the API returns totalDocs or similar for total items to calculate total pages.
-  // If strict totalPages is returned, use that. 
-  // Based on typical API response in this project, it might be in salesResponse.total or similar.
-  // For now, I will use a safe fallback or calculation if total is available.
-  const totalPages = salesResponse?.totalPages || Math.ceil((salesResponse?.total || 0) / limit) || 1;
-
-  const handleFilterChange = (key, value) => {
-    if (isSeller && key === 'sellerId') return;
-    setFilter(prev => ({ ...prev, [key]: value }));
-    setPage(1);
-  };
-
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'draft': return 'secondary';
-      case 'reserved': return 'info';
-      case 'shipped': return 'success';
-      case 'cancelled': return 'danger';
-      default: return 'primary';
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
-        <Spinner animation="border" variant="primary" />
-      </div>
-    );
-  }
-
-  // if (error) {
-  //   return (
-  //     <div className="alert alert-danger" role="alert">
-  //       Failed to load sales. Please try again later.
-  //     </div>
-  //   );
-  // }
+  const chartCol = hasNonDateFilters ? { md: 6, lg: 3 } : { md: 6, lg: 4 }
 
   return (
     <>
-      <PageTItle title="Sales List" />
-      <Row>
-        <Col xs={12}>
-          <Card className='mb-0'>
-            <CardHeader>
-              <div className="d-flex justify-content-between align-items-center gap-1 pb-1">
-                <CardTitle as={'h4'} className="flex-grow-1">
-                  All Sales Lists
-                </CardTitle>
-                <Link to="/sales/sales-add" className="btn btn-sm btn-primary">
-                  Add Sales
-                </Link>
-                <Dropdown>
-                  <DropdownToggle as={'a'} href="#" className="btn btn-sm btn-outline-light content-none" data-bs-toggle="dropdown" aria-expanded="false">
-                    This Month
-                    <IconifyIcon width={16} height={16} className="ms-1" icon="bx:chevron-down" />
-                  </DropdownToggle>
-                  <DropdownMenu className="dropdown-menu-end">
-                    <DropdownItem>Download</DropdownItem>
-                    <DropdownItem>Export</DropdownItem>
-                    <DropdownItem>Import</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </div>
-              <Row className="g-2">
-                <Col md={4}>
-                  <Form.Control
-                    type="text"
-                    placeholder="Search by Invoice No, Tracking..."
-                    value={filter.search}
-                    onChange={(e) => handleFilterChange('search', e.target.value)}
+      <PageTItle title="All Sales" />
+
+      {isAdmin && (
+        <>
+          <FilterBar onApply={setAppliedFilter} />
+
+          {dashboardLoading && !dashboard ? (
+            <div className="text-center py-5">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : (
+            <>
+              <KpiGrid data={dashboard} />
+
+              <Row className="mb-3">
+                <Col {...chartCol} className="mb-3">
+                  <SalesTrendChart data={dashboard?.salesTrend} />
+                </Col>
+                <Col {...chartCol} className="mb-3">
+                  <SalesByStatusDonut data={dashboard?.statusBreakdown} />
+                </Col>
+                <Col {...chartCol} className="mb-3">
+                  <TopSellersChart
+                    data={dashboard?.topSellers}
+                    orientation={hasNonDateFilters ? 'horizontal' : 'vertical'}
                   />
                 </Col>
-                {!isSeller && (
-                  <Col md={4}>
-                    <Form.Select
-                      value={filter.sellerId}
-                      onChange={(e) => handleFilterChange('sellerId', e.target.value)}
-                    >
-                      <option value="">All Sellers</option>
-                      {sellers.map((seller) => (
-                        <option key={seller._id} value={seller._id}>
-                          {seller.name}
-                        </option>
-                      ))}
-                    </Form.Select>
+                {hasNonDateFilters && (
+                  <Col {...chartCol} className="mb-3">
+                    <TopProjectsChart data={dashboard?.topProjects} />
                   </Col>
                 )}
-                <Col md={4}>
-                  <Form.Select
-                    value={filter.status}
-                    onChange={(e) => handleFilterChange('status', e.target.value)}
-                  >
-                    <option value="">All Statutes</option>
-                    <option value="draft">Draft</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="out_for_delivery">Out For Delivery</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="returned">Returned</option>
-                  </Form.Select>
-                </Col>
               </Row>
-            </CardHeader>
-            <CardBody className="p-0">
-              <div className="table-responsive" style={{ height: 'calc(100vh - 309px)', overflowY: 'auto' }}>
-                <Table hover className="table-centered table-nowrap mb-0">
-                  <thead className="bg-light text-muted" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-                    <tr>
-                      <th className="ps-3 uppercase font-weight-bold">Invoice No</th>
-                      <th className="uppercase font-weight-bold">Date</th>
-                      <th className="uppercase font-weight-bold">Courier Name</th>
-                      <th className="uppercase font-weight-bold">Tracking No</th>
-                      <th className="uppercase font-weight-bold">Status</th>
-                      <th className="uppercase font-weight-bold">Total Amount</th>
-                      <th className="text-center uppercase font-weight-bold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {salesData.length > 0 ? (
-                      salesData.map((item) => (
-                        <tr key={item._id}>
-                          <td className="ps-3 fw-bold text-primary">
-                            {item.invoiceNo || 'N/A'}
-                          </td>
-                          <td>
-                            {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
-                          </td>
-                          <td className="fw-semibold">
-                            {item.courier?.courierName || 'N/A'}
-                          </td>
-                          <td>
-                            {item.courier?.trackingNo || 'N/A'}
-                          </td>
-                          <td>
-                            <Badge bg={getStatusColor(item.status || 'draft')} className="text-capitalize px-2 py-1">
-                              {item.status || 'Draft'}
-                            </Badge>
-                          </td>
-                          <td className="fw-bold text-success">
-                            ${(item.totalAmount || 0).toFixed(2)}
-                          </td>
-                          <td className="text-center">
-                            <div className="hstack gap-2 justify-content-center">
-                              <Link to={`/sales/sales-detail/${item._id}`} className="btn btn-outline-primary btn-sm rounded-circle p-1 border-0 shadow-none">
-                                <IconifyIcon icon="solar:eye-broken" className="fs-18" />
-                              </Link>
-                              {canEditSale(item.status) ? (
-                                <Link to={`/sales/sales-edit/${item._id}`} className="btn btn-outline-info btn-sm rounded-circle p-1 border-0 shadow-none">
-                                  <IconifyIcon icon="solar:pen-2-broken" className="fs-18" />
-                                </Link>
-                              ) : (
-                                <button className="btn btn-outline-info btn-sm rounded-circle p-1 border-0 shadow-none" disabled style={{ cursor: 'not-allowed', opacity: 0.6 }}>
-                                  <IconifyIcon icon="solar:pen-2-broken" className="fs-18" />
-                                </button>
-                              )}
+            </>
+          )}
+        </>
+      )}
 
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="7" className="text-center p-5">
-                          <div className="text-center">
-                            <IconifyIcon icon="solar:bill-list-broken" className="fs-48 text-muted mb-3" />
-                            <h4>No Sales Found</h4>
-                            <p className="text-muted">Start by adding your first sale.</p>
-                            <Link to="/sales/sales-add" className="btn btn-primary">
-                              Add New Sale
-                            </Link>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table>
-              </div>
-              <CustomTablePaginations
-                limit={limit}
-                setLimit={setLimit}
-                page={page}
-                setPage={setPage}
-                totalPages={totalPages}
-              />
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-
-
-      {/* Modals */}
-
+      <SalesTableExpanded filter={appliedFilter} />
     </>
-  );
-};
+  )
+}
 
-export default SalesList;
+export default SalesList

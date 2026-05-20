@@ -23,11 +23,9 @@ export const purchasesAPI = api.injectEndpoints({
                 totalAmount
                 postedToStock
                 items {
+                  product
+                  variant
                   quantity
-                  purchasePrice
-                  lineTotal
-                  batchNo
-                  expiryDate
                 }
               }
             }
@@ -54,23 +52,20 @@ export const purchasesAPI = api.injectEndpoints({
                 warehouse
                 purchaseDate
                 status
+                postedToStock
                 subTotal
                 taxAmount
                 totalAmount
-                postedToStock
                 notes
                 items {
                   product
                   productName
                   variant
                   variantName
-                  sku
                   quantity
-                  purchasePrice
-                  lineTotal
-                  batchNo
-                  expiryDate
                 }
+                createdAt
+                updatedAt
               }
             }
           `,
@@ -156,12 +151,7 @@ export const purchasesAPI = api.injectEndpoints({
                   productName
                   variant
                   variantName
-                  sku
                   quantity
-                  purchasePrice
-                  lineTotal
-                  batchNo
-                  expiryDate
                 }
               }
             }
@@ -199,26 +189,45 @@ export const purchasesAPI = api.injectEndpoints({
 
     // POST TO STOCK
     postToStock: build.mutation({
-      query: (purchaseId) => ({
+      query: ({ purchaseId, items, taxAmount }) => ({
         method: 'POST',
         auth: true,
         body: {
           query: `
-            mutation PostToStock($purchaseId: ID!) {
-              PostToStock(purchaseId: $purchaseId) {
+            mutation PostToStock($purchaseId: ID!, $items: [PostToStockItemInput!]!, $taxAmount: Float) {
+              PostToStock(purchaseId: $purchaseId, items: $items, taxAmount: $taxAmount) {
                 _id
-                supplierName
-                invoiceNo
-                warehouse
-                postedToStock
                 status
+                postedToStock
+                subTotal
+                taxAmount
+                totalAmount
+                warehouse
+                warehouseName
+                payment {
+                  status
+                  paidAmount
+                  balanceAmount
+                }
+                items {
+                  product
+                  productName
+                  variant
+                  variantName
+                  sku
+                  quantity
+                  purchasePrice
+                  lineTotal
+                  batchNo
+                  expiryDate
+                }
               }
             }
           `,
-          variables: { purchaseId },
+          variables: { purchaseId, items, taxAmount },
         },
       }),
-      invalidatesTags: (result, error, purchaseId) => [
+      invalidatesTags: (result, error, { purchaseId }) => [
         { type: 'Purchases', id: purchaseId },
         'Purchases',
       ],
@@ -246,8 +255,6 @@ export const purchasesAPI = api.injectEndpoints({
                   variant
                   variantName
                   quantity
-                  purchasePrice
-                  lineTotal
                 }
                 createdAt
                 updatedAt

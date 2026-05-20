@@ -2,7 +2,7 @@
 // Reusable FileInput component included
 
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
-import { Formik, Form, FieldArray, useFormikContext, Field } from 'formik'
+import { Formik, Form, FieldArray, Field } from 'formik'
 import * as Yup from 'yup'
 import { Link, useParams } from 'react-router-dom'
 import FormikTextField from '@/components/formikfield/FormikTextField'
@@ -24,32 +24,6 @@ import StatusAlert from '../../../../components/StatusAlert'
 import FormikTextArea from '../../../../components/formikfield/FormikTextArea'
 import FormikToggleSwitch from '@/components/formikfield/FormikToggleSwitch'
 
-const PurchaseCalculations = () => {
-  const { values, setFieldValue } = useFormikContext();
-
-  useEffect(() => {
-    const items = values.items || [];
-
-    // Calculate SubTotal
-    const calculatedSubTotal = items.reduce((acc, item) => {
-      return acc + ((parseFloat(item.quantity) || 0) * (parseFloat(item.purchasePrice) || 0));
-    }, 0);
-
-    const taxAmount = parseFloat(values.taxAmount) || 0;
-    const totalAmount = calculatedSubTotal + taxAmount;
-
-    if (values.subTotal !== calculatedSubTotal) {
-      setFieldValue('subTotal', calculatedSubTotal);
-    }
-    if (values.totalAmount !== totalAmount) {
-      setFieldValue('totalAmount', totalAmount);
-    }
-
-  }, [values.items, values.taxAmount, setFieldValue, values.subTotal, values.totalAmount]);
-
-  return null;
-};
-
 const AddPurchase = () => {
   const [createPurchase, { isLoading: isCreating, isSuccess: isCreateSuccess, error: createError }] = useCreatePurchaseMutation();
   const [updatePurchase, { isLoading: isUpdating, isSuccess: isUpdateSuccess, error: updateError }] = useUpdatePurchaseMutation();
@@ -70,11 +44,7 @@ const AddPurchase = () => {
   const [currentItem, setCurrentItem] = useState({
     product: '',
     variant: '',
-    sku: '',
-    quantity: '',
-    purchasePrice: '',
-    batchNo: '',
-    expiryDate: ''
+    quantity: ''
   });
 
   // Fetch variants for the selected product
@@ -115,19 +85,12 @@ const AddPurchase = () => {
               warehouseId: purchaseData?.warehouse?._id || purchaseData?.warehouse || '',
               purchaseDate: purchaseData?.purchaseDate
                 ? new Date(purchaseData.purchaseDate).toISOString().split('T')[0]
-                : new Date().toISOString().split('T')[0], items: purchaseData?.items?.map(item => ({
-                  product: item.product?._id || item.product || '',
-                  quantity: item.quantity || '',
-                  purchasePrice: item.purchasePrice || '',
-                  lineTotal: item.lineTotal || 0,
-                  batchNo: item.batchNo || '',
-                  expiryDate: item.expiryDate ? new Date(item.expiryDate).toISOString().split('T')[0] : '',
-                  sku: item.sku || '',
-                  variant: item.variant || ''
-                })) || [],
-              subTotal: purchaseData?.subTotal || 0,
-              taxAmount: purchaseData?.taxAmount || 0,
-              totalAmount: purchaseData?.totalAmount || 0,
+                : new Date().toISOString().split('T')[0],
+              items: purchaseData?.items?.map(item => ({
+                product: item.product?._id || item.product || '',
+                variant: item.variant || '',
+                quantity: item.quantity || ''
+              })) || [],
               notes: purchaseData?.notes || '',
             }}
             validationSchema={Yup.object({
@@ -140,37 +103,17 @@ const AddPurchase = () => {
                 Yup.object({
                   product: Yup.string().required('Required'),
                   quantity: Yup.number().required('Required'),
-                  purchasePrice: Yup.number().required('Required'),
                 }),
               ),
-
-              subTotal: Yup.number(),
-              taxAmount: Yup.number().required('Required'),
-              totalAmount: Yup.number(),
             })}
             onSubmit={async (values, { resetForm }) => {
               try {
-                // Create a map of products for easy lookup
-                const productMap = (products || []).reduce((acc, p) => {
-                  acc[p._id] = p;
-                  return acc;
-                }, {});
-
                 // Format items
-                const formattedItems = values.items.map(item => {
-                  const productDetails = productMap[item.product] || {};
-                  return {
-                    product: item.product,
-                    productName: productDetails.name || "Unknown Product",
-                    variant: item.variant || null,
-                    variantName: item.variant || null,
-                    sku: item.sku || productDetails.sku || "N/A",
-                    quantity: parseFloat(item.quantity) || 0,
-                    purchasePrice: parseFloat(item.purchasePrice) || 0,
-                    batchNo: item.batchNo || "",
-                    expiryDate: item.expiryDate || "",
-                  };
-                });
+                const formattedItems = values.items.map(item => ({
+                  product: item.product,
+                  variant: item.variant || null,
+                  quantity: parseFloat(item.quantity) || 0,
+                }));
 
                 // Construct payload
                 const payload = {
@@ -178,7 +121,6 @@ const AddPurchase = () => {
                   invoiceNo: values.invoiceNo,
                   warehouseId: values.warehouseId,
                   purchaseDate: values.purchaseDate,
-                  taxAmount: parseFloat(values.taxAmount) || 0,
                   notes: values.notes || "",
                   items: formattedItems,
                 };
@@ -203,7 +145,6 @@ const AddPurchase = () => {
               console.log('errors', errors);
               return (
                 <Form>
-                  <PurchaseCalculations />
                   <Row className="g-2">
                     <Col lg={3}>
                       <FormikTextField name="supplierName" label="Supplier Name" placeholder="Enter Supplier Name" />
@@ -272,11 +213,9 @@ const AddPurchase = () => {
                                     value={currentItem.product}
                                     options={productOptions}
                                     onChange={(val) => {
-                                      const selectedProd = products?.find(p => p._id === val);
                                       setCurrentItem({
                                         ...currentItem,
                                         product: val,
-                                        sku: selectedProd?.sku || ''
                                       });
                                     }}
                                     placeholder="Select Product"
@@ -297,23 +236,13 @@ const AddPurchase = () => {
                                     <input
                                       type="text"
                                       className="form-control"
-                                      value="No variant available" // Display text
+                                      value="No variant available"
                                       readOnly
                                       disabled
                                     />
                                   )}
                                 </Col>
                                 <Col lg={4}>
-                                  <label className="form-label fw-bold">SKU</label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="SKU"
-                                    value={currentItem.sku}
-                                    onChange={(e) => setCurrentItem({ ...currentItem, sku: e.target.value })}
-                                  />
-                                </Col>
-                                <Col lg={3}>
                                   <label className="form-label fw-bold">Quantity</label>
                                   <input
                                     type="number"
@@ -321,35 +250,6 @@ const AddPurchase = () => {
                                     placeholder="Qty"
                                     value={currentItem.quantity}
                                     onChange={(e) => setCurrentItem({ ...currentItem, quantity: e.target.value })}
-                                  />
-                                </Col>
-                                <Col lg={3}>
-                                  <label className="form-label fw-bold">Price</label>
-                                  <input
-                                    type="number"
-                                    className="form-control"
-                                    placeholder="Price"
-                                    value={currentItem.purchasePrice}
-                                    onChange={(e) => setCurrentItem({ ...currentItem, purchasePrice: e.target.value })}
-                                  />
-                                </Col>
-                                <Col lg={3}>
-                                  <label className="form-label fw-bold">Batch No</label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Batch No"
-                                    value={currentItem.batchNo}
-                                    onChange={(e) => setCurrentItem({ ...currentItem, batchNo: e.target.value })}
-                                  />
-                                </Col>
-                                <Col lg={3}>
-                                  <label className="form-label fw-bold">Expiry Date</label>
-                                  <input
-                                    type="date"
-                                    className="form-control"
-                                    value={currentItem.expiryDate}
-                                    onChange={(e) => setCurrentItem({ ...currentItem, expiryDate: e.target.value })}
                                   />
                                 </Col>
                                 <Col lg={12} className="text-end mt-2">
@@ -362,11 +262,7 @@ const AddPurchase = () => {
                                         setCurrentItem({
                                           product: '',
                                           variant: '',
-                                          sku: '',
-                                          quantity: '',
-                                          purchasePrice: '',
-                                          batchNo: '',
-                                          expiryDate: ''
+                                          quantity: ''
                                         });
                                         setShowAddItemForm(false);
                                       }}
@@ -379,11 +275,11 @@ const AddPurchase = () => {
                                     variant="contained"
                                     size="small"
                                     onClick={() => {
-                                      if (!currentItem.product || !currentItem.quantity || !currentItem.purchasePrice) {
-                                        alert("Please fill required fields (Product, Qty, Price)");
+                                      if (!currentItem.product || !currentItem.quantity) {
+                                        alert("Please fill required fields (Product, Qty)");
                                         return;
                                       }
-                                      const newItem = { ...currentItem, lineTotal: (parseFloat(currentItem.quantity) || 0) * (parseFloat(currentItem.purchasePrice) || 0) };
+                                      const newItem = { ...currentItem };
 
                                       if (editingIndex !== null) {
                                         replace(editingIndex, newItem);
@@ -395,11 +291,7 @@ const AddPurchase = () => {
                                       setCurrentItem({
                                         product: '',
                                         variant: '',
-                                        sku: '',
-                                        quantity: '',
-                                        purchasePrice: '',
-                                        batchNo: '',
-                                        expiryDate: ''
+                                        quantity: ''
                                       });
                                       setShowAddItemForm(false);
                                     }}
@@ -417,20 +309,16 @@ const AddPurchase = () => {
                             <table className="table table-borderless align-middle mb-0">
                               <thead>
                                 <tr className="bg-light">
-                                  <th style={{ width: '20%' }} className="ps-2 py-2">Product</th>
-                                  <th style={{ width: '15%' }} className="px-1 py-2">Variant</th>
-                                  <th style={{ width: '10%' }} className="px-1 py-2">SKU</th>
-                                  <th style={{ width: '10%' }} className="px-1 py-2">Qty</th>
-                                  <th style={{ width: '15%' }} className="px-1 py-2">Price</th>
-                                  <th style={{ width: '10%' }} className="px-1 py-2">Batch No</th>
-                                  <th style={{ width: '14%' }} className="px-1 py-2">Expiry date</th>
-                                  <th style={{ width: '6%' }} className="text-center px-2 py-2">Action</th>
+                                  <th style={{ width: '40%' }} className="ps-2 py-2">Product</th>
+                                  <th style={{ width: '30%' }} className="px-1 py-2">Variant</th>
+                                  <th style={{ width: '20%' }} className="px-1 py-2">Qty</th>
+                                  <th style={{ width: '10%' }} className="text-center px-2 py-2">Action</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {values.items.length === 0 ? (
                                   <tr>
-                                    <td colSpan="8" className="text-center py-4 text-muted">No items added yet.</td>
+                                    <td colSpan="4" className="text-center py-4 text-muted">No items added yet.</td>
                                   </tr>
                                 ) : (
                                   values.items.map((item, index) => {
@@ -439,11 +327,7 @@ const AddPurchase = () => {
                                       <tr key={index} style={{ borderBottom: '1px solid #f0f0f0' }}>
                                         <td className="ps-2 py-2">{productName}</td>
                                         <td className="px-1 py-2">{item.variant ? (variantOptions.find(v => v.value === item.variant)?.label || item.variant) : 'No variant'}</td>
-                                        <td className="px-1 py-2">{item.sku || '-'}</td>
                                         <td className="px-1 py-2">{item.quantity}</td>
-                                        <td className="px-1 py-2">{item.purchasePrice}</td>
-                                        <td className="px-1 py-2">{item.batchNo || '-'}</td>
-                                        <td className="px-1 py-2">{item.expiryDate || '-'}</td>
                                         <td className="text-center px-1 py-2 d-flex align-items-center">
                                           <IconButton type="button" onClick={() => {
                                             setCurrentItem(item);
@@ -471,25 +355,9 @@ const AddPurchase = () => {
                   </Box>
 
                   <Row className="mt-3">
-                    <Col lg={4}>
-                      <FormikTextField type="number" name="taxAmount" label="Tax Amount" />
-                    </Col>
-
-                    <Col lg={4}>
-                      <FormikTextField type="number" name="subTotal" label="Sub Total" disabled />
-                    </Col>
-
-                    <Col lg={4}>
-                      <FormikTextField type="number" name="totalAmount" label="Total Amount" disabled />
-                    </Col>
-
-
                     <Col lg={12}>
                       <FormikTextArea name="notes" label="Notes" placeholder="Write Notes ..." />
                     </Col>
-
-
-
                   </Row>
 
                   <div className="p-3 bg-light mt-4 rounded">
