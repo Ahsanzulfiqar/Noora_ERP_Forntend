@@ -1,7 +1,10 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { useEffect } from 'react';
 import { useGetAllUsersQuery } from '@/services/authenticateendpoint/users';
 import { Badge, Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Row, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const SellersCard = ({
   _id,
@@ -72,21 +75,17 @@ const SellersCard = ({
 };
 
 const SellerList = () => {
-  const { data: usersData, isLoading, error } = useGetAllUsersQuery();
+  const { data: usersData, isLoading, error, refetch } = useGetAllUsersQuery();
   const sellersData = usersData?.filter(u => u.role === 'SELLER') || [];
+
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
 
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
         <Spinner animation="border" variant="primary" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        Failed to load sellers. Please try again later.
       </div>
     );
   }

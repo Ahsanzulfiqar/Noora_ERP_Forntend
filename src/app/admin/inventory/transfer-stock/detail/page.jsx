@@ -1,12 +1,14 @@
 import PageTItle from '@/components/PageTItle'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Link, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import GlobalSpinner from '@/components/loaders/GlobalSpinner'
 import DeleteConfirmModal from '@/components/DeleteConfirmModal'
 import StatusAlert from '@/components/StatusAlert'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import {
   useGetStockTransferByIdQuery,
   useConfirmStockTransferMutation,
@@ -32,13 +34,13 @@ const statusBadgeClass = (status) => {
 const StockTransferDetailPage = () => {
   const { id } = useParams()
 
-  const { data: transfer, isLoading } = useGetStockTransferByIdQuery(id, {
+  const { data: transfer, isLoading, error: transferError, refetch: refetchTransfer } = useGetStockTransferByIdQuery(id, {
     skip: !id,
     refetchOnMountOrArgChange: true,
   })
 
-  const { data: warehouses } = useGetAllWarehousesQuery()
-  const { data: products } = useGetAllProductsQuery()
+  const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery()
+  const { data: products, error: productsError } = useGetAllProductsQuery()
 
   const warehouseMap = (warehouses || []).reduce((acc, w) => {
     acc[w._id] = w.name
@@ -56,6 +58,22 @@ const StockTransferDetailPage = () => {
 
   const [showConfirm, setShowConfirm] = useState(false)
   const [showCancel, setShowCancel] = useState(false)
+
+  useEffect(() => {
+    if (transferError) toast.error(extractApiErrorMessage(transferError));
+  }, [transferError]);
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (productsError) toast.error(extractApiErrorMessage(productsError));
+  }, [productsError]);
+  useEffect(() => {
+    if (confirmError) toast.error(extractApiErrorMessage(confirmError));
+  }, [confirmError]);
+  useEffect(() => {
+    if (cancelError) toast.error(extractApiErrorMessage(cancelError));
+  }, [cancelError]);
 
   const handleConfirm = async () => {
     try {

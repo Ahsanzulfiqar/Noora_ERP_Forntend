@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardHeader, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import TableNoData from '@/components/TableNoData';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useFilterSubCategoriesQuery, useDeleteSubCategoryMutation } from '@/services/authenticateendpoint/category';
 import StatusAlert from '@/components/StatusAlert';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import ViewDetailModal from '../../components/ViewDetailModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const SubCategoryList = () => {
     const navigate = useNavigate();
@@ -20,7 +22,7 @@ const SubCategoryList = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
 
-    const { data, isLoading } = useFilterSubCategoriesQuery({
+    const { data, isLoading, error: subCategoriesError, refetch } = useFilterSubCategoriesQuery({
         page,
         limit,
         filter: {
@@ -31,6 +33,13 @@ const SubCategoryList = () => {
     });
 
     const [deleteSubCategory, { isSuccess: isDeleteSuccess, error: deleteError, isLoading: isDeleting }] = useDeleteSubCategoryMutation();
+
+    useEffect(() => {
+        if (subCategoriesError) toast.error(extractApiErrorMessage(subCategoriesError));
+    }, [subCategoriesError]);
+    useEffect(() => {
+        if (deleteError) toast.error(extractApiErrorMessage(deleteError));
+    }, [deleteError]);
 
     const subcategories = data?.data || [];
     const totalPages = data?.totalPages || 1;

@@ -1,18 +1,20 @@
 import { Card, CardBody, CardHeader, CardTitle, Table, Form, Row, Col } from 'react-bootstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetWarehouseProductBatchesQuery } from '../../../../../services/authenticateendpoint/stock';
 import GlobalSpinner from '@/components/loaders/GlobalSpinner';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const WareHouseBatchList = () => {
     const [selectedWarehouse, setSelectedWarehouse] = useState('');
     const [selectedProduct, setSelectedProduct] = useState('');
 
-    const { data: warehouses, isLoading: isLoadingWarehouses } = useGetAllWarehousesQuery();
-    const { data: products, isLoading: isLoadingProducts } = useGetAllProductsQuery();
+    const { data: warehouses, isLoading: isLoadingWarehouses, error: warehousesError, refetch: refetchWarehouses } = useGetAllWarehousesQuery();
+    const { data: products, isLoading: isLoadingProducts, error: productsError, refetch: refetchProducts } = useGetAllProductsQuery();
 
-    const { data: batchData, isLoading: isLoadingBatches } = useGetWarehouseProductBatchesQuery(
+    const { data: batchData, isLoading: isLoadingBatches, error: batchesError, refetch: refetchBatches } = useGetWarehouseProductBatchesQuery(
         {
             warehouseId: selectedWarehouse,
             productId: selectedProduct
@@ -23,6 +25,16 @@ const WareHouseBatchList = () => {
     );
 
     const batches = batchData?.GetWarehouseProductBatches || [];
+
+    useEffect(() => {
+        if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+    }, [warehousesError]);
+    useEffect(() => {
+        if (productsError) toast.error(extractApiErrorMessage(productsError));
+    }, [productsError]);
+    useEffect(() => {
+        if (batchesError) toast.error(extractApiErrorMessage(batchesError));
+    }, [batchesError]);
 
     if (isLoadingWarehouses || isLoadingProducts) return <GlobalSpinner />;
 

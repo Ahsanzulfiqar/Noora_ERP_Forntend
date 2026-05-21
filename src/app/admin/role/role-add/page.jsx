@@ -7,6 +7,8 @@ import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikPasswordField from '@/components/formikfield/FormikPasswordField';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import StatusAlert from '@/components/StatusAlert';
+import { toast } from 'react-toastify';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 import {
   useCreateUserMutation,
   useUpdateUserMutation,
@@ -25,9 +27,9 @@ const RoleAddPage = () => {
   const [createUser, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdating, error: updateError, isSuccess: updateSuccess }] = useUpdateUserMutation();
 
-  const { data: userData, isLoading: isFetchingUser } = useGetUserByIdQuery(roleId, { skip: !isEditMode });
-  const { data: warehouses } = useGetAllWarehousesQuery();
-  const { data: projects } = useGetAllProjectsQuery();
+  const { data: userData, isLoading: isFetchingUser, error: userFetchError } = useGetUserByIdQuery(roleId, { skip: !isEditMode });
+  const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery();
+  const { data: projects, error: projectsError } = useGetAllProjectsQuery();
 
   const navigate = useNavigate();
 
@@ -70,6 +72,22 @@ const RoleAddPage = () => {
   const isLoading = isCreating || isUpdating;
   const isSuccess = createSuccess || updateSuccess;
   const error = createError || updateError;
+
+  useEffect(() => {
+    if (userFetchError) toast.error(extractApiErrorMessage(userFetchError));
+  }, [userFetchError]);
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (projectsError) toast.error(extractApiErrorMessage(projectsError));
+  }, [projectsError]);
+  useEffect(() => {
+    if (createError) toast.error(extractApiErrorMessage(createError));
+  }, [createError]);
+  useEffect(() => {
+    if (updateError) toast.error(extractApiErrorMessage(updateError));
+  }, [updateError]);
 
   if (isEditMode && isFetchingUser) {
     return <div className="text-center p-5">Loading User Data...</div>;

@@ -1,19 +1,31 @@
 import PageTItle from '@/components/PageTItle';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardBody, CardTitle, CardHeader } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useGetAllUsersQuery, useDeactivateUserMutation, useActivateUserMutation } from '@/services/authenticateendpoint/users';
 import { Badge, Col, Row, Spinner, Table, Button, Form, Modal } from 'react-bootstrap';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 
 const RoleListPage = () => {
-  const { data: userData, isLoading, isError, error } = useGetAllUsersQuery();
-  const [deactivateUser, { isLoading: isDeactivating }] = useDeactivateUserMutation();
-  const [activateUser, { isLoading: isActivating }] = useActivateUserMutation();
+  const { data: userData, isLoading, isError, error, refetch } = useGetAllUsersQuery();
+  const [deactivateUser, { isLoading: isDeactivating, error: deactivateError }] = useDeactivateUserMutation();
+  const [activateUser, { isLoading: isActivating, error: activateError }] = useActivateUserMutation();
 
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
+  useEffect(() => {
+    if (deactivateError) toast.error(extractApiErrorMessage(deactivateError));
+  }, [deactivateError]);
+  useEffect(() => {
+    if (activateError) toast.error(extractApiErrorMessage(activateError));
+  }, [activateError]);
 
   const handleToggleClick = (user) => {
     setSelectedUser(user);
@@ -49,7 +61,7 @@ const RoleListPage = () => {
   }
 
   if (isError) {
-    return <div>Error loading users: {error?.message || 'Unknown error'}</div>;
+    return null;
   }
 
   return <>

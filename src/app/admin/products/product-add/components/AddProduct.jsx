@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form, Field, FieldArray } from 'formik'
 import * as Yup from 'yup'
@@ -11,6 +11,7 @@ import FormikTextArea from '../../../../../components/formikfield/FormikTextArea
 import FormikTextField from '../../../../../components/formikfield/FormikTextField'
 import ChoicesSearchFormInput from '../../../../../components/formikfield/ChoicesSearchFormInput'
 import StatusAlert from '../../../../../components/StatusAlert'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import FileUpload from './FileUpload';
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
@@ -27,14 +28,14 @@ import Divider from '@mui/material/Divider'
 const AddProduct = () => {
   const { productId } = useParams();
 
-  const { data } = useGetProductByIdQuery(productId, { skip: !productId })
+  const { data, error: productError } = useGetProductByIdQuery(productId, { skip: !productId })
   const [createProduct, { isLoading: createLoading, error: createError, isSuccess: createSuccess }] = useCreateProductMutation()
   const [updateProduct, { isLoading: updateLoading, error: updateError, isSuccess: updateSuccess }] = useUpdateProductMutation()
   const navigate = useNavigate()
 
   // Fetch categories and subcategories from API
-  const { data: categoriesData } = useFilterCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 })
-  const { data: subCategoriesData } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 })
+  const { data: categoriesData, error: categoriesError } = useFilterCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 })
+  const { data: subCategoriesData, error: subCategoriesError } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 })
 
   // Transform categories into dropdown options
   const categoryOptions = React.useMemo(() => {
@@ -59,6 +60,22 @@ const AddProduct = () => {
     if (!categoryId) return []
     return allSubCategoryOptions.filter(subCat => subCat.categoryId === categoryId)
   }, [allSubCategoryOptions])
+
+  useEffect(() => {
+    if (productError) toast.error(extractApiErrorMessage(productError));
+  }, [productError]);
+  useEffect(() => {
+    if (categoriesError) toast.error(extractApiErrorMessage(categoriesError));
+  }, [categoriesError]);
+  useEffect(() => {
+    if (subCategoriesError) toast.error(extractApiErrorMessage(subCategoriesError));
+  }, [subCategoriesError]);
+  useEffect(() => {
+    if (createError) toast.error(extractApiErrorMessage(createError));
+  }, [createError]);
+  useEffect(() => {
+    if (updateError) toast.error(extractApiErrorMessage(updateError));
+  }, [updateError]);
 
   return (
     <>

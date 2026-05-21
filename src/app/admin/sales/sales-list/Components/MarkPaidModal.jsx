@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Alert, Button, Form, Modal } from 'react-bootstrap'
 import { useMarkSalePaidMutation } from '@/services/authenticateendpoint/sales'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 
 const MarkPaidModal = ({ show, onHide, sale }) => {
   const [markSalePaid, { isLoading }] = useMarkSalePaidMutation()
@@ -30,7 +31,7 @@ const MarkPaidModal = ({ show, onHide, sale }) => {
       await markSalePaid({ saleId: sale._id, payment }).unwrap()
       handleClose()
     } catch (err) {
-      setError(err?.data?.errors?.[0]?.message || 'Failed to mark sale as paid.')
+      setError(extractApiErrorMessage(err) || 'Failed to mark sale as paid.')
     }
   }
 

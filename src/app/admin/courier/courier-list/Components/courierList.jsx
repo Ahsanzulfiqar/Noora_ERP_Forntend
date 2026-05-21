@@ -1,19 +1,28 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useDeleteCourierMutation, useGetAllCouriersQuery } from '../../../../../services/authenticateendpoint/courier';
 import { IconButton } from '@mui/material';
 import LoaderSpinner from '../../../../../components/loaders/LoaderSpinner';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const CourierList = () => {
-    const { data, isLoading } = useGetAllCouriersQuery();
-    const [deleteCourier] = useDeleteCourierMutation();
+    const { data, isLoading, error, refetch } = useGetAllCouriersQuery();
+    const [deleteCourier, { error: deleteError }] = useDeleteCourierMutation();
     const navigate = useNavigate();
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [courierIdToDelete, setCourierIdToDelete] = useState(null);
+
+    useEffect(() => {
+        if (error) toast.error(extractApiErrorMessage(error));
+    }, [error]);
+    useEffect(() => {
+        if (deleteError) toast.error(extractApiErrorMessage(deleteError));
+    }, [deleteError]);
 
     const handleDeleteClick = (id) => {
         setCourierIdToDelete(id);

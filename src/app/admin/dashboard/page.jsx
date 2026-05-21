@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Row, Col, Card, CardBody, Form } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import Stats from './components/Stats';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
 import { useAuth } from '@/hooks/useAuth';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const getDefaultDates = () => {
   const to = new Date();
@@ -21,7 +23,11 @@ const DashboardPage = () => {
   const { role } = useAuth();
   const isAdmin = role?.toLowerCase() === 'admin';
 
-  const { data: warehouses = [] } = useGetAllWarehousesQuery(undefined, { skip: !isAdmin });
+  const { data: warehouses = [], error: warehousesError, refetch: refetchWarehouses } = useGetAllWarehousesQuery(undefined, { skip: !isAdmin });
+
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
 
 return (
     <>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import { useCancelSaleMutation } from '@/services/authenticateendpoint/sales';
 import ActionModal from './ActionModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const CancelSaleModal = ({ show, onHide, saleId }) => {
     const [cancelSale, { isLoading }] = useCancelSaleMutation();
@@ -12,7 +13,7 @@ const CancelSaleModal = ({ show, onHide, saleId }) => {
             await cancelSale(saleId).unwrap();
             onHide();
         } catch (err) {
-            setError(err?.data?.errors?.[0]?.message || 'Failed to cancel sale');
+            setError(extractApiErrorMessage(err) || 'Failed to cancel sale');
         }
     };
 

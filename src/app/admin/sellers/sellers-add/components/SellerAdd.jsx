@@ -3,6 +3,7 @@ import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button } from 'react-b
 import { useNavigate, useParams } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+import { toast } from 'react-toastify';
 
 // Endpoints
 import {
@@ -15,13 +16,21 @@ import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikTextArea from '@/components/formikfield/FormikTextArea';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import StatusAlert from '@/components/StatusAlert';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const SellerAdd = () => {
   const navigate = useNavigate();
   const { sellerId } = useParams();
   const [updateSeller, { isLoading: isUpdating, isSuccess: updateSuccess, error: updateError }] = useUpdateSellerMutation();
 
-  const { data: sellerData, isLoading: isLoadingSeller } = useGetSellerByIdQuery(sellerId, { skip: !sellerId });
+  const { data: sellerData, isLoading: isLoadingSeller, error: sellerError } = useGetSellerByIdQuery(sellerId, { skip: !sellerId });
+
+  useEffect(() => {
+    if (sellerError) toast.error(extractApiErrorMessage(sellerError));
+  }, [sellerError]);
+  useEffect(() => {
+    if (updateError) toast.error(extractApiErrorMessage(updateError));
+  }, [updateError]);
 
   const initialValues = {
     name: sellerData?.name || '',

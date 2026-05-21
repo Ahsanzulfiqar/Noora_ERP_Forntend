@@ -3,7 +3,8 @@ import { ROLES } from '@/assets/data/roles';
 import useUserRole from '@/hooks/useUserRole';
 import { Card, CardBody, Col, Row, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import ConfirmSaleModal from './modals/ConfirmSaleModal';
 import OutForDeliveryModal from './modals/OutForDeliveryModal';
 import DeliveredModal from './modals/DeliveredModal';
@@ -13,6 +14,7 @@ import DraftSaleModal from './modals/DraftSaleModal';
 import { useGetSellerByIdQuery } from '@/services/authenticateendpoint/sellers';
 import { useGetWarehouseByIdQuery } from '@/services/authenticateendpoint/warehouse';
 import { useGetProjectByIdQuery } from '@/services/authenticateendpoint/project';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const STATUS_BADGE = {
   DRAFT: { bg: '#e2e8f0', color: '#475569', label: 'DRAFT' },
@@ -141,9 +143,19 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
 
   const role = useUserRole();
 
-  const { data: sellerData } = useGetSellerByIdQuery(saleData?.seller, { skip: !saleData?.seller });
-  const { data: warehouseData } = useGetWarehouseByIdQuery(saleData?.warehouse, { skip: !saleData?.warehouse });
-  const { data: projectData } = useGetProjectByIdQuery(saleData?.project, { skip: !saleData?.project });
+  const { data: sellerData, error: sellerError } = useGetSellerByIdQuery(saleData?.seller, { skip: !saleData?.seller });
+  const { data: warehouseData, error: warehouseError } = useGetWarehouseByIdQuery(saleData?.warehouse, { skip: !saleData?.warehouse });
+  const { data: projectData, error: projectError } = useGetProjectByIdQuery(saleData?.project, { skip: !saleData?.project });
+
+  useEffect(() => {
+    if (sellerError) toast.error(extractApiErrorMessage(sellerError));
+  }, [sellerError]);
+  useEffect(() => {
+    if (warehouseError) toast.error(extractApiErrorMessage(warehouseError));
+  }, [warehouseError]);
+  useEffect(() => {
+    if (projectError) toast.error(extractApiErrorMessage(projectError));
+  }, [projectError]);
 
   const items = saleData?.items || [];
 

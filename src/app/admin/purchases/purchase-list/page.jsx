@@ -6,7 +6,9 @@ import { Card, CardBody, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, D
 import { Link, useNavigate } from 'react-router-dom'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import StatusAlert from '@/components/StatusAlert'
-import { useState } from 'react'
+import { toast } from 'react-toastify'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
+import { useState, useEffect } from 'react'
 import DeleteConfirmModal from '../../../../components/DeleteConfirmModal'
 import { formatDate } from '../../../../helpers/format'
 import { useAuth } from '@/hooks/useAuth'
@@ -16,8 +18,8 @@ const PurchaseListPage = () => {
   const { role } = useAuth()
   const isAdmin = role === ROLES.ADMIN
 
-  const { data: purchases, isLoading, isError } = useGetAllPurchasesQuery()
-  const { data: warehousesData } = useGetAllWarehousesQuery()
+  const { data: purchases, isLoading, isError, error: purchasesError, refetch: refetchPurchases } = useGetAllPurchasesQuery()
+  const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery()
   const warehouseMap = (warehousesData || []).reduce((acc, w) => {
     acc[w._id] = w.name
     return acc
@@ -33,6 +35,19 @@ const PurchaseListPage = () => {
   const [showPostConfirm, setShowPostConfirm] = useState(false)
   const [showEditConfirm, setShowEditConfirm] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+
+  useEffect(() => {
+    if (purchasesError) toast.error(extractApiErrorMessage(purchasesError));
+  }, [purchasesError]);
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (deleteError) toast.error(extractApiErrorMessage(deleteError));
+  }, [deleteError]);
+  useEffect(() => {
+    if (postError) toast.error(extractApiErrorMessage(postError));
+  }, [postError]);
 
   // const handleDelete = async (id) => {
   //   if (window.confirm("Are you sure you want to delete this purchase?")) {
@@ -198,11 +213,6 @@ const PurchaseListPage = () => {
                             <span className="visually-hidden">Loading...</span>
                           </div>
                         </td>
-                      </tr>
-                    )}
-                    {isError && (
-                      <tr>
-                        <td colSpan="10" className="text-center text-danger">Error loading purchases</td>
                       </tr>
                     )}
                     {!isLoading && !isError && purchases?.length === 0 && (

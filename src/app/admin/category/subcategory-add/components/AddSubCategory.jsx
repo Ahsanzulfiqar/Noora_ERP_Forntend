@@ -12,16 +12,31 @@ import {
     useFilterCategoriesQuery
 } from '@/services/authenticateendpoint/category';
 import StatusAlert from '@/components/StatusAlert';
+import { toast } from 'react-toastify';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const AddSubCategory = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEdit = Boolean(id);
 
-    const { data: subCategoryData, isLoading: isLoadingSubCategory } = useGetSubCategoryByIdQuery(id, { skip: !isEdit });
-    const { data: categoriesData } = useFilterCategoriesQuery({ limit: 100 });
+    const { data: subCategoryData, isLoading: isLoadingSubCategory, error: subCategoryError } = useGetSubCategoryByIdQuery(id, { skip: !isEdit });
+    const { data: categoriesData, error: categoriesError } = useFilterCategoriesQuery({ limit: 100 });
     const [createSubCategory, { isLoading: isCreating, isSuccess: isCreateSuccess, error: createError }] = useCreateSubCategoryMutation();
     const [updateSubCategory, { isLoading: isUpdating, isSuccess: isUpdateSuccess, error: updateError }] = useUpdateSubCategoryMutation();
+
+    useEffect(() => {
+        if (subCategoryError) toast.error(extractApiErrorMessage(subCategoryError));
+    }, [subCategoryError]);
+    useEffect(() => {
+        if (categoriesError) toast.error(extractApiErrorMessage(categoriesError));
+    }, [categoriesError]);
+    useEffect(() => {
+        if (createError) toast.error(extractApiErrorMessage(createError));
+    }, [createError]);
+    useEffect(() => {
+        if (updateError) toast.error(extractApiErrorMessage(updateError));
+    }, [updateError]);
 
     const categoryOptions = categoriesData?.data?.map(cat => ({
         value: cat._id,

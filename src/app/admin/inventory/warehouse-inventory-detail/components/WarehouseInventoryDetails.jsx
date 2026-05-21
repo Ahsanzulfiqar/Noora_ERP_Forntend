@@ -1,11 +1,18 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { useEffect } from 'react';
 import { useGetWarehouseStockByIdQuery } from '@/services/authenticateendpoint/stock';
 import { Card, CardBody, CardTitle, Col, Row, Table } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const WarehouseInventoryDetails = () => {
     const { inventoryId } = useParams();
-    const { data: stockData, isLoading } = useGetWarehouseStockByIdQuery(inventoryId);
+    const { data: stockData, isLoading, error, refetch } = useGetWarehouseStockByIdQuery(inventoryId);
+
+    useEffect(() => {
+        if (error) toast.error(extractApiErrorMessage(error));
+    }, [error]);
 
     if (isLoading) {
         return (
@@ -15,6 +22,10 @@ const WarehouseInventoryDetails = () => {
                 </CardBody>
             </Card>
         );
+    }
+
+    if (error) {
+        return null;
     }
 
     if (!stockData) {

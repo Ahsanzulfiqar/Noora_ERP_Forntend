@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import { useReturnSaleMutation } from '@/services/authenticateendpoint/sales';
 import ActionModal from './ActionModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const ReturnSaleModal = ({ show, onHide, saleId }) => {
     const [returnSale, { isLoading }] = useReturnSaleMutation();
@@ -12,7 +13,7 @@ const ReturnSaleModal = ({ show, onHide, saleId }) => {
             await returnSale(saleId).unwrap();
             onHide();
         } catch (err) {
-            setError(err?.data?.errors?.[0]?.message || 'Failed to return sale');
+            setError(extractApiErrorMessage(err) || 'Failed to return sale');
         }
     };
 

@@ -1,9 +1,12 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
+import { useEffect } from 'react'
 import ReactApexChart from 'react-apexcharts'
 import { Card, CardBody, CardFooter, CardTitle, Col, Row, Spinner } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { useGetAdminDashboardQuery } from '@/services/authenticateendpoint/dashboard'
 import { useAuth } from '@/hooks/useAuth'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 
 const DUMMY_STATS = {
   revenue: 0,
@@ -52,10 +55,14 @@ const Stats = ({ from, to, warehouseIds }) => {
   const { role } = useAuth()
   const isAdmin = role?.toLowerCase() === 'admin'
 
-  const { data: realData, isLoading } = useGetAdminDashboardQuery(
+  const { data: realData, isLoading, error: dashboardError, refetch } = useGetAdminDashboardQuery(
     { from, to, warehouseIds },
     { refetchOnMountOrArgChange: true, skip: !isAdmin }
   )
+
+  useEffect(() => {
+    if (dashboardError) toast.error(extractApiErrorMessage(dashboardError));
+  }, [dashboardError]);
 
   const data = isAdmin ? realData : DUMMY_STATS
 

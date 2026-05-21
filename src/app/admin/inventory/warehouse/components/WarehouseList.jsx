@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Form } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import TableNoData from '@/components/TableNoData';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
@@ -11,6 +12,7 @@ import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/wareh
 import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 import { useAuth } from '@/hooks/useAuth';
 import { ROLES } from '@/assets/data/roles';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const WarehouseList = () => {
   const { role } = useAuth();
@@ -27,13 +29,13 @@ const WarehouseList = () => {
   const [limit, setLimit] = useState(10);
 
   // Fetching Options
-  const { data: warehousesData } = useGetAllWarehousesQuery();
-  const { data: productsData } = useGetAllProductsQuery();
-  const { data: variantsData } = useGetVariantsByProductQuery(filters.productId, {
+  const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
+  const { data: productsData, error: productsError } = useGetAllProductsQuery();
+  const { data: variantsData, error: variantsError } = useGetVariantsByProductQuery(filters.productId, {
     skip: !filters.productId,
   });
 
-  const { data, isLoading } = useGetWarehouseStockQuery({
+  const { data, isLoading, error: stockError, refetch } = useGetWarehouseStockQuery({
     page,
     limit,
     filter: {
@@ -47,6 +49,18 @@ const WarehouseList = () => {
   const totalItems = data?.total || 0;
   const totalPages = data?.totalPages || 1;
 
+  useEffect(() => {
+    if (stockError) toast.error(extractApiErrorMessage(stockError));
+  }, [stockError]);
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (productsError) toast.error(extractApiErrorMessage(productsError));
+  }, [productsError]);
+  useEffect(() => {
+    if (variantsError) toast.error(extractApiErrorMessage(variantsError));
+  }, [variantsError]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {

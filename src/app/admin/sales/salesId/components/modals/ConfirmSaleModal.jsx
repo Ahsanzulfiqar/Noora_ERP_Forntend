@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import { useConfirmSaleMutation } from '@/services/authenticateendpoint/sales';
 import ActionModal from './ActionModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const ConfirmSaleModal = ({ show, onHide, saleId }) => {
     const [confirmSale, { isLoading }] = useConfirmSaleMutation();
@@ -12,7 +13,7 @@ const ConfirmSaleModal = ({ show, onHide, saleId }) => {
             await confirmSale(saleId).unwrap();
             onHide();
         } catch (err) {
-            setError(err?.data?.errors?.[0]?.message || err?.errors?.[0]?.message || err?.message || 'Failed to confirm sale');
+            setError(extractApiErrorMessage(err) || 'Failed to confirm sale');
         }
     };
 

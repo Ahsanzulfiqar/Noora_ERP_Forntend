@@ -11,6 +11,7 @@ import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product'
 import { toast } from 'react-toastify';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput'
 import StatusAlert from '../../../../../components/StatusAlert'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import { useEffect, useState } from 'react'
 import Grid from '@mui/material/Grid'
 import ProductDetails from './ProductDetails'
@@ -31,14 +32,27 @@ const AddProductVariant = () => {
   const { productvarientId } = useParams()
   const [createVariant, { isLoading: isCreating, isSuccess: createSuccess, error: createError }] = useCreateVariantMutation()
   const [updateVariant, { isLoading: isUpdating, isSuccess: updateSuccess, error: updateError }] = useUpdateVariantMutation()
-  const { data: productsData } = useGetAllProductsQuery()
+  const { data: productsData, error: productsError } = useGetAllProductsQuery()
 
   // Fetch variant data if existing (Edit Mode)
-  const { data: variantData, isLoading: isFetching } = useGetVariantByIdQuery(productvarientId, {
+  const { data: variantData, isLoading: isFetching, error: variantError } = useGetVariantByIdQuery(productvarientId, {
     skip: !productvarientId,
   })
 
   const isLoading = isCreating || isUpdating
+
+  useEffect(() => {
+    if (productsError) toast.error(extractApiErrorMessage(productsError));
+  }, [productsError]);
+  useEffect(() => {
+    if (variantError) toast.error(extractApiErrorMessage(variantError));
+  }, [variantError]);
+  useEffect(() => {
+    if (createError) toast.error(extractApiErrorMessage(createError));
+  }, [createError]);
+  useEffect(() => {
+    if (updateError) toast.error(extractApiErrorMessage(updateError));
+  }, [updateError]);
 
   const productOptions = productsData?.map((product) => ({
     label: product.name,

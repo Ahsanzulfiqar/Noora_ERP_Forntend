@@ -1,11 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Card, CardBody, Col, Form, Row, Button } from 'react-bootstrap'
 import Flatpickr from 'react-flatpickr'
+import { toast } from 'react-toastify'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAllUsersQuery } from '@/services/authenticateendpoint/users'
 import { useGetAllProjectsQuery } from '@/services/authenticateendpoint/project'
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse'
 import { useAuth } from '@/hooks/useAuth'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 
 const startOfMonth = () => {
   const d = new Date()
@@ -36,9 +38,20 @@ const FilterBar = ({ onApply, onExport }) => {
     search: '',
   })
 
-  const { data: allUsers = [] } = useGetAllUsersQuery()
-  const { data: projects = [] } = useGetAllProjectsQuery()
-  const { data: warehouses = [] } = useGetAllWarehousesQuery()
+  const { data: allUsers = [], error: usersError, refetch: refetchUsers } = useGetAllUsersQuery()
+  const { data: projects = [], error: projectsError, refetch: refetchProjects } = useGetAllProjectsQuery()
+  const { data: warehouses = [], error: warehousesError, refetch: refetchWarehouses } = useGetAllWarehousesQuery()
+
+  useEffect(() => {
+    if (usersError) toast.error(extractApiErrorMessage(usersError));
+  }, [usersError]);
+  useEffect(() => {
+    if (projectsError) toast.error(extractApiErrorMessage(projectsError));
+  }, [projectsError]);
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+
   const sellers = useMemo(
     () => (allUsers || []).filter((u) => u.role?.toUpperCase() === 'SELLER' && u.isActive),
     [allUsers]

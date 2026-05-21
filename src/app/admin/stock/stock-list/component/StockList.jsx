@@ -3,8 +3,10 @@ import { useGetWarehouseStockQuery } from '../../../../../services/authenticatee
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const StockList = () => {
     const [page, setPage] = useState(1);
@@ -16,9 +18,9 @@ const StockList = () => {
     const [selectedVariant, setSelectedVariant] = useState('');
 
     // Fetch dropdown data
-    const { data: warehousesData } = useGetAllWarehousesQuery();
-    const { data: productsData } = useGetAllProductsQuery();
-    const { data: variantsData } = useGetVariantsByProductQuery(selectedProduct, {
+    const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
+    const { data: productsData, error: productsError } = useGetAllProductsQuery();
+    const { data: variantsData, error: variantsError } = useGetVariantsByProductQuery(selectedProduct, {
         skip: !selectedProduct
     });
 
@@ -28,7 +30,7 @@ const StockList = () => {
     if (selectedProduct) filter.productId = selectedProduct;
     if (selectedVariant) filter.variantId = selectedVariant;
 
-    const { data, isLoading, isError } = useGetWarehouseStockQuery({
+    const { data, isLoading, isError, error: stockError, refetch } = useGetWarehouseStockQuery({
         filter: Object.keys(filter).length > 0 ? filter : undefined,
         page,
         limit
@@ -37,6 +39,19 @@ const StockList = () => {
     const stockData = data?.GetWarehouseStock?.data || [];
     const pagination = data?.GetWarehouseStock || {};
 
+    useEffect(() => {
+        if (stockError) toast.error(extractApiErrorMessage(stockError));
+    }, [stockError]);
+    useEffect(() => {
+        if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+    }, [warehousesError]);
+    useEffect(() => {
+        if (productsError) toast.error(extractApiErrorMessage(productsError));
+    }, [productsError]);
+    useEffect(() => {
+        if (variantsError) toast.error(extractApiErrorMessage(variantsError));
+    }, [variantsError]);
+
     // Handle product change - reset variant when product changes
     const handleProductChange = (e) => {
         setSelectedProduct(e.target.value);
@@ -44,7 +59,6 @@ const StockList = () => {
     };
 
     if (isLoading) return <GlobalSpinner />;
-    if (isError) return <div>Error loading stock data</div>;
 
     return (
         <Card>

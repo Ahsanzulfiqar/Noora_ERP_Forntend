@@ -4,8 +4,10 @@ import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, Dropdo
 import { Link } from 'react-router-dom';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 const ProductCard = ({
   item, image,
 
@@ -55,10 +57,17 @@ const ProductCard = ({
 };
 const ProductList = () => {
   const [selectedProductId, setSelectedProductId] = useState('');
-  const { data: productsData } = useGetAllProductsQuery();
-  const { data: variantData, isLoading, error } = useGetVariantsByProductQuery(selectedProductId, {
+  const { data: productsData, error: productsError, refetch: refetchProducts } = useGetAllProductsQuery();
+  const { data: variantData, isLoading, error, refetch: refetchVariants } = useGetVariantsByProductQuery(selectedProductId, {
     skip: !selectedProductId
   });
+
+  useEffect(() => {
+    if (productsError) toast.error(extractApiErrorMessage(productsError));
+  }, [productsError]);
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
 
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.name })) || [];
   return <Card>

@@ -1,26 +1,33 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { useEffect } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Col, Row, Badge, Table } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useGetProjectByIdQuery } from '../../../../../services/authenticateendpoint/project';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
 import LoaderSpinner from '@/components/loaders/LoaderSpinner';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
 
-  const { data, isLoading, error } = useGetProjectByIdQuery(projectId, { skip: !projectId });
-  const { data: warehousesData } = useGetAllWarehousesQuery();
-  const { data: usersData } = useGetAllUsersQuery();
+  const { data, isLoading, error, refetch } = useGetProjectByIdQuery(projectId, { skip: !projectId });
+  const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
+  const { data: usersData, error: usersError } = useGetAllUsersQuery();
+
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (usersError) toast.error(extractApiErrorMessage(usersError));
+  }, [usersError]);
 
   if (isLoading) return <LoaderSpinner />;
-  if (error) return (
-    <div className="text-center p-5">
-      <IconifyIcon icon="solar:danger-broken" className="text-danger fs-48 mb-3" />
-      <h4 className="text-dark">Error loading project details</h4>
-      <p className="text-muted">Please check if the project ID is correct or try again later.</p>
-    </div>
-  );
+  if (error) return null;
 
   const getWarehouseName = (id) => {
     const warehouse = warehousesData?.find(w => w._id === id);
