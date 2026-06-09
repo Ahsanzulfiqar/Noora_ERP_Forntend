@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button } from 'react-bootstrap';
 import { Formik, Form, FieldArray } from 'formik';
 import * as Yup from 'yup';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Plus, Trash2 } from 'lucide-react';
 import Box from '@mui/material/Box';
@@ -16,19 +16,39 @@ import FormikDateField from '@/components/formikfield/FormikDateField';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
-import { useAddOpeningStockMutation } from '@/services/authenticateendpoint/stock';
+import {
+    useUpdateStockWithBatchesMutation,
+    useGetWarehouseStockByIdQuery,
+} from '@/services/authenticateendpoint/stock';
 import StatusAlert from '@/components/StatusAlert';
+import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 import { useAuth } from '@/hooks/useAuth';
 import { ROLES } from '@/assets/data/roles';
 
 const emptyBatch = { batchNo: '', expiryDate: '', quantity: 0, unitCost: 0 };
 
-const ManualAddStock = () => {
+const toDateInputValue = (value) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toISOString().slice(0, 10);
+};
+
+const ManualUpdateStock = () => {
     const navigate = useNavigate();
+    const { inventoryId } = useParams();
     const { role } = useAuth();
-    const canAddStock = role === ROLES.ADMIN || role === ROLES.MANAGER;
-    const [addOpeningStock, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] = useAddOpeningStockMutation();
+    const canEditStock = role === ROLES.ADMIN;
+
+    const {
+        data: stockData,
+        isLoading: isStockLoading,
+        error: stockError,
+    } = useGetWarehouseStockByIdQuery(inventoryId, { skip: !inventoryId || !canEditStock });
+
+    const [updateStockWithBatches, { isLoading: isUpdating, error: updateError, isSuccess: updateSuccess }] =
+        useUpdateStockWithBatchesMutation();
 
     const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery();
     const { data: products, error: productsError } = useGetAllProductsQuery();
@@ -40,23 +60,30 @@ const ManualAddStock = () => {
         if (productsError) toast.error(extractApiErrorMessage(productsError));
     }, [productsError]);
     useEffect(() => {
-        if (createError) toast.error(extractApiErrorMessage(createError));
-    }, [createError]);
+        if (stockError) toast.error(extractApiErrorMessage(stockError));
+    }, [stockError]);
+    useEffect(() => {
+        if (updateError) toast.error(extractApiErrorMessage(updateError));
+    }, [updateError]);
 
-    if (!canAddStock) {
-        return <Navigate to="/inventory/warehouse" replace />;
-    }
+    const warehouseOptions = warehouses?.map((w) => ({ label: w.name, value: w._id })) || [];
+    const productOptions = products?.map((p) => ({ label: p.name, value: p._id })) || [];
 
-    const warehouseOptions = warehouses?.map(w => ({ label: w.name, value: w._id })) || [];
-    const productOptions = products?.map(p => ({ label: p.name, value: p._id })) || [];
-
-    const initialValues = {
-        warehouseId: '',
-        productId: '',
-        variantId: '',
+    const initialValues = useMemo(() => ({
+        warehouseId: stockData?.warehouse || '',
+        productId: stockData?.product || '',
+        variantId: stockData?.variant || '',
         note: '',
-        batches: [{ ...emptyBatch }],
-    };
+        batches:
+            stockData?.batches && stockData.batches.length > 0
+                ? stockData.batches.map((b) => ({
+                      batchNo: b.batchNo || '',
+                      expiryDate: toDateInputValue(b.expiryDate),
+                      quantity: b.quantity ?? 0,
+                      unitCost: b.unitCost ?? 0,
+                  }))
+                : [{ ...emptyBatch }],
+    }), [stockData]);
 
     const validationSchema = Yup.object({
         warehouseId: Yup.string().required('Required'),
@@ -68,28 +95,45 @@ const ManualAddStock = () => {
                 Yup.object({
                     batchNo: Yup.string().required('Required'),
                     expiryDate: Yup.date().required('Required'),
-                    quantity: Yup.number().min(1, 'Must be at least 1').required('Required'),
+                    quantity: Yup.number().min(0, 'Must be 0 or more').required('Required'),
                     unitCost: Yup.number().min(0, 'Must be 0 or more').required('Required'),
                 })
             )
             .min(1, 'At least one batch is required'),
     });
 
+    if (!canEditStock) {
+        return <Navigate to="/inventory/warehouse" replace />;
+    }
+
+    if (isStockLoading) {
+        return (
+            <Col xl={12}>
+                <Card>
+                    <CardBody>
+                        <LoaderSpinner show={true} />
+                    </CardBody>
+                </Card>
+            </Col>
+        );
+    }
+
     return (
         <Col xl={12}>
             <StatusAlert
-                isSuccess={createSuccess}
-                error={createError}
-                message="Inventory added successfully"
+                isSuccess={updateSuccess}
+                error={updateError}
+                message="Inventory updated successfully"
                 path="/inventory/warehouse"
                 redirect={true}
             />
             <Card>
                 <CardHeader>
-                    <CardTitle as="h4">Add Manual Inventory</CardTitle>
+                    <CardTitle as="h4">Edit Manual Inventory</CardTitle>
                 </CardHeader>
                 <CardBody>
                     <Formik
+                        enableReinitialize
                         initialValues={initialValues}
                         validationSchema={validationSchema}
                         onSubmit={async (values) => {
@@ -99,26 +143,26 @@ const ManualAddStock = () => {
                                     productId: values.productId,
                                     variantId: values.variantId || null,
                                     note: values.note,
-                                    batches: values.batches.map(b => ({
+                                    batches: values.batches.map((b) => ({
                                         batchNo: b.batchNo,
                                         expiryDate: new Date(b.expiryDate).toISOString(),
                                         quantity: Number(b.quantity),
                                         unitCost: Number(b.unitCost),
                                     })),
                                 };
-                                await addOpeningStock(data).unwrap();
+                                await updateStockWithBatches(data).unwrap();
                             } catch (err) {
-                                console.error('Failed to add inventory:', err);
+                                console.error('Failed to update inventory:', err);
                             }
                         }}
                     >
                         {({ values, setFieldValue }) => (
-                            <ManualAddStockForm
+                            <ManualUpdateStockForm
                                 values={values}
                                 setFieldValue={setFieldValue}
                                 warehouseOptions={warehouseOptions}
                                 productOptions={productOptions}
-                                isCreating={isCreating}
+                                isUpdating={isUpdating}
                                 navigate={navigate}
                             />
                         )}
@@ -129,30 +173,31 @@ const ManualAddStock = () => {
     );
 };
 
-const ManualAddStockForm = ({
+const ManualUpdateStockForm = ({
     values,
     setFieldValue,
     warehouseOptions,
     productOptions,
-    isCreating,
-    navigate
+    isUpdating,
+    navigate,
 }) => {
     const { data: variants } = useGetVariantsByProductQuery(values.productId, {
-        skip: !values.productId
+        skip: !values.productId,
     });
-    const variantOptions = variants?.map(v => ({ label: v.name, value: v._id })) || [];
+    const variantOptions = variants?.map((v) => ({ label: v.name, value: v._id })) || [];
 
     return (
         <Form>
             <Row className="mb-4">
                 <Col md={4}>
-                    <FormikSelectField name="warehouseId" label="Warehouse" options={warehouseOptions} />
+                    <FormikSelectField name="warehouseId" label="Warehouse" options={warehouseOptions} isDisabled />
                 </Col>
                 <Col md={4}>
                     <FormikSelectField
                         name="productId"
                         label="Product"
                         options={productOptions}
+                        isDisabled
                         onChange={() => setFieldValue('variantId', '')}
                     />
                 </Col>
@@ -161,7 +206,7 @@ const ManualAddStockForm = ({
                         name="variantId"
                         label="Variant"
                         options={variantOptions}
-                        disabled={!values.productId}
+                        isDisabled
                     />
                 </Col>
             </Row>
@@ -170,17 +215,29 @@ const ManualAddStockForm = ({
                 <FieldArray name="batches">
                     {({ push, remove }) => (
                         <>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '16px', paddingRight: '8px', paddingY: '8px' }}>
-                                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Batches</Typography>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    paddingLeft: '16px',
+                                    paddingRight: '8px',
+                                    paddingY: '8px',
+                                }}
+                            >
+                                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                    Batches
+                                </Typography>
                                 <IconButton
                                     type="button"
                                     onClick={() => push({ ...emptyBatch })}
                                     sx={{
-                                        backgroundColor: '#5c7186', borderRadius: '7px',
+                                        backgroundColor: '#5c7186',
+                                        borderRadius: '7px',
                                         '&:hover': {
                                             backgroundColor: '#7b8792ff !important',
-                                            '& svg': { stroke: '#ffffffff !important' }
-                                        }
+                                            '& svg': { stroke: '#ffffffff !important' },
+                                        },
                                     }}
                                 >
                                     <Plus size={20} color="#ffffff" strokeWidth={2.5} />
@@ -194,7 +251,7 @@ const ManualAddStockForm = ({
                                             <FormikTextField
                                                 name={`batches.${index}.batchNo`}
                                                 label="Batch No"
-                                                placeholder="OPEN-001"
+                                                placeholder="BATCH-001"
                                             />
                                         </Grid>
                                         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
@@ -222,7 +279,11 @@ const ManualAddStockForm = ({
                                                 type="button"
                                                 onClick={() => remove(index)}
                                                 disabled={values.batches.length === 1}
-                                                sx={{ backgroundColor: '#ffdcdcff', marginTop: '28px', marginLeft: '2px' }}
+                                                sx={{
+                                                    backgroundColor: '#ffdcdcff',
+                                                    marginTop: '28px',
+                                                    marginLeft: '2px',
+                                                }}
                                             >
                                                 <Trash2 size={17} color="#ff3939ff" strokeWidth={2} />
                                             </IconButton>
@@ -237,7 +298,13 @@ const ManualAddStockForm = ({
 
             <Row className="mb-4">
                 <Col md={12}>
-                    <FormikTextField name="note" label="Note" as="textarea" rows={3} placeholder="Enter any notes..." />
+                    <FormikTextField
+                        name="note"
+                        label="Note"
+                        as="textarea"
+                        rows={3}
+                        placeholder="Physical stock correction"
+                    />
                 </Col>
             </Row>
 
@@ -245,12 +312,12 @@ const ManualAddStockForm = ({
                 <Button variant="outline-secondary" onClick={() => navigate('/inventory/warehouse')}>
                     Cancel
                 </Button>
-                <Button type="submit" variant="primary" disabled={isCreating}>
-                    {isCreating ? 'Adding...' : 'Add Inventory'}
+                <Button type="submit" variant="primary" disabled={isUpdating}>
+                    {isUpdating ? 'Updating...' : 'Update Inventory'}
                 </Button>
             </div>
         </Form>
     );
-}
+};
 
-export default ManualAddStock;
+export default ManualUpdateStock;

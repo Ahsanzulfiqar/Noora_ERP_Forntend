@@ -18,6 +18,8 @@ const WarehouseList = () => {
   const { role } = useAuth();
   const isSales = role === ROLES.SALES;
   const isAdmin = role === ROLES.ADMIN;
+  const isManager = role === ROLES.MANAGER;
+  const canAddStock = isAdmin || isManager;
   const location = useLocation();
   const isTransferStockView = location.pathname.startsWith('/inventory/transfer-stock');
   const [page, setPage] = useState(1);
@@ -140,14 +142,14 @@ const WarehouseList = () => {
                 </Link>
               )
             ) : (
-              isSales ? (
-                <button type="button" className="btn btn-sm btn-primary disabled" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
-                  Add Inventory
-                </button>
-              ) : (
+              canAddStock ? (
                 <Link to="/inventory/warehouse-add" className="btn btn-sm btn-primary">
                   Add Inventory
                 </Link>
+              ) : (
+                <button type="button" className="btn btn-sm btn-primary disabled" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
+                  Add Inventory
+                </button>
               )
             )}
             <Dropdown>
@@ -213,7 +215,7 @@ const WarehouseList = () => {
                           </Link>
                           {isAdmin && (
                             <>
-                              <Link to="" className="btn btn-soft-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                              <Link to={`/inventory/warehouse-edit/${item._id}`} className="btn btn-soft-primary btn-sm">
                                 <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
                               </Link>
                               <Link to="" className="btn btn-soft-danger btn-sm">

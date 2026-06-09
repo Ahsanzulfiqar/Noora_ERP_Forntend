@@ -53,14 +53,13 @@ const SubCategoryAdd = lazy(() => import('@/app/admin/category/subcategory-add/p
 // inventory Routes
 const Warehouse = lazy(() => import('@/app/admin/inventory/warehouse/page'))
 const WarehouseAddManual = lazy(() => import('@/app/admin/inventory/warehouse-add/page'))
+const WarehouseEditManual = lazy(() => import('@/app/admin/inventory/warehouse-edit/page'))
 const ReceivedOrders = lazy(() => import('@/app/admin/inventory/received-orders/page'))
 const WarehouseInventoryDetail = lazy(() => import('@/app/admin/inventory/warehouse-inventory-detail/page'))
 const TransferStock = lazy(() => import('@/app/admin/inventory/transfer-stock/page'))
 const TransferStockAdd = lazy(() => import('@/app/admin/inventory/transfer-stock/add/AddTransferStock'))
 const TransferStockDetail = lazy(() => import('@/app/admin/inventory/transfer-stock/detail/page'))
 
-
-// Purchases Routes
 
 // Purchases Routes
 const PurchaseList = lazy(() => import('@/app/admin/purchases/purchase-list/page'))
@@ -333,6 +332,11 @@ const InventoryRoutes = [
     name: 'Warehouse Add',
     path: '/inventory/warehouse-add',
     element: <WarehouseAddManual />,
+  },
+  {
+    name: 'Warehouse Edit',
+    path: '/inventory/warehouse-edit/:inventoryId',
+    element: <WarehouseEditManual />,
   },
   {
     name: 'Received Orders',
