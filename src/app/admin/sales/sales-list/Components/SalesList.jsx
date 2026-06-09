@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Col, Row, Spinner } from 'react-bootstrap'
+import { toast } from 'react-toastify'
 import PageTItle from '@/components/PageTItle'
 import FilterBar from './FilterBar'
 import KpiGrid from './KpiGrid'
@@ -11,6 +12,7 @@ import SalesTableExpanded from './SalesTableExpanded'
 import { useGetAdminSalesDashboardQuery } from '@/services/authenticateendpoint/sales'
 import { useAuth } from '@/hooks/useAuth'
 import { toIsoDate } from './formatters'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 
 const startOfMonth = () => {
   const d = new Date()
@@ -52,10 +54,14 @@ const SalesList = () => {
     return f
   }, [appliedFilter])
 
-  const { data: dashboard, isLoading: dashboardLoading } = useGetAdminSalesDashboardQuery(
+  const { data: dashboard, isLoading: dashboardLoading, error: dashboardError, refetch: refetchDashboard } = useGetAdminSalesDashboardQuery(
     dashboardFilter,
     { refetchOnMountOrArgChange: true, skip: !isAdmin }
   )
+
+  useEffect(() => {
+    if (dashboardError) toast.error(extractApiErrorMessage(dashboardError));
+  }, [dashboardError]);
 
   const chartCol = hasNonDateFilters ? { md: 6, lg: 3 } : { md: 6, lg: 4 }
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import { useUpdateSaleMutation } from '@/services/authenticateendpoint/sales';
 import ActionModal from './ActionModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const DraftSaleModal = ({ show, onHide, saleId }) => {
     const [updateSale, { isLoading }] = useUpdateSaleMutation();
@@ -15,7 +16,7 @@ const DraftSaleModal = ({ show, onHide, saleId }) => {
             }).unwrap();
             onHide();
         } catch (err) {
-            setError(err?.data?.errors?.[0]?.message || 'Failed to mark as draft');
+            setError(extractApiErrorMessage(err) || 'Failed to mark as draft');
         }
     };
 

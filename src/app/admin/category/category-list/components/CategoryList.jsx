@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardHeader, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row, Form, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import TableNoData from '@/components/TableNoData';
 import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
@@ -9,6 +10,7 @@ import { useFilterCategoriesQuery, useDeleteCategoryMutation, useFilterSubCatego
 import StatusAlert from '@/components/StatusAlert';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import ViewDetailModal from '../../components/ViewDetailModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const CategoryList = () => {
     const navigate = useNavigate();
@@ -21,7 +23,7 @@ const CategoryList = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
 
-    const { data, isLoading } = useFilterCategoriesQuery({
+    const { data, isLoading, error: categoriesError, refetch } = useFilterCategoriesQuery({
         page,
         limit,
         filter: {
@@ -33,7 +35,17 @@ const CategoryList = () => {
 
     const [deleteCategory, { isSuccess: isDeleteSuccess, error: deleteError, isLoading: isDeleting }] = useDeleteCategoryMutation();
 
-    const { data: subCategoriesData } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 1000 });
+    const { data: subCategoriesData, error: subCategoriesError } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 1000 });
+
+    useEffect(() => {
+        if (categoriesError) toast.error(extractApiErrorMessage(categoriesError));
+    }, [categoriesError]);
+    useEffect(() => {
+        if (subCategoriesError) toast.error(extractApiErrorMessage(subCategoriesError));
+    }, [subCategoriesError]);
+    useEffect(() => {
+        if (deleteError) toast.error(extractApiErrorMessage(deleteError));
+    }, [deleteError]);
 
     const subCountByCategory = React.useMemo(() => {
         const map = {};

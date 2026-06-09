@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button } from 'react-bootstrap';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikSelectField from '@/components/formikfield/FormikSelectField';
 import FormikDateField from '@/components/formikfield/FormikDateField';
@@ -10,13 +12,24 @@ import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product'
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
 import { useAddManualStockMutation } from '@/services/authenticateendpoint/stock';
 import StatusAlert from '@/components/StatusAlert';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const ManualAddStock = () => {
     const navigate = useNavigate();
     const [addManualStock, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] = useAddManualStockMutation();
 
-    const { data: warehouses } = useGetAllWarehousesQuery();
-    const { data: products } = useGetAllProductsQuery();
+    const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery();
+    const { data: products, error: productsError } = useGetAllProductsQuery();
+
+    useEffect(() => {
+        if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+    }, [warehousesError]);
+    useEffect(() => {
+        if (productsError) toast.error(extractApiErrorMessage(productsError));
+    }, [productsError]);
+    useEffect(() => {
+        if (createError) toast.error(extractApiErrorMessage(createError));
+    }, [createError]);
 
     const warehouseOptions = warehouses?.map(w => ({ label: w.name, value: w._id })) || [];
     const productOptions = products?.map(p => ({ label: p.name, value: p._id })) || [];

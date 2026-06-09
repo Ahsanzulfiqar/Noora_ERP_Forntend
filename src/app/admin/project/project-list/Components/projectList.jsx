@@ -1,15 +1,17 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Card, CardFooter, CardHeader, CardTitle } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useDeleteProjectMutation, useGetAllProjectsQuery, useGetProjectsBySellerQuery } from '../../../../../services/authenticateendpoint/project';
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
 import { IconButton } from '@mui/material';
 import LoaderSpinner from '../../../../../components/loaders/LoaderSpinner';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useAuth } from '../../../../../hooks/useAuth';
 import { ROLES } from '@/assets/data/roles';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const ProjectList = () => {
   const { role, id: currentUserId, name: currentUserName } = useAuth();
@@ -19,13 +21,22 @@ const ProjectList = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const { data: allProjects, isLoading: loadingAll } = useGetAllProjectsQuery(undefined, { skip: isSeller });
-  const { data: sellerProjects, isLoading: loadingSeller } = useGetProjectsBySellerQuery(currentUserId, { skip: !isSeller || !currentUserId });
+  const { data: allProjects, isLoading: loadingAll, error: allError, refetch: refetchAll } = useGetAllProjectsQuery(undefined, { skip: isSeller });
+  const { data: sellerProjects, isLoading: loadingSeller, error: sellerError, refetch: refetchSeller } = useGetProjectsBySellerQuery(currentUserId, { skip: !isSeller || !currentUserId });
 
   const data = isSeller ? sellerProjects : allProjects;
   const isLoading = isSeller ? loadingSeller : loadingAll;
-  const { data: usersData } = useGetAllUsersQuery();
+  const projectsError = isSeller ? sellerError : allError;
+  const refetchProjects = isSeller ? refetchSeller : refetchAll;
+  const { data: usersData, error: usersError } = useGetAllUsersQuery();
   const sellerMap = Object.fromEntries((usersData || []).filter((u) => u.role === 'SELLER').map((s) => [s._id, s.name]));
+
+  useEffect(() => {
+    if (projectsError) toast.error(extractApiErrorMessage(projectsError));
+  }, [projectsError]);
+  useEffect(() => {
+    if (usersError) toast.error(extractApiErrorMessage(usersError));
+  }, [usersError]);
 
   const [deleteProject] = useDeleteProjectMutation();
   const navigate = useNavigate();

@@ -1,15 +1,24 @@
 import { Modal, Button } from 'react-bootstrap';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+import { toast } from 'react-toastify';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import { useGetAllProjectsQuery } from '@/services/authenticateendpoint/project';
 import { useUpdateUserMutation } from '@/services/authenticateendpoint/users';
 import { useState, useEffect } from 'react';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const AssignProjectModal = ({ show, onHide, user, onSuccess }) => {
-    const { data: projects } = useGetAllProjectsQuery();
-    const [updateUser, { isLoading }] = useUpdateUserMutation();
+    const { data: projects, error: projectsError } = useGetAllProjectsQuery();
+    const [updateUser, { isLoading, error: updateError }] = useUpdateUserMutation();
+
+    useEffect(() => {
+        if (projectsError) toast.error(extractApiErrorMessage(projectsError));
+    }, [projectsError]);
+    useEffect(() => {
+        if (updateError) toast.error(extractApiErrorMessage(updateError));
+    }, [updateError]);
 
     const projectOptions = projects?.map(p => ({
         value: p._id,

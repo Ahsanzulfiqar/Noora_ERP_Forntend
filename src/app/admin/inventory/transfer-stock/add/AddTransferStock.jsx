@@ -4,19 +4,21 @@ import * as Yup from 'yup'
 import { Link } from 'react-router-dom'
 import { Box, Divider, IconButton } from '@mui/material'
 import { Trash2, Plus, X, Edit } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import Button from '@mui/material/Button'
 import FormikTextArea from '@/components/formikfield/FormikTextArea'
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput'
 import StatusAlert from '@/components/StatusAlert'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse'
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product'
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant'
 import { useCreateStockTransferMutation } from '@/services/authenticateendpoint/stockTransfer'
 
 const AddTransferStock = () => {
-  const { data: warehouses } = useGetAllWarehousesQuery()
-  const { data: products } = useGetAllProductsQuery()
+  const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery()
+  const { data: products, error: productsError } = useGetAllProductsQuery()
   const [createStockTransfer, { isLoading: isSaving, isSuccess, error: createError }] =
     useCreateStockTransferMutation()
 
@@ -37,6 +39,16 @@ const AddTransferStock = () => {
     skip: !currentItem.product,
   })
   const variantOptions = productVariants?.map(v => ({ label: v.name, value: v._id })) || []
+
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (productsError) toast.error(extractApiErrorMessage(productsError));
+  }, [productsError]);
+  useEffect(() => {
+    if (createError) toast.error(extractApiErrorMessage(createError));
+  }, [createError]);
 
   return (
     <Col xl={12} lg={12}>

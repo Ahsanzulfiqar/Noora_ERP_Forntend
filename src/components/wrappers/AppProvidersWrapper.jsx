@@ -6,6 +6,7 @@ import { TitleProvider } from '@/context/useTitleContext';
 import { useEffect } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
 import { store } from '@/app/store';
 const AppProvidersWrapper = ({

@@ -1,13 +1,15 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { currency } from '@/context/constants';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useDeleteWarehouseMutation, useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { IconButton } from '@mui/material';
 import StatusAlert from '../../../../../components/StatusAlert';
 import LoaderSpinner from '../../../../../components/loaders/LoaderSpinner';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 const ProductCard = ({
   title,
   price,
@@ -78,7 +80,7 @@ const ProductCard = ({
   </tr>;
 };
 const WareHouseList = () => {
-  const { data, isLoading: isLoadingWarehouses, error } = useGetAllWarehousesQuery()
+  const { data, isLoading: isLoadingWarehouses, error, refetch } = useGetAllWarehousesQuery()
   const [deleteWarehouse, { isSuccess: isDeleteSuccess, error: isDeleteError }] = useDeleteWarehouseMutation();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -86,6 +88,13 @@ const WareHouseList = () => {
 
   const totalPages = Math.ceil((data?.length || 0) / limit);
   const paginatedData = data?.slice((page - 1) * limit, page * limit) || [];
+
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
+  useEffect(() => {
+    if (isDeleteError) toast.error(extractApiErrorMessage(isDeleteError));
+  }, [isDeleteError]);
 
   return <Card>
     < StatusAlert

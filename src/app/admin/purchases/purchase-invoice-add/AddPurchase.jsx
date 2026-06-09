@@ -21,17 +21,19 @@ import { useGetAllProductsQuery } from '../../../../services/authenticateendpoin
 import { useGetAllWarehousesQuery } from '../../../../services/authenticateendpoint/warehouse'
 import { useGetVariantsByProductQuery } from '../../../../services/authenticateendpoint/productvariant'
 import StatusAlert from '../../../../components/StatusAlert'
+import { toast } from 'react-toastify'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import FormikTextArea from '../../../../components/formikfield/FormikTextArea'
 import FormikToggleSwitch from '@/components/formikfield/FormikToggleSwitch'
 
 const AddPurchase = () => {
   const [createPurchase, { isLoading: isCreating, isSuccess: isCreateSuccess, error: createError }] = useCreatePurchaseMutation();
   const [updatePurchase, { isLoading: isUpdating, isSuccess: isUpdateSuccess, error: updateError }] = useUpdatePurchaseMutation();
-  const { data: products } = useGetAllProductsQuery();
-  const { data: warehouses } = useGetAllWarehousesQuery();
+  const { data: products, error: productsError } = useGetAllProductsQuery();
+  const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery();
   const { purchaseId } = useParams();
 
-  const { data: purchaseData, isLoading: isLoadingPurchase } = useGetPurchaseByIdQuery(purchaseId, {
+  const { data: purchaseData, isLoading: isLoadingPurchase, error: purchaseError } = useGetPurchaseByIdQuery(purchaseId, {
     skip: !purchaseId,
     refetchOnMountOrArgChange: true
   });
@@ -61,6 +63,22 @@ const AddPurchase = () => {
       }
     }
   }, [productVariants, currentItem]);
+
+  useEffect(() => {
+    if (productsError) toast.error(extractApiErrorMessage(productsError));
+  }, [productsError]);
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (purchaseError) toast.error(extractApiErrorMessage(purchaseError));
+  }, [purchaseError]);
+  useEffect(() => {
+    if (createError) toast.error(extractApiErrorMessage(createError));
+  }, [createError]);
+  useEffect(() => {
+    if (updateError) toast.error(extractApiErrorMessage(updateError));
+  }, [updateError]);
 
   return (
     <Col xl={12} lg={12}>

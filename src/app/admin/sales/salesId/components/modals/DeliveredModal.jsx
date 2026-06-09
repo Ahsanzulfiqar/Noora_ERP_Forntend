@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import { useMarkDeliveredMutation } from '@/services/authenticateendpoint/sales';
 import ActionModal from './ActionModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const DeliveredModal = ({ show, onHide, saleId }) => {
     const [markDelivered, { isLoading }] = useMarkDeliveredMutation();
@@ -12,7 +13,7 @@ const DeliveredModal = ({ show, onHide, saleId }) => {
             await markDelivered(saleId).unwrap();
             onHide();
         } catch (err) {
-            setError(err?.data?.errors?.[0]?.message || 'Failed to mark as delivered');
+            setError(extractApiErrorMessage(err) || 'Failed to mark as delivered');
         }
     };
 

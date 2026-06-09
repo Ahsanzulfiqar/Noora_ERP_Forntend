@@ -1,12 +1,15 @@
 
+import { useEffect } from 'react'
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { Link, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import FormikTextField from '@/components/formikfield/FormikTextField'
 import { useCreateWarehouseMutation, useGetAllWarehousesQuery, useGetWarehouseByIdQuery, useUpdateWarehouseMutation } from '../../../../../services/authenticateendpoint/warehouse'
 import Button from '@mui/material/Button'
 import StatusAlert from '../../../../../components/StatusAlert'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import countryList from 'react-select-country-list'
 import FormikToggleSwitch from '../../../../../components/formikfield/FormikToggleSwitch'
 import ChoicesSearchFormInput from '../../../../../components/formikfield/ChoicesSearchFormInput'
@@ -26,6 +29,14 @@ const AddWareHouse = () => {
       value: w._id,
       label: w.name,
     })) || []
+
+  useEffect(() => {
+    if (createError) toast.error(extractApiErrorMessage(createError));
+  }, [createError]);
+  useEffect(() => {
+    if (updateError) toast.error(extractApiErrorMessage(updateError));
+  }, [updateError]);
+
   return (
     <Col xl={12} lg={12}>
       <StatusAlert

@@ -1,11 +1,13 @@
 import { Badge, Card, CardBody, CardHeader, Form, Spinner, Table } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import { useGetSalesQuery } from '@/services/authenticateendpoint/sales'
 import { useAuth } from '@/hooks/useAuth'
 import MarkPaidModal from './MarkPaidModal'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
@@ -60,10 +62,14 @@ const SalesTableExpanded = ({ filter }) => {
     search,
   }
 
-  const { data: salesResponse, isLoading } = useGetSalesQuery(
+  const { data: salesResponse, isLoading, error, refetch } = useGetSalesQuery(
     { page, limit, filter: queryFilter },
     { refetchOnMountOrArgChange: true }
   )
+
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
 
   const rows = salesResponse?.data || []
   const total = salesResponse?.total || 0

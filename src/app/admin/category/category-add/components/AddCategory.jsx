@@ -7,15 +7,27 @@ import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikSelectField from '@/components/formikfield/FormikSelectField';
 import { useCreateCategoryMutation, useUpdateCategoryMutation, useGetCategoryByIdQuery } from '@/services/authenticateendpoint/category';
 import StatusAlert from '@/components/StatusAlert';
+import { toast } from 'react-toastify';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const AddCategory = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEdit = Boolean(id);
 
-    const { data: categoryData, isLoading: isLoadingCategory } = useGetCategoryByIdQuery(id, { skip: !isEdit });
+    const { data: categoryData, isLoading: isLoadingCategory, error: categoryError } = useGetCategoryByIdQuery(id, { skip: !isEdit });
     const [createCategory, { isLoading: isCreating, isSuccess: isCreateSuccess, error: createError }] = useCreateCategoryMutation();
     const [updateCategory, { isLoading: isUpdating, isSuccess: isUpdateSuccess, error: updateError }] = useUpdateCategoryMutation();
+
+    useEffect(() => {
+        if (categoryError) toast.error(extractApiErrorMessage(categoryError));
+    }, [categoryError]);
+    useEffect(() => {
+        if (createError) toast.error(extractApiErrorMessage(createError));
+    }, [createError]);
+    useEffect(() => {
+        if (updateError) toast.error(extractApiErrorMessage(updateError));
+    }, [updateError]);
 
     const handleSubmit = async (values) => {
         try {

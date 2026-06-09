@@ -1,11 +1,14 @@
+import { useEffect } from 'react'
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import FormikTextField from '@/components/formikfield/FormikTextField'
 import { useCreateCourierMutation, useGetCourierByIdQuery, useUpdateCourierMutation } from '../../../../../services/authenticateendpoint/courier'
 import Button from '@mui/material/Button'
 import StatusAlert from '../../../../../components/StatusAlert'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import FormikToggleSwitch from '../../../../../components/formikfield/FormikToggleSwitch'
 
 const AddEditCourier = () => {
@@ -16,7 +19,17 @@ const AddEditCourier = () => {
     const [searchParams] = useSearchParams();
     const courierId = searchParams.get('courierId');
 
-    const { data } = useGetCourierByIdQuery(courierId, { skip: !courierId })
+    const { data, error: courierError } = useGetCourierByIdQuery(courierId, { skip: !courierId })
+
+    useEffect(() => {
+        if (courierError) toast.error(extractApiErrorMessage(courierError));
+    }, [courierError]);
+    useEffect(() => {
+        if (createError) toast.error(extractApiErrorMessage(createError));
+    }, [createError]);
+    useEffect(() => {
+        if (updateError) toast.error(extractApiErrorMessage(updateError));
+    }, [updateError]);
 
     return (
         <Col xl={12} lg={12}>

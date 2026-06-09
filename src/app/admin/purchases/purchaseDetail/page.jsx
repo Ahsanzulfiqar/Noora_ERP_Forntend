@@ -3,17 +3,18 @@ import { getProductById } from '@/helpers/data';
 import { useEffect, useState } from 'react';
 import { Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import ItemDetails from './components/ItemDetails';
 import Step from './components/Step';
 import { useGetPurchaseByIdQuery } from '../../../../services/authenticateendpoint/purchases';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 const ProductDetailsPage = () => {
   const { purchaseId } = useParams();
 
-  const { data: purchaseData, isLoading: isLoadingPurchase } = useGetPurchaseByIdQuery(purchaseId, {
+  const { data: purchaseData, isLoading: isLoadingPurchase, error: purchaseError, refetch: refetchPurchase } = useGetPurchaseByIdQuery(purchaseId, {
     skip: !purchaseId,
     refetchOnMountOrArgChange: true
   });
-  console.log('purchaseData', purchaseData);
   const [_product, setProduct] = useState();
   const {
     productId
@@ -28,6 +29,9 @@ const ProductDetailsPage = () => {
       }
     })();
   }, []);
+  useEffect(() => {
+    if (purchaseError) toast.error(extractApiErrorMessage(purchaseError));
+  }, [purchaseError]);
   return <>
     <PageTItle title="Purchase Details" />
     <Row>

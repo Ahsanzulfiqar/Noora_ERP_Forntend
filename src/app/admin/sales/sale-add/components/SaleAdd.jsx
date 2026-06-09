@@ -3,6 +3,7 @@ import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button, Table } from '
 import { useNavigate, useParams } from 'react-router-dom';
 import { Formik, Form, FieldArray, Field } from 'formik';
 import { Icon } from '@iconify/react';
+import { toast } from 'react-toastify';
 import { useAuth } from '@/hooks/useAuth';
 import { ROLES } from '@/assets/data/roles';
 
@@ -21,6 +22,7 @@ import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikTextArea from '@/components/formikfield/FormikTextArea';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import StatusAlert from '@/components/StatusAlert';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 import { SalesValidationSchema } from '../../utils/utils';
 import { Plus, Trash2, X, Edit } from 'lucide-react';
 import { IconButton, Tooltip } from '@mui/material';
@@ -34,14 +36,14 @@ const SaleAdd = () => {
   const [createSale, { isLoading: isCreating, isSuccess: createSuccess, error: createError }] = useCreateSaleMutation();
   const [updateSale, { isLoading: isUpdating, isSuccess: updateSuccess, error: updateError }] = useUpdateSaleMutation();
 
-  const { data: saleData, isLoading: isLoadingSale } = useGetSaleByIdQuery(salesId, { skip: !salesId });
-  const { data: usersData } = useGetAllUsersQuery();
+  const { data: saleData, isLoading: isLoadingSale, error: saleError } = useGetSaleByIdQuery(salesId, { skip: !salesId });
+  const { data: usersData, error: usersError } = useGetAllUsersQuery();
   const [selectedSellerId, setSelectedSellerId] = useState(isSeller ? userId : (saleData?.seller || ''));
-  const { data: projectsBySellerData } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId || isSales });
-  const { data: allProjectsData } = useGetAllProjectsQuery(undefined, { skip: !isSales });
-  const { data: warehousesData } = useGetAllWarehousesQuery();
-  const { data: productsData } = useGetAllProductsQuery();
-  const { data: couriersData } = useGetAllCouriersQuery();
+  const { data: projectsBySellerData, error: projectsBySellerError } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId || isSales });
+  const { data: allProjectsData, error: allProjectsError } = useGetAllProjectsQuery(undefined, { skip: !isSales });
+  const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
+  const { data: productsData, error: productsError } = useGetAllProductsQuery();
+  const { data: couriersData, error: couriersError } = useGetAllCouriersQuery();
 
   const [newItem, setNewItem] = useState({
     product: '',
@@ -55,6 +57,34 @@ const SaleAdd = () => {
   });
 
   const { data: variantsData } = useGetVariantsByProductQuery(newItem.product, { skip: !newItem.product });
+
+  useEffect(() => {
+    if (saleError) toast.error(extractApiErrorMessage(saleError));
+  }, [saleError]);
+  useEffect(() => {
+    if (usersError) toast.error(extractApiErrorMessage(usersError));
+  }, [usersError]);
+  useEffect(() => {
+    if (projectsBySellerError) toast.error(extractApiErrorMessage(projectsBySellerError));
+  }, [projectsBySellerError]);
+  useEffect(() => {
+    if (allProjectsError) toast.error(extractApiErrorMessage(allProjectsError));
+  }, [allProjectsError]);
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (productsError) toast.error(extractApiErrorMessage(productsError));
+  }, [productsError]);
+  useEffect(() => {
+    if (couriersError) toast.error(extractApiErrorMessage(couriersError));
+  }, [couriersError]);
+  useEffect(() => {
+    if (createError) toast.error(extractApiErrorMessage(createError));
+  }, [createError]);
+  useEffect(() => {
+    if (updateError) toast.error(extractApiErrorMessage(updateError));
+  }, [updateError]);
 
   const statusOptions = [
     { value: 'draft', label: 'Draft' },

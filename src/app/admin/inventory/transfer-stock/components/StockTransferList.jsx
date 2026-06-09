@@ -1,13 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { Card, CardTitle, Col, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import TableNoData from '@/components/TableNoData'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import LoaderSpinner from '@/components/loaders/LoaderSpinner'
 import { useGetStockTransfersQuery } from '@/services/authenticateendpoint/stockTransfer'
 import { useAuth } from '@/hooks/useAuth'
 import { ROLES } from '@/assets/data/roles'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 
 const statusBadgeClass = (status) => {
   switch ((status || '').toLowerCase()) {
@@ -27,8 +29,12 @@ const StockTransferList = () => {
   const { role } = useAuth()
   const isSales = role === ROLES.SALES
 
-  const { data: transfers, isLoading } = useGetStockTransfersQuery()
+  const { data: transfers, isLoading, error, refetch } = useGetStockTransfersQuery()
   const list = transfers || []
+
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
 
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)

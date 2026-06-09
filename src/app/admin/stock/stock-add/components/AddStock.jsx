@@ -1,19 +1,22 @@
 // React form with Formik
 // Reusable Components
 
+import { useEffect } from 'react'
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import FormikSelectField from '@/components/formikfield/FormikSelectField'
 import { usePostToStockMutation } from '../../../../../services/authenticateendpoint/purchases'
 import { useGetAllPurchasesQuery } from '../../../../../services/authenticateendpoint/purchases'
 import Button from '@mui/material/Button'
 import StatusAlert from '../../../../../components/StatusAlert'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 
 const AddStock = () => {
     const [postToStock, { isLoading: isPosting, error: postError, isSuccess: postSuccess }] = usePostToStockMutation()
-    const { data: purchases, isLoading: isLoadingPurchases } = useGetAllPurchasesQuery()
+    const { data: purchases, isLoading: isLoadingPurchases, error: purchasesError } = useGetAllPurchasesQuery()
 
     // Filter purchases that haven't been posted to stock yet, if necessary. 
     // For now showing all purchases or maybe we should only show those not posted?
@@ -26,6 +29,13 @@ const AddStock = () => {
         label: `${purchase.invoiceNo} - ${purchase.supplierName}`,
         value: purchase._id
     })) || []
+
+    useEffect(() => {
+        if (purchasesError) toast.error(extractApiErrorMessage(purchasesError));
+    }, [purchasesError]);
+    useEffect(() => {
+        if (postError) toast.error(extractApiErrorMessage(postError));
+    }, [postError]);
 
     return (
         <Col xl={12} lg={12}>

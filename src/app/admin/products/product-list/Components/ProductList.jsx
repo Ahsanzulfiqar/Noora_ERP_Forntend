@@ -4,9 +4,11 @@ import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, Dropdo
 import { Link, useNavigate } from 'react-router-dom'
 import { useDeleteProductMutation, useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product'
 import IconButton from '@mui/material/IconButton'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import LoaderSpinner from '@/components/loaders/LoaderSpinner'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const [deleteProduct] = useDeleteProductMutation();
@@ -92,7 +94,11 @@ const ProductCard = ({ product }) => {
 const ProductList = () => {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
-  const { data: productData, isLoading, error } = useGetAllProductsQuery()
+  const { data: productData, isLoading, error, refetch } = useGetAllProductsQuery()
+
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
 
   const totalItems = productData?.length || 0
   const totalPages = Math.ceil(totalItems / limit)
@@ -147,13 +153,6 @@ const ProductList = () => {
             </thead>
             <tbody>
               {isLoading && <LoaderSpinner show={isLoading} colSpan={8} />}
-              {error && (
-                <tr>
-                  <td colSpan="11" className="text-center text-danger">
-                    Error loading products
-                  </td>
-                </tr>
-              )}
               {currentData?.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}

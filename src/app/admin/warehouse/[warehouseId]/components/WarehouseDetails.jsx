@@ -1,16 +1,22 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { useEffect } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
 import { Link, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useGetWarehouseByIdQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Contact, MapPin } from 'lucide-react';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 const WarehouseDetails = () => {
   const { warehouseId } = useParams();
-  console.log(warehouseId);
 
-  const { data, isLoading, error } = useGetWarehouseByIdQuery(warehouseId)
-  console.log(data, isLoading, error);
+  const { data, isLoading, error, refetch } = useGetWarehouseByIdQuery(warehouseId)
+
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
+
   return <Col lg={12}>
     <Card>
       <CardHeader >

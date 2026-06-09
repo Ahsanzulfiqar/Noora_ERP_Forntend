@@ -1,17 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import { Formik, Form, Field } from 'formik';
+import { toast } from 'react-toastify';
 import { useMarkOutForDeliveryMutation } from '@/services/authenticateendpoint/sales';
 import { useGetAllCouriersQuery } from '@/services/authenticateendpoint/courier';
 import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikTextArea from '@/components/formikfield/FormikTextArea';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import ActionModal from './ActionModal';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const OutForDeliveryModal = ({ show, onHide, saleId }) => {
     const [markOutForDelivery, { isLoading }] = useMarkOutForDeliveryMutation();
-    const { data: couriersData } = useGetAllCouriersQuery();
+    const { data: couriersData, error: couriersError } = useGetAllCouriersQuery();
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (couriersError) toast.error(extractApiErrorMessage(couriersError));
+    }, [couriersError]);
 
     const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
 
@@ -34,7 +40,7 @@ const OutForDeliveryModal = ({ show, onHide, saleId }) => {
             }).unwrap();
             onHide();
         } catch (err) {
-            setError(err?.data?.errors?.[0]?.message || 'Failed to mark as out for delivery');
+            setError(extractApiErrorMessage(err) || 'Failed to mark as out for delivery');
         }
     };
 

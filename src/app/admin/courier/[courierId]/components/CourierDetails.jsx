@@ -1,16 +1,23 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
+import { useEffect } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useGetCourierByIdQuery } from '../../../../../services/authenticateendpoint/courier';
 import LoaderSpinner from '@/components/loaders/LoaderSpinner';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const CourierDetails = () => {
     const { courierId } = useParams();
 
-    const { data, isLoading, error } = useGetCourierByIdQuery(courierId, { skip: !courierId })
+    const { data, isLoading, error, refetch } = useGetCourierByIdQuery(courierId, { skip: !courierId })
+
+    useEffect(() => {
+        if (error) toast.error(extractApiErrorMessage(error));
+    }, [error]);
 
     if (isLoading) return <LoaderSpinner />
-    if (error) return <div>Error loading courier details</div>
+    if (error) return null
 
     return <Col lg={12}>
         <Card>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useGetProductByIdQuery } from '../../../../../services/authenticateendpoint/product';
 import { useFilterCategoriesQuery, useFilterSubCategoriesQuery } from '../../../../../services/authenticateendpoint/category';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
@@ -7,12 +8,13 @@ import product1 from '@/assets/images/product/noimage.png';
 import { currency } from '@/context/constants';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import { Col, Card, CardBody, Spinner, Alert, Row, CardHeader, Table, Badge } from 'react-bootstrap';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const ProductDetails = () => {
   const { productId } = useParams();
-  const { data, isLoading, error } = useGetProductByIdQuery(productId);
-  const { data: categoriesData } = useFilterCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 });
-  const { data: subCategoriesData } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 });
+  const { data, isLoading, error, refetch } = useGetProductByIdQuery(productId);
+  const { data: categoriesData, error: categoriesError } = useFilterCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 });
+  const { data: subCategoriesData, error: subCategoriesError } = useFilterSubCategoriesQuery({ filter: { isActive: true }, page: 1, limit: 100 });
 
   const [mainImage, setMainImage] = useState(product1);
 
@@ -78,6 +80,16 @@ const ProductDetails = () => {
     }
   }, [images]);
 
+  useEffect(() => {
+    if (error) toast.error(extractApiErrorMessage(error));
+  }, [error]);
+  useEffect(() => {
+    if (categoriesError) toast.error(extractApiErrorMessage(categoriesError));
+  }, [categoriesError]);
+  useEffect(() => {
+    if (subCategoriesError) toast.error(extractApiErrorMessage(subCategoriesError));
+  }, [subCategoriesError]);
+
   if (isLoading) {
     return (
       <div className="text-center p-5">
@@ -88,11 +100,7 @@ const ProductDetails = () => {
   }
 
   if (error) {
-    return (
-      <Alert variant="danger" className="m-3">
-        Error loading product: {error.message || 'Unknown error occurred'}
-      </Alert>
-    );
+    return null;
   }
 
   if (!product) {

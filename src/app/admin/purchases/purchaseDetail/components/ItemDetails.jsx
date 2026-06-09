@@ -1,15 +1,17 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { Button, Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { usePostToStockMutation } from '@/services/authenticateendpoint/purchases';
 import { useConfirmPurchaseMutation } from '@/services/authenticateendpoint/purchases';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DeleteConfirmModal from '../../../../../components/DeleteConfirmModal';
 import PostToStockModal from './PostToStockModal';
 import StatusAlert from '@/components/StatusAlert';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
   const [postToStock, { isLoading: isPosting, isSuccess: isPostSuccess, error: postError }] = usePostToStockMutation();
@@ -17,6 +19,13 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
   const [showPostConfirm, setShowPostConfirm] = useState(false);
   const [showConfirmPurchase, setShowConfirmPurchase] = useState(false);
   const totalAmount = purchaseData?.totalAmount ?? purchaseData?.items?.reduce((sum, item) => sum + (Number(item?.lineTotal) || 0), 0) ?? 0;
+
+  useEffect(() => {
+    if (postError) toast.error(extractApiErrorMessage(postError));
+  }, [postError]);
+  useEffect(() => {
+    if (confirmError) toast.error(extractApiErrorMessage(confirmError));
+  }, [confirmError]);
 
   const handlePostToStockClick = () => {
     setShowPostConfirm(true);

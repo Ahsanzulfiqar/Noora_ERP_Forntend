@@ -1,13 +1,16 @@
+import { useEffect } from 'react'
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { Link, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import FormikTextField from '@/components/formikfield/FormikTextField'
 import { useCreateProjectMutation, useGetProjectByIdQuery, useUpdateProjectMutation } from '../../../../../services/authenticateendpoint/project'
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse'
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users'
 import Button from '@mui/material/Button'
 import StatusAlert from '../../../../../components/StatusAlert'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import ChoicesSearchFormInput from '../../../../../components/formikfield/ChoicesSearchFormInput'
 import FormikToggleSwitch from '../../../../../components/formikfield/FormikToggleSwitch'
 import { useAuth } from '../../../../../hooks/useAuth'
@@ -20,17 +23,33 @@ const AddEditproject = () => {
   const [updateProject, { isLoading: isUpdating, error: updateError, isSuccess: updateSuccess }] = useUpdateProjectMutation()
 
   // Fetch Warehouses
-  const { data: warehousesData } = useGetAllWarehousesQuery();
+  const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
 
-  const { data: usersData } = useGetAllUsersQuery(undefined, { skip: !isAdmin });
+  const { data: usersData, error: usersError } = useGetAllUsersQuery(undefined, { skip: !isAdmin });
   const sellerOptions = usersData
     ?.filter(u => u.role === 'SELLER')
     ?.map(u => ({ value: u._id, label: u.name })) || [];
 
   const { projectId } = useParams();
 
-  const { data } = useGetProjectByIdQuery(projectId, { skip: !projectId })
+  const { data, error: projectError } = useGetProjectByIdQuery(projectId, { skip: !projectId })
+
+  useEffect(() => {
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+  }, [warehousesError]);
+  useEffect(() => {
+    if (usersError) toast.error(extractApiErrorMessage(usersError));
+  }, [usersError]);
+  useEffect(() => {
+    if (projectError) toast.error(extractApiErrorMessage(projectError));
+  }, [projectError]);
+  useEffect(() => {
+    if (createError) toast.error(extractApiErrorMessage(createError));
+  }, [createError]);
+  useEffect(() => {
+    if (updateError) toast.error(extractApiErrorMessage(updateError));
+  }, [updateError]);
 
   return (
     <Col xl={12} lg={12}>

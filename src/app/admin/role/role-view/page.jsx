@@ -1,11 +1,18 @@
 import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { useGetUserByIdQuery } from '@/services/authenticateendpoint/users';
 import UserDetails from './components/UserDetails';
 import PageTItle from '@/components/PageTItle';
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const RoleViewPage = () => {
     const { roleId } = useParams();
-    const { data: userData, isLoading, isError, error } = useGetUserByIdQuery(roleId);
+    const { data: userData, isLoading, isError, error, refetch } = useGetUserByIdQuery(roleId);
+
+    useEffect(() => {
+        if (error) toast.error(extractApiErrorMessage(error));
+    }, [error]);
 
     if (isLoading) {
         return (
@@ -19,11 +26,7 @@ const RoleViewPage = () => {
     }
 
     if (isError) {
-        return (
-            <div className="alert alert-danger m-3">
-                Error loading user details: {error?.message || 'Unknown error'}
-            </div>
-        );
+        return null;
     }
 
     if (!userData) {
