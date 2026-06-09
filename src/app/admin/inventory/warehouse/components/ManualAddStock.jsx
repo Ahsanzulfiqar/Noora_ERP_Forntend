@@ -1,22 +1,30 @@
 import { useEffect } from 'react';
 import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button } from 'react-bootstrap';
-import { Formik, Form } from 'formik';
+import { Formik, Form, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Plus, Trash2 } from 'lucide-react';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
 import FormikTextField from '@/components/formikfield/FormikTextField';
 import FormikSelectField from '@/components/formikfield/FormikSelectField';
 import FormikDateField from '@/components/formikfield/FormikDateField';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
-import { useAddManualStockMutation } from '@/services/authenticateendpoint/stock';
+import { useAddOpeningStockMutation } from '@/services/authenticateendpoint/stock';
 import StatusAlert from '@/components/StatusAlert';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
+const emptyBatch = { batchNo: '', expiryDate: '', quantity: 0, unitCost: 0 };
+
 const ManualAddStock = () => {
     const navigate = useNavigate();
-    const [addManualStock, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] = useAddManualStockMutation();
+    const [addOpeningStock, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] = useAddOpeningStockMutation();
 
     const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery();
     const { data: products, error: productsError } = useGetAllProductsQuery();
@@ -38,20 +46,25 @@ const ManualAddStock = () => {
         warehouseId: '',
         productId: '',
         variantId: '',
-        quantity: 0,
-        batchNo: '',
-        expiryDate: '',
-        note: ''
+        note: '',
+        batches: [{ ...emptyBatch }],
     };
 
     const validationSchema = Yup.object({
         warehouseId: Yup.string().required('Required'),
         productId: Yup.string().required('Required'),
         variantId: Yup.string(),
-        quantity: Yup.number().min(1, 'Must be at least 1').required('Required'),
-        batchNo: Yup.string().required('Required'),
-        expiryDate: Yup.date().required('Required'),
-        note: Yup.string()
+        note: Yup.string(),
+        batches: Yup.array()
+            .of(
+                Yup.object({
+                    batchNo: Yup.string().required('Required'),
+                    expiryDate: Yup.date().required('Required'),
+                    quantity: Yup.number().min(1, 'Must be at least 1').required('Required'),
+                    unitCost: Yup.number().min(0, 'Must be 0 or more').required('Required'),
+                })
+            )
+            .min(1, 'At least one batch is required'),
     });
 
     return (
@@ -76,13 +89,16 @@ const ManualAddStock = () => {
                                 const data = {
                                     warehouseId: values.warehouseId,
                                     productId: values.productId,
-                                    quantity: values.quantity,
-                                    batchNo: values.batchNo,
-                                    expiryDate: new Date(values.expiryDate).toISOString(),
+                                    variantId: values.variantId || null,
                                     note: values.note,
-                                    ...(values.variantId && { variantId: values.variantId }),
+                                    batches: values.batches.map(b => ({
+                                        batchNo: b.batchNo,
+                                        expiryDate: new Date(b.expiryDate).toISOString(),
+                                        quantity: Number(b.quantity),
+                                        unitCost: Number(b.unitCost),
+                                    })),
                                 };
-                                await addManualStock(data).unwrap();
+                                await addOpeningStock(data).unwrap();
                             } catch (err) {
                                 console.error('Failed to add inventory:', err);
                             }
@@ -142,17 +158,74 @@ const ManualAddStockForm = ({
                 </Col>
             </Row>
 
-            <Row className="mb-4">
-                <Col md={4}>
-                    <FormikTextField name="batchNo" label="Batch No" placeholder="Enter Batch No" />
-                </Col>
-                <Col md={4}>
-                    <FormikDateField name="expiryDate" label="Expiry Date" />
-                </Col>
-                <Col md={4}>
-                    <FormikTextField name="quantity" label="Quantity" type="number" />
-                </Col>
-            </Row>
+            <Box sx={{ border: '1px solid #dfdfdfff', borderRadius: '10px', mb: 3 }}>
+                <FieldArray name="batches">
+                    {({ push, remove }) => (
+                        <>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '16px', paddingRight: '8px', paddingY: '8px' }}>
+                                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Batches</Typography>
+                                <IconButton
+                                    type="button"
+                                    onClick={() => push({ ...emptyBatch })}
+                                    sx={{
+                                        backgroundColor: '#5c7186', borderRadius: '7px',
+                                        '&:hover': {
+                                            backgroundColor: '#7b8792ff !important',
+                                            '& svg': { stroke: '#ffffffff !important' }
+                                        }
+                                    }}
+                                >
+                                    <Plus size={20} color="#ffffff" strokeWidth={2.5} />
+                                </IconButton>
+                            </Box>
+                            <Divider />
+                            <Box sx={{ paddingX: '16px', paddingY: '12px' }}>
+                                {values.batches.map((_, index) => (
+                                    <Grid key={index} container spacing={2} alignItems="flex-start">
+                                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                                            <FormikTextField
+                                                name={`batches.${index}.batchNo`}
+                                                label="Batch No"
+                                                placeholder="OPEN-001"
+                                            />
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                                            <FormikDateField
+                                                name={`batches.${index}.expiryDate`}
+                                                label="Expiry Date"
+                                            />
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+                                            <FormikTextField
+                                                name={`batches.${index}.quantity`}
+                                                label="Quantity"
+                                                type="number"
+                                            />
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                                            <FormikTextField
+                                                name={`batches.${index}.unitCost`}
+                                                label="Unit Cost"
+                                                type="number"
+                                            />
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 12, md: 1 }}>
+                                            <IconButton
+                                                type="button"
+                                                onClick={() => remove(index)}
+                                                disabled={values.batches.length === 1}
+                                                sx={{ backgroundColor: '#ffdcdcff', marginTop: '28px', marginLeft: '2px' }}
+                                            >
+                                                <Trash2 size={17} color="#ff3939ff" strokeWidth={2} />
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+                                ))}
+                            </Box>
+                        </>
+                    )}
+                </FieldArray>
+            </Box>
 
             <Row className="mb-4">
                 <Col md={12}>

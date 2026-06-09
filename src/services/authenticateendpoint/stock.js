@@ -2,21 +2,27 @@ import { api } from '../authapi'
 
 export const stocksAPI = api.injectEndpoints({
   endpoints: (build) => ({
-    // Add Manual Stock
-    addManualStock: build.mutation({
+    // Add Opening Stock (manual inventory with multiple batches)
+    addOpeningStock: build.mutation({
       query: (data) => ({
         method: 'POST',
         auth: true,
         body: {
           query: `
-            mutation AddManualStock($data: ManualStockInput!) {
-              AddManualStock(data: $data) {
+            mutation AddOpeningStock($data: AddOpeningStockInput!) {
+              AddOpeningStock(data: $data) {
                 _id
+                warehouse
+                product
+                variant
                 quantity
                 reserved
+                avgCost
                 batches {
                   batchNo
+                  expiryDate
                   quantity
+                  unitCost
                 }
               }
             }
@@ -171,7 +177,7 @@ export const stocksAPI = api.injectEndpoints({
 })
 
 export const {
-  useAddManualStockMutation,
+  useAddOpeningStockMutation,
   useCreateWarehouseStockMutation,
   useGetWarehouseStockQuery,
   useGetWarehouseProductBatchesQuery,
