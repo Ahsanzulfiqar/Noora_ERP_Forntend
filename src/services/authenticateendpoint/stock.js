@@ -33,7 +33,7 @@ export const stocksAPI = api.injectEndpoints({
       invalidatesTags: ['Stock'],
     }),
 
-    // Update Stock With Batches (physical stock correction)
+    // Update Stock With Batches 
     updateStockWithBatches: build.mutation({
       query: (data) => ({
         method: 'POST',
