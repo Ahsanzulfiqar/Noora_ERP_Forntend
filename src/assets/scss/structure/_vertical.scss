@@ -456,7 +456,7 @@ html[data-menu-size="sm-hover"] {
           display: none;
      }
 
-     .main-nav:not(:hover) {
+     .main-nav {
           width: $main-nav-width-sm;
           min-width: $main-nav-width-sm;
 
@@ -504,26 +504,19 @@ html[data-menu-size="sm-hover"] {
           .simplebar-track.simplebar-vertical {
                visibility: hidden !important;
           }
-     }
 
-     .main-nav {
-          width: $main-nav-width;
-          min-width: $main-nav-width;
+          .button-sm-hover {
+               display: block;
+               right: -11px;
+               background-color: $main-nav-bg;
+               border: 1px solid var(--#{$prefix}border-color);
+               box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+               z-index: 2;
 
-          .logo-box {
-               text-align: left;
-          }
-
-          &:hover {
-               .button-sm-hover {
-                    display: block;
-
-                    .button-sm-hover-icon {
-                         transform: rotateY(180deg);
-                         transition: all 0.3s ease-in-out;
-                    }
+               .button-sm-hover-icon {
+                    transform-style: preserve-3d;
+                    transition: all 0.3s ease-in-out;
                }
-
           }
 
           .simplebar-track.simplebar-horizontal {

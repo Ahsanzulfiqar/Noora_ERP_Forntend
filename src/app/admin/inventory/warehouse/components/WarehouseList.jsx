@@ -183,6 +183,7 @@ const WarehouseList = () => {
                   <th>Quantity</th>
                   <th>Reserved</th>
                   <th>Reorder Level</th>
+                  <th>Avg Price</th>
                   <th>Created At</th>
                   <th>Action</th>
                 </tr>
@@ -205,6 +206,7 @@ const WarehouseList = () => {
                       <td>{item.quantity || '0'}</td>
                       <td>{item.reserved || '0'}</td>
                       <td>{item.reorderLevel || '0'}</td>
+                      <td>{item.avgCost ? Number(item.avgCost).toFixed(2) : '0'}</td>
                       <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}</td>
                       <td>
                         <div className="d-flex gap-2">

@@ -33,6 +33,18 @@ const LayoutProvider = ({
     showBackdrop: false
   });
 
+  // Always boot with the sidebar in its fixed/expanded state on every page load,
+  // even if a prior session toggled it to sm-hover or condensed.
+  useEffect(() => {
+    if (settings.menu?.size !== 'sm-hover-active') {
+      setSettings({
+        ...settings,
+        menu: { ...settings.menu, size: 'sm-hover-active' }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // update settings
   const updateSettings = _newSettings => setSettings({
     ...settings,

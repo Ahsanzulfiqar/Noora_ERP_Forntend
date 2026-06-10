@@ -22,8 +22,11 @@ const HoverMenuToggle = () => {
   const handleHoverMenu = () => {
     if (size === 'sm-hover-active') changeMenuSize('sm-hover');else changeMenuSize('sm-hover-active');
   };
-  return <button type="button" onClick={handleHoverMenu} className="button-sm-hover" aria-label="Show Full Sidebar">
-      <IconifyIcon height={22} width={22} icon="solar:double-alt-arrow-right-bold-duotone" className="button-sm-hover-icon" />
+  const icon = size === 'sm-hover-active'
+    ? 'solar:alt-arrow-left-bold-duotone'
+    : 'solar:alt-arrow-right-bold-duotone';
+  return <button type="button" onClick={handleHoverMenu} className="button-sm-hover" aria-label="Toggle Sidebar">
+      <IconifyIcon height={22} width={22} icon={icon} className="button-sm-hover-icon" />
     </button>;
 };
 export default HoverMenuToggle;

@@ -15,6 +15,16 @@ import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/wareho
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product'
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant'
 import { useCreateStockTransferMutation } from '@/services/authenticateendpoint/stockTransfer'
+import { useGetWarehouseProductBatchesQuery } from '@/services/authenticateendpoint/stock'
+
+// Normalize batch expiry (may arrive as ISO string, Date string, or numeric timestamp)
+const formatDateForInput = (d) => {
+  if (!d) return ''
+  const raw = typeof d === 'string' && /^\d+$/.test(d) ? Number(d) : d
+  const dt = new Date(raw)
+  if (isNaN(dt.getTime())) return ''
+  return dt.toISOString().split('T')[0]
+}
 
 const AddTransferStock = () => {
   const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery()
@@ -27,6 +37,7 @@ const AddTransferStock = () => {
 
   const [showAddItemForm, setShowAddItemForm] = useState(false)
   const [editingIndex, setEditingIndex] = useState(null)
+  const [fromWarehouseId, setFromWarehouseId] = useState('')
   const [currentItem, setCurrentItem] = useState({
     product: '',
     variant: '',
@@ -39,6 +50,33 @@ const AddTransferStock = () => {
     skip: !currentItem.product,
   })
   const variantOptions = productVariants?.map(v => ({ label: v.name, value: v._id })) || []
+
+  const { data: batchesData, isFetching: isFetchingBatches } = useGetWarehouseProductBatchesQuery(
+    {
+      warehouseId: fromWarehouseId,
+      productId: currentItem.product,
+      variantId: currentItem.variant || null,
+    },
+    { skip: !fromWarehouseId || !currentItem.product },
+  )
+  const availableBatches =
+    batchesData?.data?.GetWarehouseProductBatches ||
+    batchesData?.GetWarehouseProductBatches ||
+    []
+  const batchOptions = availableBatches.map((b) => ({
+    label: `${b.batchNo} (Qty: ${b.quantity})`,
+    value: b.batchNo,
+  }))
+
+  const batchPlaceholder = !fromWarehouseId
+    ? 'Select From Warehouse first'
+    : !currentItem.product
+      ? 'Select Product first'
+      : isFetchingBatches
+        ? 'Loading batches...'
+        : availableBatches.length === 0
+          ? 'No batches available'
+          : 'Select Batch'
 
   useEffect(() => {
     if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
@@ -124,6 +162,9 @@ const AddTransferStock = () => {
                           onChange={(val) => {
                             form.setFieldValue('fromWarehouse', val)
                             form.setFieldTouched('fromWarehouse', true, false)
+                            setFromWarehouseId(val)
+                            // Reset batch selection on warehouse change — batches are warehouse-scoped
+                            setCurrentItem((ci) => ({ ...ci, batchNo: '', expiryDate: '' }))
                           }}
                           placeholder="Select From Warehouse"
                         />
@@ -200,7 +241,7 @@ const AddTransferStock = () => {
                                   id="add-product"
                                   value={currentItem.product}
                                   options={productOptions}
-                                  onChange={(val) => setCurrentItem({ ...currentItem, product: val, variant: '' })}
+                                  onChange={(val) => setCurrentItem({ ...currentItem, product: val, variant: '', batchNo: '', expiryDate: '' })}
                                   placeholder="Select Product"
                                 />
                               </Col>
@@ -212,7 +253,7 @@ const AddTransferStock = () => {
                                     id="add-variant"
                                     value={currentItem.variant}
                                     options={variantOptions}
-                                    onChange={(val) => setCurrentItem({ ...currentItem, variant: val })}
+                                    onChange={(val) => setCurrentItem({ ...currentItem, variant: val, batchNo: '', expiryDate: '' })}
                                     placeholder="Select Variant"
                                   />
                                 ) : (
@@ -232,12 +273,21 @@ const AddTransferStock = () => {
                               </Col>
                               <Col lg={6}>
                                 <label className="form-label fw-bold">Batch No</label>
-                                <input
-                                  type="text"
+                                <ChoicesSearchFormInput
+                                  key={`batch-${fromWarehouseId}-${currentItem.product}-${currentItem.variant}`}
                                   className="form-control"
-                                  placeholder="Batch No"
+                                  id="add-batch"
                                   value={currentItem.batchNo}
-                                  onChange={(e) => setCurrentItem({ ...currentItem, batchNo: e.target.value })}
+                                  options={batchOptions}
+                                  onChange={(val) => {
+                                    const selected = availableBatches.find((b) => b.batchNo === val)
+                                    setCurrentItem({
+                                      ...currentItem,
+                                      batchNo: val,
+                                      expiryDate: formatDateForInput(selected?.expiryDate),
+                                    })
+                                  }}
+                                  placeholder={batchPlaceholder}
                                 />
                               </Col>
                               <Col lg={6}>
@@ -246,7 +296,8 @@ const AddTransferStock = () => {
                                   type="date"
                                   className="form-control"
                                   value={currentItem.expiryDate}
-                                  onChange={(e) => setCurrentItem({ ...currentItem, expiryDate: e.target.value })}
+                                  readOnly
+                                  disabled
                                 />
                               </Col>
                               <Col lg={12} className="text-end mt-2">
