@@ -436,7 +436,7 @@ const SaleAdd = () => {
                       </Field>
                     </Col>
 
-                    {(role === 'Admin' || role === 'ADMIN') && (
+                    {salesId && (role === 'Admin' || role === 'ADMIN') && (
                       <>
                         <Col lg={4}>
                           <Field name="courierName">

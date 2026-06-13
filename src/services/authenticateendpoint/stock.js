@@ -157,6 +157,7 @@ export const stocksAPI = api.injectEndpoints({
                 quantity
                 reserved
                 reorderLevel
+                avgCost
                 batches {
                   batchNo
                   expiryDate

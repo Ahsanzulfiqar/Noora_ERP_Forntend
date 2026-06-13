@@ -88,6 +88,12 @@ const WarehouseInventoryDetails = () => {
                                     <h4 className="mb-0 text-danger">{stockData.reorderLevel}</h4>
                                 </div>
                             </Col>
+                            <Col md={3}>
+                                <div className="border p-3 rounded">
+                                    <h6 className="text-muted mb-1">Avg Price</h6>
+                                    <h4 className="mb-0 text-info">{stockData.avgCost ? Number(stockData.avgCost).toFixed(2) : '0'}</h4>
+                                </div>
+                            </Col>
                         </Row>
 
                         <hr className="my-4" />

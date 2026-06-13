@@ -1,6 +1,6 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { currency } from '@/context/constants'
-import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'
+import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Form } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDeleteProductMutation, useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product'
 import IconButton from '@mui/material/IconButton'
@@ -94,15 +94,31 @@ const ProductCard = ({ product }) => {
 const ProductList = () => {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
+  const [search, setSearch] = useState('')
   const { data: productData, isLoading, error, refetch } = useGetAllProductsQuery()
 
   useEffect(() => {
     if (error) toast.error(extractApiErrorMessage(error));
   }, [error]);
 
-  const totalItems = productData?.length || 0
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value)
+    setPage(1)
+  }
+
+  const filteredData = (productData || []).filter((product) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return (
+      product?.name?.toLowerCase().includes(q) ||
+      product?.brand?.toLowerCase().includes(q) ||
+      product?.sku?.toLowerCase().includes(q)
+    )
+  })
+
+  const totalItems = filteredData.length
   const totalPages = Math.ceil(totalItems / limit)
-  const currentData = productData?.slice((page - 1) * limit, page * limit) || []
+  const currentData = filteredData.slice((page - 1) * limit, page * limit)
 
   return (
     <Card>
@@ -110,6 +126,14 @@ const ProductList = () => {
         <CardTitle as={'h4'} className="flex-grow-1">
           All Products Lists
         </CardTitle>
+        <Form.Control
+          type="text"
+          placeholder="Search by name, brand, or SKU..."
+          size="sm"
+          value={search}
+          onChange={handleSearchChange}
+          style={{ width: '240px' }}
+        />
         <Link to="/products/product-add" className="btn btn-sm btn-primary">
           Add Product
         </Link>
@@ -156,7 +180,7 @@ const ProductList = () => {
               {currentData?.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
-              {!isLoading && !error && productData?.length === 0 && (
+              {!isLoading && !error && currentData.length === 0 && (
                 <tr>
                   <td colSpan="11" className="text-center">
                     No Record Found
