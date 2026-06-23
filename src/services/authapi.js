@@ -98,7 +98,7 @@ export const api = createApi({
   reducerPath: 'authapi',
   baseQuery: baseQueryWithReauth,
 
-  tagTypes: ['User', 'Project', 'Sales', 'Category', 'SubCategory', 'Courier', 'Products', 'Variants', 'Purchases', 'Sellers', 'Warehouses', 'WarehouseStock', 'Stock', 'StockTransfer'],
+  tagTypes: ['User', 'Project', 'Sales', 'Category', 'SubCategory', 'Courier', 'Products', 'Variants', 'Purchases', 'Sellers', 'Warehouses', 'WarehouseStock', 'Stock', 'StockTransfer', 'Account'],
 
   endpoints: () => ({}), // empty, others will inject
 })
