@@ -2,9 +2,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 // Custom base query that handles GraphQL errors properly
 const baseQueryWithErrorHandling = async (args, api, extraOptions) => {
-  const baseQuery = fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_GRAPHQL_URL,
-    method: 'POST',
+const baseQuery = fetchBaseQuery({
+baseUrl: import.meta.env.VITE_API_URL,
+  method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
