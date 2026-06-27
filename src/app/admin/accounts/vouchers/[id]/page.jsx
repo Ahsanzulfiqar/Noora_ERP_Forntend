@@ -1,36 +1,45 @@
+import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import PageTItle from '@/components/PageTItle'
-import { Card, CardHeader, CardTitle, Table, Row, Col, Badge, Button } from 'react-bootstrap'
+import { Card, CardHeader, CardTitle, Table, Row, Col, Badge, Button, Spinner, Alert } from 'react-bootstrap'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
+import { useGetAccountsQuery, useGetVoucherByIdQuery } from '@/services/authenticateendpoint/account'
 
 const VoucherDetailPage = () => {
     const { id } = useParams()
+    const { data, isLoading, isFetching, error } = useGetVoucherByIdQuery(id, { skip: !id })
+    const { data: accounts = [] } = useGetAccountsQuery({ isActive: true })
 
-    // Mock detail data
-    const voucher = {
-        voucherNo: 'JV-2026-001',
-        date: '2026-02-20',
-        memo: 'Salary payment for Feb',
-        status: 'POSTED',
-        lines: [
-            { id: 1, account: '1001 - Cash in Hand', debit: 0, credit: 50000 },
-            { id: 2, account: '5001 - Office Rent', debit: 50000, credit: 0 },
-        ],
+    const accountMap = useMemo(() => {
+        const map = new Map()
+        accounts.forEach((account) => {
+            map.set(account._id, account)
+        })
+        return map
+    }, [accounts])
+
+    const voucher = data?.voucher
+    const lines = data?.lines || []
+
+    const resolveAccountName = (accountId) => {
+        const account = accountMap.get(accountId)
+        if (!account) return accountId || 'Unknown account'
+        return `${account.code ? `${account.code} - ` : ''}${account.name}`
     }
 
-    const totalDebit = voucher.lines.reduce((sum, line) => sum + line.debit, 0)
-    const totalCredit = voucher.lines.reduce((sum, line) => sum + line.credit, 0)
+    const totalDebit = lines.reduce((sum, line) => sum + Number(line.debit || 0), 0)
+    const totalCredit = lines.reduce((sum, line) => sum + Number(line.credit || 0), 0)
 
     return (
         <>
-            <PageTItle title={`Voucher ${voucher.voucherNo}`} />
+            <PageTItle title={voucher ? `Voucher ${voucher.voucherNo}` : 'Voucher Detail'} />
             <Row>
                 <Col xl={12}>
                     <Card>
                         <CardHeader className="d-flex justify-content-between align-items-center">
                             <div className="d-flex align-items-center gap-2">
-                                <CardTitle as="h4">{voucher.voucherNo}</CardTitle>
-                                <Badge bg="success">{voucher.status}</Badge>
+                                <CardTitle as="h4">{voucher?.voucherNo || 'Voucher Detail'}</CardTitle>
+                                {voucher?.status && <Badge bg="success">{voucher.status}</Badge>}
                             </div>
                             <div className="d-flex gap-2">
                                 <Button variant="outline-primary" size="sm">
@@ -42,18 +51,43 @@ const VoucherDetailPage = () => {
                             </div>
                         </CardHeader>
                         <Card.Body>
-                            <Row className="mb-4">
-                                <Col md={6}>
-                                    <div className="mb-2">
-                                        <span className="text-muted fw-medium">Date:</span>
-                                        <span className="ms-2">{voucher.date}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-muted fw-medium">Memo:</span>
-                                        <span className="ms-2">{voucher.memo}</span>
-                                    </div>
-                                </Col>
-                            </Row>
+                            {error && (
+                                <Alert variant="danger" className="mb-3">
+                                    Failed to load voucher detail.
+                                </Alert>
+                            )}
+                            {(isLoading || isFetching) && (
+                                <div className="py-4 text-center">
+                                    <Spinner animation="border" />
+                                </div>
+                            )}
+
+                            {!isLoading && voucher && (
+                                <Row className="mb-4">
+                                    <Col md={6}>
+                                        <div className="mb-2">
+                                            <span className="text-muted fw-medium">Date:</span>
+                                            <span className="ms-2">{voucher.date}</span>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-muted fw-medium">Type:</span>
+                                            <span className="ms-2">{voucher.type || '-'}</span>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-muted fw-medium">Source Type:</span>
+                                            <span className="ms-2">{voucher.sourceType || '-'}</span>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-muted fw-medium">Payment Mode:</span>
+                                            <span className="ms-2">{voucher.paymentMode || '-'}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted fw-medium">Memo:</span>
+                                            <span className="ms-2">{voucher.memo}</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            )}
 
                             <div className="table-responsive">
                                 <Table bordered hover>
@@ -65,11 +99,11 @@ const VoucherDetailPage = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {voucher.lines.map((line) => (
-                                            <tr key={line.id}>
-                                                <td>{line.account}</td>
-                                                <td className="text-end">{line.debit.toFixed(2)}</td>
-                                                <td className="text-end">{line.credit.toFixed(2)}</td>
+                                        {lines.map((line) => (
+                                            <tr key={line._id || line.accountId}>
+                                                <td>{resolveAccountName(line.accountId)}</td>
+                                                <td className="text-end">{Number(line.debit || 0).toFixed(2)}</td>
+                                                <td className="text-end">{Number(line.credit || 0).toFixed(2)}</td>
                                             </tr>
                                         ))}
                                     </tbody>

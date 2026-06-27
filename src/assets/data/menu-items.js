@@ -317,6 +317,18 @@ export const MENU_ITEMS = [
         parentKey: 'accounts',
       },
       {
+        key: 'money-in',
+        label: 'Money In',
+        url: '/accounts/money-in',
+        parentKey: 'accounts',
+      },
+      {
+        key: 'money-out',
+        label: 'Money Out',
+        url: '/accounts/money-out',
+        parentKey: 'accounts',
+      },
+      {
         key: 'vouchers',
         label: 'Vouchers',
         url: '/accounts/vouchers',

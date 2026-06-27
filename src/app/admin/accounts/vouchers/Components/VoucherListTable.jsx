@@ -1,30 +1,38 @@
-import { useState } from 'react'
-import { Card, CardHeader, CardTitle, Table, Form, Row, Col, Badge, Button } from 'react-bootstrap'
+import { useMemo, useState } from 'react'
+import { Card, CardHeader, CardTitle, Table, Form, Row, Col, Badge, Button, Spinner, Alert } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import IconButton from '@mui/material/IconButton'
-import Flatpickr from 'react-flatpickr'
+import { useGetVouchersQuery } from '@/services/authenticateendpoint/account'
 
-const INITIAL_VOUCHERS = [
-    { id: 1, voucherNo: 'JV-2026-001', date: '2026-02-20', memo: 'Salary payment for Feb', status: 'POSTED' },
-    { id: 2, voucherNo: 'JV-2026-002', date: '2026-02-21', memo: 'Office rent payment', status: 'POSTED' },
-    { id: 3, voucherNo: 'JV-2026-003', date: '2026-02-22', memo: 'Petty cash reimbursement', status: 'DRAFT' },
-    { id: 4, voucherNo: 'JV-2026-004', date: '2026-02-23', memo: 'Client payment received', status: 'VOID' },
-]
+const toDisplayDate = (value) => {
+    if (!value) return '-'
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return String(value).slice(0, 10)
+    return date.toLocaleDateString()
+}
 
 const VoucherListTable = () => {
     const navigate = useNavigate()
-    const [vouchers] = useState(INITIAL_VOUCHERS)
     const [search, setSearch] = useState('')
     const [statusFilter, setStatusFilter] = useState('')
-    const [dateRange, setDateRange] = useState([])
+    const [fromDate, setFromDate] = useState('')
+    const [toDate, setToDate] = useState('')
 
-    const filteredVouchers = vouchers.filter((v) => {
-        const matchesSearch = v.voucherNo.toLowerCase().includes(search.toLowerCase())
+    const queryArgs = useMemo(() => {
+        const args = {}
+        if (fromDate) args.from = fromDate
+        if (toDate) args.to = toDate
+        return args
+    }, [fromDate, toDate])
+
+    const { data: vouchers = [], isLoading, isFetching, error } = useGetVouchersQuery(queryArgs)
+
+    const filteredVouchers = useMemo(() => vouchers.filter((v) => {
+        const matchesSearch = (v.voucherNo || '').toLowerCase().includes(search.toLowerCase())
         const matchesStatus = statusFilter === '' || v.status === statusFilter
-        // Date range filtering could be added here
         return matchesSearch && matchesStatus
-    })
+    }), [vouchers, search, statusFilter])
 
     const getStatusBadge = (status) => {
         switch (status) {
@@ -44,6 +52,11 @@ const VoucherListTable = () => {
                 </Link>
             </CardHeader>
             <Card.Body>
+                {error && (
+                    <Alert variant="danger" className="mb-3">
+                        Failed to load vouchers.
+                    </Alert>
+                )}
                 <Row className="mb-3">
                     <Col md={3}>
                         <Form.Group>
@@ -70,15 +83,33 @@ const VoucherListTable = () => {
                     <Col md={4}>
                         <Form.Group>
                             <Form.Label>Date Range</Form.Label>
-                            <Flatpickr
-                                className="form-control"
-                                placeholder="Select date range"
-                                options={{ mode: 'range', dateFormat: 'Y-m-d' }}
-                                onChange={(dates) => setDateRange(dates)}
-                            />
+                            <Row className="g-2">
+                                <Col md={6}>
+                                    <Form.Control
+                                        type="date"
+                                        value={fromDate}
+                                        onChange={(e) => setFromDate(e.target.value)}
+                                        placeholder="From"
+                                    />
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Control
+                                        type="date"
+                                        value={toDate}
+                                        onChange={(e) => setToDate(e.target.value)}
+                                        placeholder="To"
+                                    />
+                                </Col>
+                            </Row>
                         </Form.Group>
                     </Col>
                 </Row>
+
+                {(isLoading || isFetching) && (
+                    <div className="py-4 text-center">
+                        <Spinner animation="border" />
+                    </div>
+                )}
 
                 <div className="table-responsive">
                     <Table className="align-middle mb-0 table-hover table-centered">
@@ -92,22 +123,22 @@ const VoucherListTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredVouchers.map((v) => (
-                                <tr key={v.id}>
+                            {!isLoading && filteredVouchers.map((v) => (
+                                <tr key={v._id || v.voucherNo}>
                                     <td className="fw-medium text-primary">
-                                        <Link to={`/accounts/vouchers/${v.id}`}>{v.voucherNo}</Link>
+                                        <Link to={`/accounts/vouchers/${v._id}`}>{v.voucherNo}</Link>
                                     </td>
-                                    <td>{v.date}</td>
+                                    <td>{toDisplayDate(v.date)}</td>
                                     <td>{v.memo}</td>
                                     <td>{getStatusBadge(v.status)}</td>
                                     <td className="text-center">
-                                        <IconButton size="small" className="btn btn-soft-primary btn-sm" onClick={() => navigate(`/accounts/vouchers/${v.id}`)}>
+                                        <IconButton size="small" className="btn btn-soft-primary btn-sm" onClick={() => navigate(`/accounts/vouchers/${v._id}`)}>
                                             <IconifyIcon icon="solar:eye-broken" className="align-middle fs-18" />
                                         </IconButton>
                                     </td>
                                 </tr>
                             ))}
-                            {filteredVouchers.length === 0 && (
+                            {!isLoading && filteredVouchers.length === 0 && (
                                 <tr>
                                     <td colSpan="5" className="text-center">
                                         No vouchers found.
