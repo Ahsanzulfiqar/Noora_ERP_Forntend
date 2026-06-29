@@ -4,7 +4,7 @@ import { getCookie, deleteCookie } from 'cookies-next';
 const authSessionKey = '_LARKON_AUTH_KEY_';
 
 const baseQuery = fetchBaseQuery({
-baseUrl: import.meta.env.VITE_GRAPHQL_URL,
+baseUrl: import.meta.env.VITE_GRAPHQL_URL ?? import.meta.env.VITE_API_URL,
   method: 'POST',
   prepareHeaders: (headers) => {
     const cookieValue = getCookie(authSessionKey);
