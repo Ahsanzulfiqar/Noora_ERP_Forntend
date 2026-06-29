@@ -84,6 +84,102 @@ export const accountAPI = api.injectEndpoints({
       providesTags: ['Account'],
     }),
 
+    getVouchers: build.query({
+      query: ({ from, to } = {}) => ({
+        method: 'POST',
+        body: {
+          query: `
+            query GetVouchers($from: Date, $to: Date) {
+              GetVouchers(from: $from, to: $to) {
+                _id
+                voucherNo
+                type
+                date
+                memo
+                status
+                sourceType
+                paymentMode
+                createdAt
+              }
+            }
+          `,
+          variables: {
+            ...(from ? { from } : {}),
+            ...(to ? { to } : {}),
+          },
+        },
+      }),
+      transformResponse: (response) => response?.data?.GetVouchers || [],
+    }),
+
+    // GET VOUCHER BY ID
+    getVoucherById: build.query({
+      query: (id) => ({
+        method: 'POST',
+        body: {
+          query: `
+            query GetVoucherById($id: ID!) {
+              GetVoucherById(id: $id) {
+                voucher {
+                  _id
+                  voucherNo
+                  date
+                  memo
+                  status
+                  sourceType
+                  paymentMode
+                }
+                lines {
+                  _id
+                  voucherId
+                  accountId
+                  debit
+                  credit
+                  memo
+                }
+              }
+            }
+          `,
+          variables: { id },
+        },
+      }),
+      transformResponse: (response) => response?.data?.GetVoucherById || null,
+    }),
+
+    // GET TRIAL BALANCE
+    getTrialBalance: build.query({
+      query: ({ from, to } = {}) => ({
+        method: 'POST',
+        body: {
+          query: `
+            query GetTrialBalance($from: Date, $to: Date) {
+              GetTrialBalance(from: $from, to: $to) {
+                from
+                to
+                totalDebit
+                totalCredit
+                isBalanced
+                rows {
+                  accountId
+                  accountCode
+                  accountName
+                  accountType
+                  debitTotal
+                  creditTotal
+                  balance
+                }
+              }
+            }
+          `,
+          variables: {
+            ...(from ? { from } : {}),
+            ...(to ? { to } : {}),
+          },
+        },
+      }),
+      transformResponse: (response) => response?.data?.GetTrialBalance || null,
+    }),
+
     // ACCOUNT MUTATIONS
 
     // SEED DEFAULT ACCOUNTS
@@ -209,6 +305,56 @@ export const accountAPI = api.injectEndpoints({
       }),
       invalidatesTags: ['Account'],
     }),
+
+    // CREATE MONEY IN
+    createMoneyIn: build.mutation({
+      query: (data) => ({
+        method: 'POST',
+        body: {
+          query: `
+            mutation CreateMoneyIn($data: CreateMoneyInInput!) {
+              CreateMoneyIn(data: $data) {
+                _id
+                voucherNo
+                type
+                date
+                memo
+                status
+                sourceType
+                paymentMode
+                createdAt
+              }
+            }
+          `,
+          variables: { data },
+        },
+      }),
+      transformResponse: (response) => response?.data?.CreateMoneyIn,
+    }),
+
+    // CREATE MONEY OUT
+    createMoneyOut: build.mutation({
+      query: (data) => ({
+        method: 'POST',
+        body: {
+          query: `
+            mutation CreateMoneyOut($data: CreateMoneyOutInput!) {
+              CreateMoneyOut(data: $data) {
+                _id
+                voucherNo
+                type
+                memo
+                status
+                sourceType
+                createdAt
+              }
+            }
+          `,
+          variables: { data },
+        },
+      }),
+      transformResponse: (response) => response?.data?.CreateMoneyOut,
+    }),
   }),
 })
 
@@ -216,10 +362,15 @@ export const {
   useGetAccountsQuery,
   useGetAccountByIdQuery,
   useGetAccountTreeQuery,
+  useGetVouchersQuery,
+  useGetVoucherByIdQuery,
+  useGetTrialBalanceQuery,
   useSeedDefaultAccountsMutation,
   useCreateAccountMutation,
   useUpdateAccountMutation,
   useDisableAccountMutation,
   useEnableAccountMutation,
   useDeleteAccountMutation,
+  useCreateMoneyInMutation,
+  useCreateMoneyOutMutation,
 } = accountAPI

@@ -89,9 +89,12 @@ const Permissions = lazy(() => import('../app/admin/permissions/page'))
 // Accounts Routes
 const ChartOfAccounts = lazy(() => import('@/app/admin/accounts/chart-of-accounts/page'))
 const JournalEntry = lazy(() => import('@/app/admin/accounts/journal/new/page'))
+const MoneyIn = lazy(() => import('@/app/admin/accounts/money-in/page'))
+const MoneyOut = lazy(() => import('@/app/admin/accounts/money-out/page'))
 const VouchersList = lazy(() => import('@/app/admin/accounts/vouchers/page'))
 const VoucherDetail = lazy(() => import('@/app/admin/accounts/vouchers/[id]/page'))
 const Ledger = lazy(() => import('@/app/admin/accounts/ledger/page'))
+const LedgerDetail = lazy(() => import('@/app/admin/accounts/ledger/[id]/page'))
 const TrialBalance = lazy(() => import('@/app/admin/accounts/trial-balance/page'))
 
 
@@ -449,6 +452,16 @@ const AccountsRoutes = [
     element: <JournalEntry />,
   },
   {
+    name: 'Money In',
+    path: '/accounts/money-in',
+    element: <MoneyIn />,
+  },
+  {
+    name: 'Money Out',
+    path: '/accounts/money-out',
+    element: <MoneyOut />,
+  },
+  {
     name: 'Vouchers List',
     path: '/accounts/vouchers',
     element: <VouchersList />,
@@ -462,6 +475,11 @@ const AccountsRoutes = [
     name: 'Ledger',
     path: '/accounts/ledger',
     element: <Ledger />,
+  },
+  {
+    name: 'Ledger Detail',
+    path: '/accounts/ledger/:id',
+    element: <LedgerDetail />,
   },
   {
     name: 'Trial Balance',
