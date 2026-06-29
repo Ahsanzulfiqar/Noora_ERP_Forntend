@@ -4,10 +4,6 @@ import { Navigate } from 'react-router-dom'
 // Dashboard Routes
 const DashboardPage = lazy(() => import('@/app/admin/dashboard/page'))
 
-// Apps Routes
-
-
-
 // Pages Routes
 const ComingSoon = lazy(() => import('@/app/(other)/coming-soon/page'))
 const Maintenance = lazy(() => import('@/app/(other)/maintenance/page'))
@@ -15,7 +11,6 @@ const NotFound = lazy(() => import('@/app/(other)/pages-404/page'))
 
 // const Profile = lazy(() => import('@/app/(admin)/profile/page'))
 // const Permissions = lazy(() => import('@/app/(admin)/permissions/page'))
-
 
 // Ware House  Routes
 const WareHouseList = lazy(() => import('@/app/admin/warehouse/warehouse-list/page'))
@@ -59,7 +54,6 @@ const TransferStock = lazy(() => import('@/app/admin/inventory/transfer-stock/pa
 const TransferStockAdd = lazy(() => import('@/app/admin/inventory/transfer-stock/add/AddTransferStock'))
 const TransferStockDetail = lazy(() => import('@/app/admin/inventory/transfer-stock/detail/page'))
 
-
 // Purchases Routes
 
 // Purchases Routes
@@ -94,10 +88,7 @@ const MoneyOut = lazy(() => import('@/app/admin/accounts/money-out/page'))
 const VouchersList = lazy(() => import('@/app/admin/accounts/vouchers/page'))
 const VoucherDetail = lazy(() => import('@/app/admin/accounts/vouchers/[id]/page'))
 const Ledger = lazy(() => import('@/app/admin/accounts/ledger/page'))
-const LedgerDetail = lazy(() => import('@/app/admin/accounts/ledger/[id]/page'))
 const TrialBalance = lazy(() => import('@/app/admin/accounts/trial-balance/page'))
-
-
 
 // Role Routes
 // const RoleList = lazy(() => import('@/app/(admin)/role/role-list/page'))
@@ -110,15 +101,9 @@ const TrialBalance = lazy(() => import('@/app/admin/accounts/trial-balance/page'
 
 // Seller Routes
 
-
-
-
 // Charts and Maps Routes
 
-
 // // Form Routes
-
-
 
 // Auth Routes
 const SignIn = lazy(() => import('@/app/(other)/auth/sign-in/page'))
@@ -135,7 +120,6 @@ const initialRoutes = [
 const generalRoutes = []
 const appsRoutes = []
 const customRoutes = [
-
   {
     name: 'Profile',
     path: '/profile',
@@ -146,7 +130,6 @@ const customRoutes = [
     path: '/permissions',
     element: <Permissions />,
   },
-
 ]
 const tableRoutes = []
 
@@ -475,11 +458,6 @@ const AccountsRoutes = [
     name: 'Ledger',
     path: '/accounts/ledger',
     element: <Ledger />,
-  },
-  {
-    name: 'Ledger Detail',
-    path: '/accounts/ledger/:id',
-    element: <LedgerDetail />,
   },
   {
     name: 'Trial Balance',

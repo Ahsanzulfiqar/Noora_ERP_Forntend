@@ -48,11 +48,10 @@ export const sellersAPI = api.injectEndpoints({
                 name
                 email
                 phone
-                companyName
-                address
-                sellerType
-                commissionType
-                commissionValue
+                role
+                isActive
+                createdAt
+                updatedAt
               }
             }
           `,
