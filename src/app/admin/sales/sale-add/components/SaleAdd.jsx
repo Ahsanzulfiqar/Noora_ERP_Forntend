@@ -275,7 +275,7 @@ const SaleAdd = () => {
         error={createError || updateError}
         message={salesId ? 'Sale updated successfully' : 'Sale created successfully'}
         path="/sales/sales-list"
-        redirect={true}
+        redirect={Boolean(salesId)}
       />
 
       <Formik
