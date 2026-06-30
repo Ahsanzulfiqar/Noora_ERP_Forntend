@@ -1,16 +1,14 @@
-import logoDark from '@/assets/images/logo-dark.png';
-import logoLight from '@/assets/images/logo-light.png';
 import logoSm from '@/assets/images/logo-sm.png';
 import { Link } from 'react-router-dom';
 const LogoBox = () => {
   return <div className="logo-box">
-      <Link to="/" className="logo-dark">
+      <Link to="/" className="logo-dark text-decoration-none">
         <img src={logoSm} width={28} height={26} className="logo-sm" alt="logo sm" />
-        <img src={logoDark} height={24} width={112} className="logo-lg" alt="logo dark" />
+        <span className="logo-lg fw-bold fs-22 text-dark ms-1 align-middle">Noora</span>
       </Link>
-      <Link to="/" className="logo-light">
+      <Link to="/" className="logo-light text-decoration-none">
         <img src={logoSm} width={28} height={26} className="logo-sm" alt="logo sm" />
-        <img src={logoLight} height={24} width={112} className="logo-lg" alt="logo light" />
+        <span className="logo-lg fw-bold fs-22 text-white ms-1 align-middle">Noora</span>
       </Link>
     </div>;
 };
