@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { useAuthContext } from '@/context/useAuthContext';
 import { useNotificationContext } from '@/context/useNotificationContext';
@@ -12,7 +12,6 @@ const useSignIn = () => {
   const {
     saveSession
   } = useAuthContext();
-  const [searchParams] = useSearchParams();
   const {
     showNotification
   } = useNotificationContext();
@@ -39,8 +38,7 @@ const useSignIn = () => {
   });
 
   const redirectUser = () => {
-    const redirectLink = searchParams.get('redirectTo');
-    if (redirectLink) navigate(redirectLink); else navigate('/dashboard');
+    navigate('/dashboard');
   };
 
   const login = handleSubmit(async values => {
