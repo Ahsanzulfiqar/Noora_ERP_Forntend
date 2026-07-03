@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader, CardTitle, Table, Pagination, Form, Row, Col } from 'react-bootstrap';
-import { useGetWarehouseStockQuery } from '../../../../../services/authenticateendpoint/stock';
+import { useGetWarehouseStockQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
@@ -36,8 +36,8 @@ const StockList = () => {
         limit
     });
 
-    const stockData = data?.GetWarehouseStock?.data || [];
-    const pagination = data?.GetWarehouseStock || {};
+    const stockData = data?.data || [];
+    const pagination = data || {};
 
     useEffect(() => {
         if (stockError) toast.error(extractApiErrorMessage(stockError));
@@ -137,13 +137,13 @@ const StockList = () => {
                             {stockData.length > 0 ? (
                                 stockData.map((item) => (
                                     <tr key={item._id}>
-                                        <td>{item.warehouse?.name || item.warehouse}</td>
-                                        <td>{item.product?.name || item.product}</td>
-                                        <td>{item.variant?.name || item.variant}</td>
-                                        <td>{item.quantity}</td>
-                                        <td>{item.reserved}</td>
-                                        <td>{item.reorderLevel}</td>
-                                        <td>{new Date(item.updatedAt).toLocaleDateString()}</td>
+                                        <td>{item.warehouseName || 'N/A'}</td>
+                                        <td>{item.productName || 'N/A'}</td>
+                                        <td>{item.variantName || 'N/A'}</td>
+                                        <td>{item.quantity ?? 0}</td>
+                                        <td>{item.reserved ?? 0}</td>
+                                        <td>{item.reorderLevel ?? 0}</td>
+                                        <td>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</td>
                                     </tr>
                                 ))
                             ) : (

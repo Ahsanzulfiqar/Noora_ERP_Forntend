@@ -283,8 +283,9 @@ const SaleAdd = () => {
         validationSchema={SalesValidationSchema}
         onSubmit={handleSubmit}
         enableReinitialize={true}
+        validateOnMount={true}
       >
-        {({ values, setFieldValue, errors }) => {
+        {({ values, setFieldValue, errors, isValid }) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
           console.log('values', values);
           console.log('errors', errors);
@@ -810,7 +811,7 @@ const SaleAdd = () => {
                   variant="outline-secondary"
 
                   type="submit"
-                  disabled={isCreating || isUpdating}
+                  disabled={isCreating || isUpdating || !isValid || values.items.length === 0}
                   style={{ width: '150px' }}
                 >
                   {isCreating || isUpdating
