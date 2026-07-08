@@ -6,7 +6,7 @@ const ProductAddPage = () => {
   return (
     <Box
     >
-      {/* <PageTItle title="Create Product" /> */}
+      <PageTItle title="Create Product" />
 
       <AddProduct />
     </Box>

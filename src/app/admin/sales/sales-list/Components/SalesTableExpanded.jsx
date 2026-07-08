@@ -58,6 +58,7 @@ const SalesTableExpanded = ({ filter }) => {
 
   const queryFilter = {
     sellerId: isSeller ? userId : filter?.sellerId || '',
+    courierId: filter?.courierId || '',
     status: filter?.status || '',
     search,
   }
@@ -71,8 +72,11 @@ const SalesTableExpanded = ({ filter }) => {
     if (error) toast.error(extractApiErrorMessage(error));
   }, [error]);
 
-  const rows = salesResponse?.data || []
-  const total = salesResponse?.total || 0
+  const allRows = salesResponse?.data || []
+  const rows = filter?.courierId
+    ? allRows.filter((r) => r.courier?.courierId === filter.courierId)
+    : allRows
+  const total = filter?.courierId ? rows.length : salesResponse?.total || 0
   const totalPages = salesResponse?.totalPages || Math.ceil(total / limit) || 1
 
   const canEditSale = (status) => {

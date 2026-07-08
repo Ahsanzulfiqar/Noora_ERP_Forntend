@@ -6,6 +6,7 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAllUsersQuery } from '@/services/authenticateendpoint/users'
 import { useGetAllProjectsQuery } from '@/services/authenticateendpoint/project'
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse'
+import { useGetAllCouriersQuery } from '@/services/authenticateendpoint/courier'
 import { useAuth } from '@/hooks/useAuth'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 
@@ -35,12 +36,14 @@ const FilterBar = ({ onApply, onExport }) => {
     sellerId: isSeller ? userId : '',
     warehouseId: '',
     status: '',
+    courierId: '',
     search: '',
   })
 
   const { data: allUsers = [], error: usersError, refetch: refetchUsers } = useGetAllUsersQuery()
   const { data: projects = [], error: projectsError, refetch: refetchProjects } = useGetAllProjectsQuery()
   const { data: warehouses = [], error: warehousesError, refetch: refetchWarehouses } = useGetAllWarehousesQuery()
+  const { data: couriers = [], error: couriersError } = useGetAllCouriersQuery()
 
   useEffect(() => {
     if (usersError) toast.error(extractApiErrorMessage(usersError));
@@ -51,6 +54,9 @@ const FilterBar = ({ onApply, onExport }) => {
   useEffect(() => {
     if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
   }, [warehousesError]);
+  useEffect(() => {
+    if (couriersError) toast.error(extractApiErrorMessage(couriersError));
+  }, [couriersError]);
 
   const sellers = useMemo(
     () => (allUsers || []).filter((u) => u.role?.toUpperCase() === 'SELLER' && u.isActive),
@@ -67,6 +73,7 @@ const FilterBar = ({ onApply, onExport }) => {
       sellerId: draft.sellerId,
       warehouseId: draft.warehouseId,
       status: draft.status,
+      courierId: draft.courierId,
       search: draft.search,
     })
   }
@@ -141,7 +148,23 @@ const FilterBar = ({ onApply, onExport }) => {
               ))}
             </Form.Select>
           </Col>
-          <Col md={12} lg={2} className="d-flex gap-2 justify-content-lg-end">
+          <Col md={6} lg={2}>
+            <Form.Label className="text-muted small mb-1">Courier</Form.Label>
+            <Form.Select
+              value={draft.courierId}
+              onChange={(e) => setField('courierId', e.target.value)}
+            >
+              <option value="">All Couriers</option>
+              {couriers.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </Form.Select>
+          </Col>
+        </Row>
+        <Row className="mt-2">
+          <Col xs={12} className="d-flex gap-2 justify-content-end">
             <Button variant="light" className="d-flex align-items-center gap-1">
               <IconifyIcon icon="bx:filter-alt" />
               <span className="d-none d-xl-inline">More Filters</span>

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"e:/Ahsan bhi Project/Noora_ERP_Forntend/src/app/admin/purchases\" 2>nul; ls \"e:/Ahsan bhi Project/Noora_ERP_Forntend/src/app/admin\")"
+    ],
+    "additionalDirectories": [
+      "E:\\Ahsan bhi Project\\Noora_ERP_Forntend"
+    ]
+  }
+}

@@ -25,6 +25,7 @@ import { toast } from 'react-toastify'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import FormikTextArea from '../../../../components/formikfield/FormikTextArea'
 import FormikToggleSwitch from '@/components/formikfield/FormikToggleSwitch'
+import PageTItle from '@/components/PageTItle'
 
 const AddPurchase = () => {
   const [createPurchase, { isLoading: isCreating, isSuccess: isCreateSuccess, error: createError }] = useCreatePurchaseMutation();
@@ -82,6 +83,7 @@ const AddPurchase = () => {
 
   return (
     <Col xl={12} lg={12}>
+      <PageTItle title={purchaseId ? "Edit Purchase" : "Create Purchase"} />
       <StatusAlert
         isSuccess={isCreateSuccess || isUpdateSuccess}
         error={createError || updateError}

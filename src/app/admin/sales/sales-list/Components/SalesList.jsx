@@ -26,6 +26,7 @@ const initialFilter = {
   sellerId: '',
   warehouseId: '',
   status: '',
+  courierId: '',
   search: '',
 }
 
@@ -39,7 +40,8 @@ const SalesList = () => {
     appliedFilter.projectId ||
       appliedFilter.sellerId ||
       appliedFilter.warehouseId ||
-      appliedFilter.status
+      appliedFilter.status ||
+      appliedFilter.courierId
   )
 
   const dashboardFilter = useMemo(() => {
@@ -51,6 +53,7 @@ const SalesList = () => {
     if (appliedFilter.projectId) f.projectId = appliedFilter.projectId
     if (appliedFilter.sellerId) f.sellerId = appliedFilter.sellerId
     if (appliedFilter.warehouseId) f.warehouseId = appliedFilter.warehouseId
+    if (appliedFilter.status) f.status = appliedFilter.status
     return f
   }, [appliedFilter])
 

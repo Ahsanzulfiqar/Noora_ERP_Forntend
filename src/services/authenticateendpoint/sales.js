@@ -22,6 +22,7 @@ export const salesAPI = api.injectEndpoints({
               courier {
                 courierName
                 trackingNo
+                courierId
               }
               payment {
                 status
@@ -126,6 +127,7 @@ export const salesAPI = api.injectEndpoints({
                 subTotal
                 taxAmount
                 totalAmount
+                totalCost
                 courier {
                   courierName
                   trackingNo
@@ -336,13 +338,13 @@ export const salesAPI = api.injectEndpoints({
 
     // RETURN SALE
     returnSale: build.mutation({
-      query: (saleId) => ({
+      query: ({ saleId, returnReason }) => ({
         method: 'POST',
         auth: true,
         body: {
           query: `
-            mutation ReturnSale($saleId: ID!) {
-              ReturnSale(saleId: $saleId) {
+            mutation ReturnSale($saleId: ID!, $returnReason: String) {
+              ReturnSale(saleId: $saleId, returnReason: $returnReason) {
                 _id
                 status
                 statusTimestamps {
@@ -353,10 +355,11 @@ export const salesAPI = api.injectEndpoints({
           `,
           variables: {
             saleId,
+            returnReason,
           },
         },
       }),
-      invalidatesTags: (result, error, saleId) => [
+      invalidatesTags: (result, error, { saleId }) => [
         'Sales',
         { type: 'Sales', id: saleId },
       ],
@@ -400,21 +403,22 @@ export const salesAPI = api.injectEndpoints({
 
     // CANCEL SALE
     cancelSale: build.mutation({
-      query: (saleId) => ({
+      query: ({ saleId, cancelReason }) => ({
         method: 'POST',
         auth: true,
         body: {
           query: `
-            mutation CancelSale($saleId: ID!) {
-              CancelSale(saleId: $saleId)
+            mutation CancelSale($saleId: ID!, $cancelReason: String) {
+              CancelSale(saleId: $saleId, cancelReason: $cancelReason)
             }
           `,
           variables: {
             saleId,
+            cancelReason,
           },
         },
       }),
-      invalidatesTags: (result, error, saleId) => [
+      invalidatesTags: (result, error, { saleId }) => [
         'Sales',
         { type: 'Sales', id: saleId },
       ],

@@ -138,6 +138,7 @@ export const warehousesAPI = api.injectEndpoints({
                     batchNo
                     expiryDate
                     quantity
+                    unitCost
                   }
                   createdAt
                   updatedAt

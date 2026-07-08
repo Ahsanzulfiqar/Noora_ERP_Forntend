@@ -4,7 +4,7 @@ import { formatCurrency, formatNumber, formatPercent } from './formatters'
 
 const buildKpis = (d = {}) => [
   { key: 'totalRevenue', label: 'Total Revenue', amount: formatCurrency(d.totalRevenue), icon: 'bx:dollar-circle', color: 'success' },
-  { key: 'netProfit', label: 'Net Profit', amount: formatCurrency(d.netProfit), icon: 'bx:shield-quarter', color: 'success' },
+  { key: 'netProfit', label: 'Gross Profit', amount: formatCurrency(d.netProfit), icon: 'bx:shield-quarter', color: 'success' },
   { key: 'totalOrders', label: 'Total Orders', amount: formatNumber(d.totalOrders), icon: 'bx:shopping-bag', color: 'primary' },
   { key: 'pendingOrders', label: 'Pending Orders', amount: formatNumber(d.pendingOrders), icon: 'bx:time-five', color: 'warning' },
   { key: 'deliveredOrders', label: 'Delivered Orders', amount: formatNumber(d.deliveredOrders), icon: 'bx:check-circle', color: 'success' },

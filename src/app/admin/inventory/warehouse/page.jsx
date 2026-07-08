@@ -3,7 +3,7 @@ import StockData from './components/StockData';
 import WarehouseList from './components/WarehouseList';
 const WarehousePage = () => {
   return <>
-      <PageTItle title="Warehouse List" />
+      <PageTItle title="Stock List" />
       <StockData />
       <WarehouseList />
     </>;

@@ -11,6 +11,7 @@ import DeliveredModal from './modals/DeliveredModal';
 import ReturnSaleModal from './modals/ReturnSaleModal';
 import CancelSaleModal from './modals/CancelSaleModal';
 import DraftSaleModal from './modals/DraftSaleModal';
+import MarkPaidModal from '../../sales-list/Components/MarkPaidModal';
 import { useGetSellerByIdQuery } from '@/services/authenticateendpoint/sellers';
 import { useGetWarehouseByIdQuery } from '@/services/authenticateendpoint/warehouse';
 import { useGetProjectByIdQuery } from '@/services/authenticateendpoint/project';
@@ -159,13 +160,11 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
 
   const items = saleData?.items || [];
 
-  // Derive cost / profit per line. Backend doesn't currently return per-item cost,
-  // so we estimate with a 25% margin so the "Profit" UI is populated with sensible dummy data.
   const enrichedItems = useMemo(() => {
     return items.map((it) => {
       const qty = Number(it.quantity || 0);
       const price = Number(it.salePrice || 0);
-      const cost = Number(it.cost || price * 0.75);
+      const cost = Number(it.cost || 0);
       const lineTotal = Number(it.lineTotal || price * qty);
       const lineCost = cost * qty;
       const lineProfit = lineTotal - lineCost;
@@ -175,7 +174,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
 
   const totals = useMemo(() => {
     const subTotal = Number(saleData?.subTotal ?? enrichedItems.reduce((s, i) => s + i.lineTotal, 0));
-    const totalCost = enrichedItems.reduce((s, i) => s + i.lineCost, 0);
+    const totalCost = Number(saleData?.totalCost ?? enrichedItems.reduce((s, i) => s + i.lineCost, 0));
     const taxAmount = Number(saleData?.taxAmount || 0);
     const totalAmount = Number(saleData?.totalAmount ?? subTotal + taxAmount);
     const grossProfit = totalAmount - totalCost;
@@ -207,24 +206,23 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
     );
   }
 
-  // Customer / project fallbacks (dummy where backend hasn't sent the value)
   const customer = {
-    name: saleData?.customerName || 'John Doe',
-    phone: saleData?.customerPhone || '+971 50 123 4567',
-    location: [saleData?.country || 'UAE', saleData?.city || 'Dubai'].filter(Boolean).join(', '),
-    address: saleData?.address || 'Downtown, Dubai, UAE',
+    name: saleData?.customerName || '—',
+    phone: saleData?.customerPhone || '—',
+    location: [saleData?.country, saleData?.city].filter(Boolean).join(', ') || '—',
+    address: saleData?.address || '—',
   };
 
-  const projectName = projectData?.name || 'Default Project';
+  const projectName = projectData?.name || '—';
   const sellerName = sellerData?.name || '—';
   const warehouseName = warehouseData?.name || '—';
-  const createdBy = saleData?.createdBy || 'Admin';
+  const createdBy = saleData?.createdBy || '—';
   const createdAt = saleData?.createdAt;
   const shippedAt = saleData?.shippedAt || findHistoryAt('OUT_FOR_DELIVERY');
   const deliveredAt = findHistoryAt('DELIVERED');
 
-  const paymentStatus = saleData?.payment?.status || 'PENDING';
-  const paymentMode = saleData?.payment?.mode || 'COD';
+  const paymentStatus = saleData?.payment?.status || '—';
+  const paymentMode = saleData?.payment?.mode || '—';
 
   return (
     <>
@@ -288,34 +286,36 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                 );
               })()}
 
-              <button
-                className="btn btn-sm d-flex align-items-center gap-1 text-white"
-                style={{ background: '#1e293b', borderColor: '#1e293b' }}
-                onClick={() => window.print()}
-              >
-                <IconifyIcon icon="solar:printer-bold" className="fs-16" /> Print Invoice
-              </button>
+              {saleData?.status?.toLowerCase() === 'delivered' && saleData?.payment?.status?.toLowerCase() !== 'paid' && (
+                <button
+                  type="button"
+                  className="btn btn-success btn-sm d-flex align-items-center gap-1"
+                  onClick={() => setActiveModal('MARK_PAID')}
+                >
+                  <IconifyIcon icon="solar:dollar-broken" className="fs-16" /> Mark Paid
+                </button>
+              )}
             </div>
           </div>
 
           <Row className="g-4 align-items-center" style={{ borderTop: '1px solid #f1f5f9', paddingTop: 16 }}>
             <Col xl={2} lg={4} md={4} sm={6} xs={12}>
-              <div className="d-flex align-items-center gap-2 text-muted" style={{ fontSize: 12 }}>
-                <IconifyIcon icon="solar:calendar-bold-duotone" className="fs-16" />
-                <span>{formatDate(createdAt)}</span>
+              <div className="d-flex align-items-center gap-2 text-muted" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
+                <IconifyIcon icon="solar:calendar-bold-duotone" className="fs-16 flex-shrink-0" />
+                <span className="text-truncate">{formatDate(createdAt)}</span>
               </div>
               <div className="text-muted small mt-1">Invoice Date</div>
             </Col>
-            <Col xl={3} lg={4} md={4} sm={6} xs={12}>
+            <Col xl={2} lg={4} md={4} sm={6} xs={12}>
               <div className="d-flex align-items-center gap-2 text-primary" style={{ fontSize: 13 }}>
-                <IconifyIcon icon="solar:hashtag-square-bold-duotone" className="fs-16" />
-                <span className="text-truncate" title={saleData?._id}>{saleData?._id || '—'}</span>
+                <IconifyIcon icon="solar:user-bold-duotone" className="fs-16 flex-shrink-0" />
+                <span className="text-truncate" title={customer.name}>{customer.name}</span>
               </div>
-              <div className="text-muted small mt-1">Sale ID</div>
+              <div className="text-muted small mt-1">Customer</div>
             </Col>
             <Col xl={2} lg={4} md={4} sm={6} xs={12}>
               <div className="d-flex align-items-center gap-2 text-primary" style={{ fontSize: 13 }}>
-                <IconifyIcon icon="solar:wallet-money-bold-duotone" className="fs-16" />
+                <IconifyIcon icon="solar:wallet-money-bold-duotone" className="fs-16 flex-shrink-0" />
                 <span>{paymentMode}</span>
               </div>
               <div className="text-muted small mt-1">Payment Mode</div>
@@ -328,7 +328,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
               <div className="fw-bold" style={{ fontSize: 20, color: '#8b5cf6' }}>{currency(totals.grossProfit)}</div>
               <div className="text-muted small mt-1">Total Profit</div>
             </Col>
-            <Col xl={1} lg={4} md={4} sm={6} xs={12}>
+            <Col xl={2} lg={4} md={4} sm={6} xs={12}>
               <div><PaymentBadge status={paymentStatus} /></div>
               <div className="text-muted small mt-1">Payment Status</div>
             </Col>
@@ -374,7 +374,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                             <span className="text-dark fw-medium">{item.productName}</span>
                           </div>
                         </td>
-                        <td className="text-muted">{item.sku || `SKU-${String(index + 1).padStart(3, '0')}`}</td>
+                        <td className="text-muted">{item.sku || '—'}</td>
                         <td className="text-muted">{item.variantName || item.variant || 'N/A'}</td>
                         <td className="text-center">{item.qty}</td>
                         <td>{currency(item.cost)}</td>
@@ -593,6 +593,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
           <ReturnSaleModal show={activeModal === 'RETURN'} onHide={closeModals} saleId={saleData._id} />
           <CancelSaleModal show={activeModal === 'CANCEL'} onHide={closeModals} saleId={saleData._id} />
           <DraftSaleModal show={activeModal === 'DRAFT'} onHide={closeModals} saleId={saleData._id} />
+          <MarkPaidModal show={activeModal === 'MARK_PAID'} onHide={closeModals} sale={saleData} />
         </>
       )}
     </>
