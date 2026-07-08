@@ -28,7 +28,7 @@ const ProjectList = () => {
   const isLoading = isSeller ? loadingSeller : loadingAll;
   const projectsError = isSeller ? sellerError : allError;
   const refetchProjects = isSeller ? refetchSeller : refetchAll;
-  const { data: usersData, error: usersError } = useGetAllUsersQuery();
+  const { data: usersData, error: usersError } = useGetAllUsersQuery(undefined, { skip: isSeller });
   const sellerMap = Object.fromEntries((usersData || []).filter((u) => u.role === 'SELLER').map((s) => [s._id, s.name]));
 
   useEffect(() => {

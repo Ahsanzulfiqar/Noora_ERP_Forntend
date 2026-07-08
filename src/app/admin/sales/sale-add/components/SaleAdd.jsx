@@ -36,14 +36,15 @@ const SaleAdd = () => {
   const [createSale, { isLoading: isCreating, isSuccess: createSuccess, error: createError }] = useCreateSaleMutation();
   const [updateSale, { isLoading: isUpdating, isSuccess: updateSuccess, error: updateError }] = useUpdateSaleMutation();
 
+  const isAdmin = role === 'Admin' || role === 'ADMIN';
   const { data: saleData, isLoading: isLoadingSale, error: saleError } = useGetSaleByIdQuery(salesId, { skip: !salesId });
-  const { data: usersData, error: usersError } = useGetAllUsersQuery();
+  const { data: usersData, error: usersError } = useGetAllUsersQuery(undefined, { skip: isSeller });
   const [selectedSellerId, setSelectedSellerId] = useState(isSeller ? userId : (saleData?.seller || ''));
   const { data: projectsBySellerData, error: projectsBySellerError } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId || isSales });
   const { data: allProjectsData, error: allProjectsError } = useGetAllProjectsQuery(undefined, { skip: !isSales });
   const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
   const { data: productsData, error: productsError } = useGetAllProductsQuery();
-  const { data: couriersData, error: couriersError } = useGetAllCouriersQuery();
+  const { data: couriersData, error: couriersError } = useGetAllCouriersQuery(undefined, { skip: !isAdmin });
 
   const [newItem, setNewItem] = useState({
     product: '',
