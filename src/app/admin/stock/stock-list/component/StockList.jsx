@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import { FilterSelect } from '@/components/Filters';
 
 const StockList = () => {
     const [page, setPage] = useState(1);
@@ -69,53 +70,38 @@ const StockList = () => {
                 {/* Filter Section */}
                 <Row className="mb-4">
                     <Col md={4}>
-                        <Form.Group>
-                            <Form.Label>Warehouse</Form.Label>
-                            <Form.Select
-                                value={selectedWarehouse}
-                                onChange={(e) => setSelectedWarehouse(e.target.value)}
-                            >
-                                <option value="">All Warehouses</option>
-                                {warehousesData?.map((warehouse) => (
-                                    <option key={warehouse._id} value={warehouse._id}>
-                                        {warehouse.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
+                        <FilterSelect
+                            label="Warehouse"
+                            value={selectedWarehouse}
+                            onChange={setSelectedWarehouse}
+                            options={[
+                                { value: '', label: 'All Warehouses' },
+                                ...(warehousesData?.map((w) => ({ value: w._id, label: w.name })) || []),
+                            ]}
+                        />
                     </Col>
                     <Col md={4}>
-                        <Form.Group>
-                            <Form.Label>Product</Form.Label>
-                            <Form.Select
-                                value={selectedProduct}
-                                onChange={handleProductChange}
-                            >
-                                <option value="">All Products</option>
-                                {productsData?.map((product) => (
-                                    <option key={product._id} value={product._id}>
-                                        {product.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
+                        <FilterSelect
+                            label="Product"
+                            value={selectedProduct}
+                            onChange={(v) => handleProductChange({ target: { value: v } })}
+                            options={[
+                                { value: '', label: 'All Products' },
+                                ...(productsData?.map((p) => ({ value: p._id, label: p.name })) || []),
+                            ]}
+                        />
                     </Col>
                     <Col md={4}>
-                        <Form.Group>
-                            <Form.Label>Variant</Form.Label>
-                            <Form.Select
-                                value={selectedVariant}
-                                onChange={(e) => setSelectedVariant(e.target.value)}
-                                disabled={!selectedProduct}
-                            >
-                                <option value="">All Variants</option>
-                                {variantsData?.map((variant) => (
-                                    <option key={variant._id} value={variant._id}>
-                                        {variant.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
+                        <FilterSelect
+                            label="Variant"
+                            value={selectedVariant}
+                            onChange={setSelectedVariant}
+                            disabled={!selectedProduct}
+                            options={[
+                                { value: '', label: 'All Variants' },
+                                ...(variantsData?.map((v) => ({ value: v._id, label: v.name })) || []),
+                            ]}
+                        />
                     </Col>
                 </Row>
 

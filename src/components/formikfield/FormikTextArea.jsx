@@ -5,6 +5,7 @@ const FormikTextArea = ({
   name,
   placeholder,
   rows = 4,
+  ...props
 }) => {
   const [field, meta] = useField(name);
 
@@ -18,6 +19,7 @@ const FormikTextArea = ({
 
       <textarea
         {...field}
+        {...props}
         rows={rows}
         className={`form-control custom-placeholder ${meta.touched && meta.error ? "is-invalid" : ""
           }`}

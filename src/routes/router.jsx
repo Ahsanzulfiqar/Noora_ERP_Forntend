@@ -5,8 +5,15 @@ import { appRoutes, authRoutes } from '@/routes/index';
 import { useAuthContext } from '@/context/useAuthContext';
 import { useAuth } from '@/hooks/useAuth';
 import { isPathAllowedForRole } from '@/routes/roleAccess';
+import { ROLES } from '@/assets/data/roles';
 import OtherLayout from '@/layout/OtherLayout';
 import AdminLayout from '@/layout/AdminLayout';
+
+const getLandingPath = (role) => {
+  if (role === ROLES.SELLER) return '/seller/dashboard';
+  return '/dashboard';
+};
+
 const AppRouter = props => {
   const {
     isAuthenticated
@@ -20,7 +27,7 @@ const AppRouter = props => {
       }} />;
     }
     if (!isPathAllowedForRole(role, route.path)) {
-      return <Navigate to="/dashboard" replace />;
+      return <Navigate to={getLandingPath(role)} replace />;
     }
     return <AdminLayout {...props}>{route.element}</AdminLayout>;
   };

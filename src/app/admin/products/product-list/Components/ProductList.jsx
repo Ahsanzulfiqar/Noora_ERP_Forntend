@@ -9,6 +9,7 @@ import { toast } from 'react-toastify'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import LoaderSpinner from '@/components/loaders/LoaderSpinner'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
+import { FilterSearch } from '@/components/Filters'
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const [deleteProduct] = useDeleteProductMutation();
@@ -126,12 +127,11 @@ const ProductList = () => {
         <CardTitle as={'h4'} className="flex-grow-1">
           All Products Lists
         </CardTitle>
-        <Form.Control
-          type="text"
+        <FilterSearch
+          value={search}
+          onChange={(v) => handleSearchChange({ target: { value: v } })}
           placeholder="Search by name, brand, or SKU..."
           size="sm"
-          value={search}
-          onChange={handleSearchChange}
           style={{ width: '240px' }}
         />
         <Link to="/products/product-add" className="btn btn-sm btn-primary">

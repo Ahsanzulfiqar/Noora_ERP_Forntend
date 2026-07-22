@@ -72,11 +72,11 @@ const ProductList = () => {
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.name })) || [];
   return <Card>
     <CardHeader className="d-flex justify-content-between align-items-center gap-1">
-      <CardTitle as={'h4'} className="flex-grow-1">
+      <CardTitle as={'h4'} className="flex-grow-1 mb-0">
         All Variants
       </CardTitle>
 
-      <div style={{ width: '300px' }} className="me-2">
+      <div style={{ width: '300px', marginTop: '20px' }} className="me-2">
         <ChoicesSearchFormInput
           label=""
           placeholder="Select Product to see Variants"

@@ -1,4 +1,4 @@
-import { MENU_ITEMS } from '@/assets/data/menu-items';
+import { MENU_ITEMS, SELLER_MENU_ITEMS } from '@/assets/data/menu-items';
 import { ROLES } from '@/assets/data/roles';
 import { isPathAllowedForRole } from '@/routes/roleAccess';
 
@@ -16,7 +16,7 @@ const filterMenuByAllowedPaths = (items, role) =>
 
 export const getMenuItems = (role) => {
   if (role === ROLES.SELLER) {
-    return MENU_ITEMS.filter((item) => ['dashboard', 'projects', 'sales', 'report'].includes(item.key))
+    return SELLER_MENU_ITEMS;
   }
   if (role === ROLES.SALES) {
     return MENU_ITEMS.filter((item) => ['dashboard', 'sales', 'inventory'].includes(item.key))

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import IconButton from '@mui/material/IconButton'
 import { useGetVouchersQuery } from '@/services/authenticateendpoint/account'
+import { FilterSelect, FilterSearch, FilterDate } from '@/components/Filters'
 
 const toDisplayDate = (value) => {
     if (!value) return '-'
@@ -59,49 +60,36 @@ const VoucherListTable = () => {
                 )}
                 <Row className="mb-3">
                     <Col md={3}>
-                        <Form.Group>
-                            <Form.Label>Voucher No</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Search voucher..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-                        </Form.Group>
+                        <Form.Label>Voucher No</Form.Label>
+                        <FilterSearch
+                            value={search}
+                            onChange={setSearch}
+                            placeholder="Search voucher..."
+                        />
                     </Col>
                     <Col md={3}>
-                        <Form.Group>
-                            <Form.Label>Status</Form.Label>
-                            <Form.Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                                <option value="">All Status</option>
-                                <option value="POSTED">POSTED</option>
-                                <option value="DRAFT">DRAFT</option>
-                                <option value="VOID">VOID</option>
-                            </Form.Select>
-                        </Form.Group>
+                        <FilterSelect
+                            label="Status"
+                            value={statusFilter}
+                            onChange={setStatusFilter}
+                            options={[
+                                { value: '', label: 'All Status' },
+                                { value: 'POSTED', label: 'POSTED' },
+                                { value: 'DRAFT', label: 'DRAFT' },
+                                { value: 'VOID', label: 'VOID' },
+                            ]}
+                        />
                     </Col>
                     <Col md={4}>
-                        <Form.Group>
-                            <Form.Label>Date Range</Form.Label>
-                            <Row className="g-2">
-                                <Col md={6}>
-                                    <Form.Control
-                                        type="date"
-                                        value={fromDate}
-                                        onChange={(e) => setFromDate(e.target.value)}
-                                        placeholder="From"
-                                    />
-                                </Col>
-                                <Col md={6}>
-                                    <Form.Control
-                                        type="date"
-                                        value={toDate}
-                                        onChange={(e) => setToDate(e.target.value)}
-                                        placeholder="To"
-                                    />
-                                </Col>
-                            </Row>
-                        </Form.Group>
+                        <Form.Label>Date Range</Form.Label>
+                        <Row className="g-2">
+                            <Col md={6}>
+                                <FilterDate value={fromDate} onChange={setFromDate} />
+                            </Col>
+                            <Col md={6}>
+                                <FilterDate value={toDate} onChange={setToDate} />
+                            </Col>
+                        </Row>
                     </Col>
                 </Row>
 

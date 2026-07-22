@@ -1,18 +1,27 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Card, CardBody, Col, Form, Row, Button } from 'react-bootstrap'
-import Flatpickr from 'react-flatpickr'
 import { toast } from 'react-toastify'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAllUsersQuery } from '@/services/authenticateendpoint/users'
 import { useGetAllProjectsQuery } from '@/services/authenticateendpoint/project'
-import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse'
 import { useGetAllCouriersQuery } from '@/services/authenticateendpoint/courier'
 import { useAuth } from '@/hooks/useAuth'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
+import { FilterSelect, FilterDate } from '@/components/Filters'
 
 const startOfMonth = () => {
   const d = new Date()
   return new Date(d.getFullYear(), d.getMonth(), 1)
+}
+
+const toIsoDate = (d) => {
+  if (!d) return ''
+  const dt = d instanceof Date ? d : new Date(d)
+  if (Number.isNaN(dt.getTime())) return ''
+  const y = dt.getFullYear()
+  const m = String(dt.getMonth() + 1).padStart(2, '0')
+  const day = String(dt.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 const STATUS_OPTIONS = [
@@ -26,23 +35,22 @@ const STATUS_OPTIONS = [
   { value: 'returned', label: 'Returned' },
 ]
 
-const FilterBar = ({ onApply, onExport }) => {
+const FilterBar = ({ onApply }) => {
   const { role, id: userId } = useAuth()
   const isSeller = role === 'SELLER'
 
   const [draft, setDraft] = useState({
-    dateRange: [startOfMonth(), new Date()],
+    dateFrom: toIsoDate(startOfMonth()),
+    dateTo: toIsoDate(new Date()),
     projectId: '',
     sellerId: isSeller ? userId : '',
-    warehouseId: '',
     status: '',
     courierId: '',
     search: '',
   })
 
-  const { data: allUsers = [], error: usersError, refetch: refetchUsers } = useGetAllUsersQuery()
-  const { data: projects = [], error: projectsError, refetch: refetchProjects } = useGetAllProjectsQuery()
-  const { data: warehouses = [], error: warehousesError, refetch: refetchWarehouses } = useGetAllWarehousesQuery()
+  const { data: allUsers = [], error: usersError } = useGetAllUsersQuery()
+  const { data: projects = [], error: projectsError } = useGetAllProjectsQuery()
   const { data: couriers = [], error: couriersError } = useGetAllCouriersQuery()
 
   useEffect(() => {
@@ -51,9 +59,6 @@ const FilterBar = ({ onApply, onExport }) => {
   useEffect(() => {
     if (projectsError) toast.error(extractApiErrorMessage(projectsError));
   }, [projectsError]);
-  useEffect(() => {
-    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
-  }, [warehousesError]);
   useEffect(() => {
     if (couriersError) toast.error(extractApiErrorMessage(couriersError));
   }, [couriersError]);
@@ -65,16 +70,30 @@ const FilterBar = ({ onApply, onExport }) => {
 
   const setField = (key, value) => setDraft((prev) => ({ ...prev, [key]: value }))
 
-  const handleApply = () => {
+  // Auto-apply whenever any filter changes (only when both dates are set)
+  useEffect(() => {
+    if (!draft.dateFrom || !draft.dateTo) return
     onApply?.({
-      from: draft.dateRange?.[0] || null,
-      to: draft.dateRange?.[1] || null,
+      from: draft.dateFrom ? new Date(draft.dateFrom) : null,
+      to: draft.dateTo ? new Date(draft.dateTo) : null,
       projectId: draft.projectId,
       sellerId: draft.sellerId,
-      warehouseId: draft.warehouseId,
       status: draft.status,
       courierId: draft.courierId,
       search: draft.search,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft.dateFrom, draft.dateTo, draft.projectId, draft.sellerId, draft.status, draft.courierId, draft.search])
+
+  const handleClear = () => {
+    setDraft({
+      dateFrom: toIsoDate(startOfMonth()),
+      dateTo: toIsoDate(new Date()),
+      projectId: '',
+      sellerId: isSeller ? userId : '',
+      status: '',
+      courierId: '',
+      search: '',
     })
   }
 
@@ -82,105 +101,71 @@ const FilterBar = ({ onApply, onExport }) => {
     <Card className="mb-3">
       <CardBody>
         <Row className="g-2 align-items-end">
-          <Col md={6} lg={2}>
-            <Form.Label className="text-muted small mb-1">Date Range</Form.Label>
-            <Flatpickr
-              className="form-control"
-              value={draft.dateRange}
-              onChange={(dates) => setField('dateRange', dates)}
-              options={{ mode: 'range', dateFormat: 'd M Y' }}
-              placeholder="Select date range"
+          <Col md={6} lg>
+            <FilterDate
+              inline
+              label="From"
+              value={draft.dateFrom}
+              onChange={(v) => setField('dateFrom', v)}
             />
           </Col>
-          <Col md={6} lg={2}>
-            <Form.Label className="text-muted small mb-1">Project</Form.Label>
-            <Form.Select
-              value={draft.projectId}
-              onChange={(e) => setField('projectId', e.target.value)}
-            >
-              <option value="">All Projects</option>
-              {projects.map((p) => (
-                <option key={p._id} value={p._id}>
-                  {p.name}
-                </option>
-              ))}
-            </Form.Select>
+          <Col md={6} lg>
+            <FilterDate
+              inline
+              label="To"
+              value={draft.dateTo}
+              onChange={(v) => setField('dateTo', v)}
+            />
           </Col>
-          <Col md={6} lg={2}>
-            <Form.Label className="text-muted small mb-1">Seller</Form.Label>
-            <Form.Select
+          <Col md={6} lg>
+            <FilterSelect
+              label="Seller"
               value={draft.sellerId}
-              onChange={(e) => setField('sellerId', e.target.value)}
+              onChange={(v) => setField('sellerId', v)}
               disabled={isSeller}
-            >
-              <option value="">All Sellers</option>
-              {sellers.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name}
-                </option>
-              ))}
-            </Form.Select>
+              options={[
+                { value: '', label: 'All Sellers' },
+                ...sellers.map((s) => ({ value: s._id, label: s.name })),
+              ]}
+            />
           </Col>
-          <Col md={6} lg={2}>
-            <Form.Label className="text-muted small mb-1">Warehouse</Form.Label>
-            <Form.Select
-              value={draft.warehouseId}
-              onChange={(e) => setField('warehouseId', e.target.value)}
-            >
-              <option value="">All Warehouses</option>
-              {warehouses.map((w) => (
-                <option key={w._id} value={w._id}>
-                  {w.name}
-                </option>
-              ))}
-            </Form.Select>
+          <Col md={6} lg>
+            <FilterSelect
+              label="Project"
+              value={draft.projectId}
+              onChange={(v) => setField('projectId', v)}
+              options={[
+                { value: '', label: 'All Projects' },
+                ...projects.map((p) => ({ value: p._id, label: p.name })),
+              ]}
+            />
           </Col>
-          <Col md={6} lg={2}>
-            <Form.Label className="text-muted small mb-1">Status</Form.Label>
-            <Form.Select
+          <Col md={6} lg>
+            <FilterSelect
+              label="Status"
               value={draft.status}
-              onChange={(e) => setField('status', e.target.value)}
-            >
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </Form.Select>
+              onChange={(v) => setField('status', v)}
+              options={STATUS_OPTIONS}
+            />
           </Col>
-          <Col md={6} lg={2}>
-            <Form.Label className="text-muted small mb-1">Courier</Form.Label>
-            <Form.Select
+          <Col md={6} lg>
+            <FilterSelect
+              label="Courier"
               value={draft.courierId}
-              onChange={(e) => setField('courierId', e.target.value)}
-            >
-              <option value="">All Couriers</option>
-              {couriers.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </Form.Select>
+              onChange={(v) => setField('courierId', v)}
+              options={[
+                { value: '', label: 'All Couriers' },
+                ...couriers.map((c) => ({ value: c._id, label: c.name })),
+              ]}
+            />
           </Col>
-        </Row>
-        <Row className="mt-2">
-          <Col xs={12} className="d-flex gap-2 justify-content-end">
-            <Button variant="light" className="d-flex align-items-center gap-1">
-              <IconifyIcon icon="bx:filter-alt" />
-              <span className="d-none d-xl-inline">More Filters</span>
-            </Button>
-            <Button variant="primary" className="d-flex align-items-center gap-1" onClick={handleApply}>
-              <IconifyIcon icon="bx:search" />
-              <span>Apply</span>
+          <Col md={12} lg="auto" className="d-flex gap-2 justify-content-end ms-auto">
+            <Button variant="light" className="d-inline-flex align-items-center gap-1 text-nowrap" onClick={handleClear}>
+              <IconifyIcon icon="bx:x" />
+              <span>Clear All</span>
             </Button>
           </Col>
         </Row>
-        <div className="d-flex justify-content-end mt-2">
-          <Button variant="outline-secondary" size="sm" className="d-flex align-items-center gap-1" onClick={onExport}>
-            <IconifyIcon icon="bx:export" />
-            Export
-          </Button>
-        </div>
       </CardBody>
     </Card>
   )

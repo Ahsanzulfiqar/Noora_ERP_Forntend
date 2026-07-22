@@ -84,6 +84,7 @@ const SalesList = () => {
             <>
               <KpiGrid data={dashboard} />
 
+              {/*
               <Row className="mb-3">
                 <Col {...chartCol} className="mb-3">
                   <SalesTrendChart data={dashboard?.salesTrend} />
@@ -103,6 +104,7 @@ const SalesList = () => {
                   </Col>
                 )}
               </Row>
+              */}
             </>
           )}
         </>

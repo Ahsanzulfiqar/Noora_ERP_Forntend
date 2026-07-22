@@ -120,6 +120,7 @@ export const stocksAPI = api.injectEndpoints({
                   batchNo
                   expiryDate
                   quantity
+                  unitCost
                 }
                 createdAt
                 updatedAt
@@ -132,6 +133,43 @@ export const stocksAPI = api.injectEndpoints({
       transformResponse: (response) => response?.data?.GetWarehouseStockById,
       providesTags: (result, error, id) => [{ type: 'Stock', id }],
     }),
+
+    // Update Inventory (adjust warehouse stock batches)
+    updateInventory: build.mutation({
+      query: (data) => ({
+        method: 'POST',
+        auth: true,
+        body: {
+          query: `
+            mutation UpdateStockWithBatches($data: UpdateStockWithBatchesInput!) {
+              UpdateStockWithBatches(data: $data) {
+                _id
+                warehouse
+                product
+                variant
+                quantity
+                reserved
+                avgCost
+                batches {
+                  batchNo
+                  expiryDate
+                  quantity
+                  unitCost
+                }
+                createdAt
+                updatedAt
+              }
+            }
+          `,
+          variables: { data },
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [
+        'Stock',
+        'WarehouseStock',
+        { type: 'Stock', id: arg?._id },
+      ],
+    }),
   }),
 })
 
@@ -140,4 +178,5 @@ export const {
   useCreateWarehouseStockMutation,
   useGetWarehouseProductBatchesQuery,
   useGetWarehouseStockByIdQuery,
+  useUpdateInventoryMutation,
 } = stocksAPI

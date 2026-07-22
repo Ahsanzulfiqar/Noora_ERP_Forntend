@@ -17,6 +17,20 @@ export const ROLE_ALLOWED_PATHS = {
     '/sales/sales-list',
     '/sales/sales-detail/:salesId',
   ],
+  [ROLES.SELLER]: [
+    '/',
+    '/profile',
+    '/seller/dashboard',
+    '/seller/performance',
+    '/seller/orders',
+    '/seller/customers',
+    '/seller/products',
+    '/seller/stock',
+    '/seller/commissions',
+    '/sales/sales-add',
+    '/sales/sales-edit/:salesId',
+    '/sales/sales-detail/:salesId',
+  ],
 };
 
 export const isPathAllowedForRole = (role, pathname) => {
