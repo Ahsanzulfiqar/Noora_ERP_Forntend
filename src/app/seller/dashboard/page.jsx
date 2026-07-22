@@ -177,7 +177,7 @@ const SellerDashboardPage = () => {
             <CardHeader className="border-bottom">
               <div className="d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">Top Selling Products</h5>
-                <Link to="/seller/products" className="text-success fw-semibold fs-13">
+                <Link to="/seller/products" className="text-dark fw-semibold fs-13">
                   View All
                 </Link>
               </div>
@@ -215,7 +215,7 @@ const SellerDashboardPage = () => {
                           >
                             {p.productName || p.sku || 'Product'}
                           </div>
-                          <div className="fw-semibold text-success text-nowrap flex-shrink-0">
+                          <div className="fw-semibold text-dark text-nowrap flex-shrink-0">
                             {formatPKR(p.revenue)}
                           </div>
                         </div>

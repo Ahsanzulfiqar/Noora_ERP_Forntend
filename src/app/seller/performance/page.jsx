@@ -281,7 +281,7 @@ const SellerPerformancePage = () => {
             <CardHeader className="border-bottom">
               <div className="d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">Top Customers</h5>
-                <span className="text-success fw-semibold fs-13">Total Sales</span>
+                <span className="text-dark fw-semibold fs-13">Total Sales</span>
               </div>
             </CardHeader>
             <CardBody>
@@ -349,7 +349,7 @@ const SellerPerformancePage = () => {
                 <>
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                      <div className="text-success fw-bold fs-18">{formatPKR(compareCurr.totalRevenue)}</div>
+                      <div className="text-dark fw-bold fs-18">{formatPKR(compareCurr.totalRevenue)}</div>
                       <small className="text-muted">Current</small>
                     </div>
                     <div className="text-center">
@@ -425,7 +425,7 @@ const SellerPerformancePage = () => {
                   </div>
                   <div className="border-top mt-2 pt-2 d-flex justify-content-between">
                     <span className="fw-bold">Total</span>
-                    <span className="fw-bold text-success">{formatPKR(curr.totalRevenue)}</span>
+                    <span className="fw-bold text-dark">{formatPKR(curr.totalRevenue)}</span>
                   </div>
                 </div>
               )}

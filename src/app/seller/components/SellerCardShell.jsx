@@ -28,12 +28,12 @@ const SellerCardShell = ({
               {subtitle && <small className="text-muted">{subtitle}</small>}
             </div>
             {action && actionTo && (
-              <Link to={actionTo} className="text-success fw-semibold fs-13">
+              <Link to={actionTo} className="text-dark fw-semibold fs-13">
                 {action}
               </Link>
             )}
             {action && !actionTo && (
-              <span className="text-success fw-semibold fs-13">{action}</span>
+              <span className="text-dark fw-semibold fs-13">{action}</span>
             )}
           </div>
         </CardHeader>

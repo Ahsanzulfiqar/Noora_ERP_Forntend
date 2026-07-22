@@ -11,7 +11,7 @@ const RecentOrdersTable = ({ sales = [], isLoading }) => {
       <CardHeader className="border-bottom">
         <div className="d-flex justify-content-between align-items-center">
           <h5 className="mb-0">Recent Orders</h5>
-          <Link to="/seller/orders" className="text-success fw-semibold fs-13">
+          <Link to="/seller/orders" className="text-dark fw-semibold fs-13">
             View All Orders
           </Link>
         </div>

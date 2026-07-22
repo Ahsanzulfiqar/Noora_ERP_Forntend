@@ -574,7 +574,7 @@ const SellerCustomersPage = () => {
                   <Col>
                     <div className="text-center border rounded p-2">
                       <small className="text-muted d-block">Total Spent</small>
-                      <div className="fw-bold text-success">{formatPKR(selected.totalSpent)}</div>
+                      <div className="fw-bold text-dark">{formatPKR(selected.totalSpent)}</div>
                     </div>
                   </Col>
                   <Col>
@@ -640,7 +640,7 @@ const SellerCustomersPage = () => {
                             </tbody>
                           </Table>
                           <div className="text-end mt-2">
-                            <Link to="/seller/orders" className="text-success fw-semibold small">
+                            <Link to="/seller/orders" className="text-dark fw-semibold small">
                               View All Orders →
                             </Link>
                           </div>
