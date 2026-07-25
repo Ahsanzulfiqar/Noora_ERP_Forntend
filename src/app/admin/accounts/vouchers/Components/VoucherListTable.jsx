@@ -5,6 +5,7 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import IconButton from '@mui/material/IconButton'
 import { useGetVouchersQuery } from '@/services/authenticateendpoint/account'
 import { FilterSelect, FilterSearch, FilterDate } from '@/components/Filters'
+import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 
 const toDisplayDate = (value) => {
     if (!value) return '-'
@@ -19,6 +20,8 @@ const VoucherListTable = () => {
     const [statusFilter, setStatusFilter] = useState('')
     const [fromDate, setFromDate] = useState('')
     const [toDate, setToDate] = useState('')
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(10)
 
     const queryArgs = useMemo(() => {
         const args = {}
@@ -34,6 +37,12 @@ const VoucherListTable = () => {
         const matchesStatus = statusFilter === '' || v.status === statusFilter
         return matchesSearch && matchesStatus
     }), [vouchers, search, statusFilter])
+
+    const totalPages = Math.max(1, Math.ceil(filteredVouchers.length / limit))
+    const pagedVouchers = useMemo(
+        () => filteredVouchers.slice((page - 1) * limit, page * limit),
+        [filteredVouchers, page, limit]
+    )
 
     const getStatusBadge = (status) => {
         switch (status) {
@@ -111,7 +120,7 @@ const VoucherListTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {!isLoading && filteredVouchers.map((v) => (
+                            {!isLoading && pagedVouchers.map((v) => (
                                 <tr key={v._id || v.voucherNo}>
                                     <td className="fw-medium text-primary">
                                         <Link to={`/accounts/vouchers/${v._id}`}>{v.voucherNo}</Link>
@@ -137,6 +146,13 @@ const VoucherListTable = () => {
                     </Table>
                 </div>
             </Card.Body>
+            <CustomTablePaginations
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+            />
         </Card>
     )
 }
