@@ -1,13 +1,14 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { currency } from '@/context/constants';
-import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
+import { Card, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 const ProductCard = ({
   item, image,
 
@@ -57,6 +58,8 @@ const ProductCard = ({
 };
 const ProductList = () => {
   const [selectedProductId, setSelectedProductId] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const { data: productsData, error: productsError, refetch: refetchProducts } = useGetAllProductsQuery();
   const { data: variantData, isLoading, error, refetch: refetchVariants } = useGetVariantsByProductQuery(selectedProductId, {
     skip: !selectedProductId
@@ -68,6 +71,17 @@ const ProductList = () => {
   useEffect(() => {
     if (error) toast.error(extractApiErrorMessage(error));
   }, [error]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedProductId]);
+
+  const totalItems = variantData?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+  const pagedVariants = useMemo(
+    () => (variantData || []).slice((page - 1) * limit, page * limit),
+    [variantData, page, limit]
+  );
 
   const productOptions = productsData?.map(p => ({ value: p._id, label: p.name })) || [];
   return <Card>
@@ -138,7 +152,7 @@ const ProductList = () => {
                 <td colSpan="7" className="text-center">No variants found for this product</td>
               </tr>
             )}
-            {variantData?.map((item, idx) => (
+            {pagedVariants.map((item, idx) => (
               <ProductCard
                 key={idx}
                 {...item}
@@ -150,37 +164,13 @@ const ProductList = () => {
         </table>
       </div>
     </div>
-    <CardFooter className="border-top">
-      <nav aria-label="Page navigation example">
-        <ul className="pagination justify-content-end mb-0">
-          <li className="page-item">
-            <Link className="page-link" to="">
-              Previous
-            </Link>
-          </li>
-          <li className="page-item active">
-            <Link className="page-link" to="">
-              1
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" to="">
-              2
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" to="">
-              3
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" to="">
-              Next
-            </Link>
-          </li>
-        </ul>
-      </nav>
-    </CardFooter>
+    <CustomTablePaginations
+      limit={limit}
+      setLimit={setLimit}
+      page={page}
+      setPage={setPage}
+      totalPages={totalPages}
+    />
   </Card>;
 };
 export default ProductList;

@@ -17,25 +17,37 @@ export const FilterSelect = ({
   disabled = false,
   style,
   className = '',
+  inline = false,
 }) => {
   const hasEmptyOption = options.some((o) => o.value === '')
+  const select = (
+    <Form.Select
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e.target.value)}
+      size={size}
+      disabled={disabled}
+      style={style}
+    >
+      {!hasEmptyOption && placeholder && <option value="">{placeholder}</option>}
+      {options.map((o) => (
+        <option key={String(o.value)} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </Form.Select>
+  )
+  if (inline) {
+    return (
+      <div className={`d-flex align-items-center gap-2 ${className}`}>
+        {label && <Form.Label className="mb-0 text-nowrap">{label}:</Form.Label>}
+        {select}
+      </div>
+    )
+  }
   return (
     <div className={className}>
       {label && <Form.Label className="text-muted small mb-1">{label}</Form.Label>}
-      <Form.Select
-        value={value ?? ''}
-        onChange={(e) => onChange?.(e.target.value)}
-        size={size}
-        disabled={disabled}
-        style={style}
-      >
-        {!hasEmptyOption && placeholder && <option value="">{placeholder}</option>}
-        {options.map((o) => (
-          <option key={String(o.value)} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </Form.Select>
+      {select}
     </div>
   )
 }

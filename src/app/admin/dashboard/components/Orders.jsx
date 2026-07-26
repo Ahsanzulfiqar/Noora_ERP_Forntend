@@ -1,10 +1,20 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { getAllOrders } from '@/helpers/data';
 import { useFetchData } from '@/hooks/useFetchData';
-import { Button, Card, CardBody, CardFooter, CardTitle, Col, Row } from 'react-bootstrap';
+import { useState, useMemo } from 'react';
+import { Button, Card, CardBody, CardTitle, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 const Orders = () => {
   const orderData = useFetchData(getAllOrders);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const totalItems = orderData?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+  const pagedOrders = useMemo(
+    () => (orderData || []).slice((page - 1) * limit, page * limit),
+    [orderData, page, limit]
+  );
   return <Col>
       <Card>
         <CardBody>
@@ -32,7 +42,7 @@ const Orders = () => {
               </tr>
             </thead>
             <tbody>
-              {orderData?.slice(0, 5).map((item, idx) => <tr key={idx}>
+              {pagedOrders.map((item, idx) => <tr key={idx}>
                   <td className="ps-3">
                     <Link to="/orders/order-detail">#{item.id}</Link>
                   </td>
@@ -53,49 +63,14 @@ const Orders = () => {
             </tbody>
           </table>
         </div>
-        <CardFooter className="border-top">
-          {}
-          <Row className="g-3">
-            <div className="col-sm">
-              <div className="text-muted">
-                Showing
-                <span className="fw-semibold">5</span>
-                of
-                <span className="fw-semibold">90,521</span>
-                orders
-              </div>
-            </div>
-            <Col sm={'auto'}>
-              <ul className="pagination m-0">
-                <li className="page-item">
-                  <span role="button" className="page-link">
-                    <IconifyIcon icon="bx:left-arrow-alt" />
-                  </span>
-                </li>
-                <li className="page-item active">
-                  <span role="button" className="page-link">
-                    1
-                  </span>
-                </li>
-                <li className="page-item">
-                  <span role="button" className="page-link">
-                    2
-                  </span>
-                </li>
-                <li className="page-item">
-                  <span role="button" className="page-link">
-                    3
-                  </span>
-                </li>
-                <li className="page-item">
-                  <span role="button" className="page-link">
-                    <IconifyIcon icon="bx:right-arrow-alt" />
-                  </span>
-                </li>
-              </ul>
-            </Col>
-          </Row>
-        </CardFooter>
+        <CustomTablePaginations
+          limit={limit}
+          setLimit={setLimit}
+          page={page}
+          setPage={setPage}
+          totalPages={totalPages}
+          options={[5, 10, 20, 50]}
+        />
       </Card>
     </Col>;
 };

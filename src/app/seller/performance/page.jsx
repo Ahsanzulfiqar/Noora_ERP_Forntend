@@ -220,6 +220,7 @@ const SellerPerformancePage = () => {
         </Col>
         <Col md="auto">
           <FilterSelect
+            inline
             label="Project"
             size="sm"
             value={projectId}
