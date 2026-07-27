@@ -1,11 +1,20 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { getPermissionsListData } from '@/helpers/data';
 import { useFetchData } from '@/hooks/useFetchData';
-import { Fragment } from 'react';
-import { Card, CardFooter, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'react-bootstrap';
+import { Fragment, useState, useMemo } from 'react';
+import { Card, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 const PermissionsList = () => {
   const permissionsData = useFetchData(getPermissionsListData);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const totalItems = permissionsData?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+  const pagedData = useMemo(
+    () => (permissionsData || []).slice((page - 1) * limit, page * limit),
+    [permissionsData, page, limit]
+  );
   return <Row>
       <Col xl={12}>
         <Card>
@@ -45,7 +54,7 @@ const PermissionsList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {permissionsData?.map((item, idx) => <tr key={idx}>
+                  {pagedData.map((item, idx) => <tr key={idx}>
                       <td>
                         <div className="form-check">
                           <input type="checkbox" className="form-check-input" id="customCheck2" />
@@ -93,37 +102,13 @@ const PermissionsList = () => {
               </table>
             </div>
           </div>
-          <CardFooter className="border-top">
-            <nav aria-label="Page navigation example">
-              <ul className="pagination justify-content-end mb-0">
-                <li className="page-item">
-                  <Link className="page-link" to="">
-                    Previous
-                  </Link>
-                </li>
-                <li className="page-item active">
-                  <Link className="page-link" to="">
-                    1
-                  </Link>
-                </li>
-                <li className="page-item">
-                  <Link className="page-link" to="">
-                    2
-                  </Link>
-                </li>
-                <li className="page-item">
-                  <Link className="page-link" to="">
-                    3
-                  </Link>
-                </li>
-                <li className="page-item">
-                  <Link className="page-link" to="">
-                    Next
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </CardFooter>
+          <CustomTablePaginations
+            limit={limit}
+            setLimit={setLimit}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </Card>
       </Col>
     </Row>;

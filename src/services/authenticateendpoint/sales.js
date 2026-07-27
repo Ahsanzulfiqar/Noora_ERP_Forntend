@@ -18,6 +18,12 @@ export const salesAPI = api.injectEndpoints({
               status
               seller
               warehouse
+              project
+              customerName
+              customerPhone
+              city
+              country
+              address
               totalAmount
               courier {
                 courierName
@@ -31,6 +37,14 @@ export const salesAPI = api.injectEndpoints({
                 paidAmount
                 balanceAmount
                 paidAt
+              }
+              items {
+                product
+                productName
+                sku
+                quantity
+                salePrice
+                lineTotal
               }
               createdAt
             }
@@ -212,24 +226,28 @@ export const salesAPI = api.injectEndpoints({
         auth: true,
         body: {
           query: `
-            mutation UpdateSale($id: ID!, $data: UpdateSaleInput!) {
-              UpdateSale(id: $id, data: $data) {
+            mutation UpdateSale($saleId: ID!, $data: UpdateSaleInput!) {
+              UpdateSale(saleId: $saleId, data: $data) {
                 _id
                 invoiceNo
                 status
-                status
+                customerName
+                customerPhone
+                city
                 totalAmount
-                courier {
-                  courierName
-                  trackingNo
-                  trackingUrl
+                items {
+                  product
+                  productName
+                  sku
+                  quantity
+                  salePrice
+                  lineTotal
                 }
-                deliveryNotes
               }
             }
           `,
           variables: {
-            id,
+            saleId: id,
             data,
           },
         },

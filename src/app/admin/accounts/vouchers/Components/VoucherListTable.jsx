@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import IconButton from '@mui/material/IconButton'
 import { useGetVouchersQuery } from '@/services/authenticateendpoint/account'
+import { FilterSelect, FilterSearch, FilterDate } from '@/components/Filters'
+import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 
 const toDisplayDate = (value) => {
     if (!value) return '-'
@@ -18,6 +20,8 @@ const VoucherListTable = () => {
     const [statusFilter, setStatusFilter] = useState('')
     const [fromDate, setFromDate] = useState('')
     const [toDate, setToDate] = useState('')
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(10)
 
     const queryArgs = useMemo(() => {
         const args = {}
@@ -33,6 +37,12 @@ const VoucherListTable = () => {
         const matchesStatus = statusFilter === '' || v.status === statusFilter
         return matchesSearch && matchesStatus
     }), [vouchers, search, statusFilter])
+
+    const totalPages = Math.max(1, Math.ceil(filteredVouchers.length / limit))
+    const pagedVouchers = useMemo(
+        () => filteredVouchers.slice((page - 1) * limit, page * limit),
+        [filteredVouchers, page, limit]
+    )
 
     const getStatusBadge = (status) => {
         switch (status) {
@@ -59,49 +69,36 @@ const VoucherListTable = () => {
                 )}
                 <Row className="mb-3">
                     <Col md={3}>
-                        <Form.Group>
-                            <Form.Label>Voucher No</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Search voucher..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-                        </Form.Group>
+                        <Form.Label>Voucher No</Form.Label>
+                        <FilterSearch
+                            value={search}
+                            onChange={setSearch}
+                            placeholder="Search voucher..."
+                        />
                     </Col>
                     <Col md={3}>
-                        <Form.Group>
-                            <Form.Label>Status</Form.Label>
-                            <Form.Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                                <option value="">All Status</option>
-                                <option value="POSTED">POSTED</option>
-                                <option value="DRAFT">DRAFT</option>
-                                <option value="VOID">VOID</option>
-                            </Form.Select>
-                        </Form.Group>
+                        <FilterSelect
+                            label="Status"
+                            value={statusFilter}
+                            onChange={setStatusFilter}
+                            options={[
+                                { value: '', label: 'All Status' },
+                                { value: 'POSTED', label: 'POSTED' },
+                                { value: 'DRAFT', label: 'DRAFT' },
+                                { value: 'VOID', label: 'VOID' },
+                            ]}
+                        />
                     </Col>
                     <Col md={4}>
-                        <Form.Group>
-                            <Form.Label>Date Range</Form.Label>
-                            <Row className="g-2">
-                                <Col md={6}>
-                                    <Form.Control
-                                        type="date"
-                                        value={fromDate}
-                                        onChange={(e) => setFromDate(e.target.value)}
-                                        placeholder="From"
-                                    />
-                                </Col>
-                                <Col md={6}>
-                                    <Form.Control
-                                        type="date"
-                                        value={toDate}
-                                        onChange={(e) => setToDate(e.target.value)}
-                                        placeholder="To"
-                                    />
-                                </Col>
-                            </Row>
-                        </Form.Group>
+                        <Form.Label>Date Range</Form.Label>
+                        <Row className="g-2">
+                            <Col md={6}>
+                                <FilterDate value={fromDate} onChange={setFromDate} />
+                            </Col>
+                            <Col md={6}>
+                                <FilterDate value={toDate} onChange={setToDate} />
+                            </Col>
+                        </Row>
                     </Col>
                 </Row>
 
@@ -123,7 +120,7 @@ const VoucherListTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {!isLoading && filteredVouchers.map((v) => (
+                            {!isLoading && pagedVouchers.map((v) => (
                                 <tr key={v._id || v.voucherNo}>
                                     <td className="fw-medium text-primary">
                                         <Link to={`/accounts/vouchers/${v._id}`}>{v.voucherNo}</Link>
@@ -149,6 +146,13 @@ const VoucherListTable = () => {
                     </Table>
                 </div>
             </Card.Body>
+            <CustomTablePaginations
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+            />
         </Card>
     )
 }

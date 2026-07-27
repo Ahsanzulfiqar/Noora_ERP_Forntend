@@ -16,6 +16,7 @@ import { useGetSellerByIdQuery } from '@/services/authenticateendpoint/sellers';
 import { useGetWarehouseByIdQuery } from '@/services/authenticateendpoint/warehouse';
 import { useGetProjectByIdQuery } from '@/services/authenticateendpoint/project';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import SaleStatusChip from '@/components/SaleStatusChip';
 
 const STATUS_BADGE = {
   DRAFT: { bg: '#e2e8f0', color: '#475569', label: 'DRAFT' },
@@ -240,7 +241,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
               <div>
                 <div className="d-flex align-items-center gap-2 flex-wrap">
                   <h4 className="mb-0 text-dark fw-bold">Invoice #{saleData?.invoiceNo || '—'}</h4>
-                  <StatusBadge status={saleData?.status} />
+                  <SaleStatusChip status={saleData?.status || 'draft'} />
                 </div>
               </div>
             </div>
@@ -287,13 +288,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
               })()}
 
               {saleData?.status?.toLowerCase() === 'delivered' && saleData?.payment?.status?.toLowerCase() !== 'paid' && (
-                <button
-                  type="button"
-                  className="btn btn-success btn-sm d-flex align-items-center gap-1"
-                  onClick={() => setActiveModal('MARK_PAID')}
-                >
-                  <IconifyIcon icon="solar:dollar-broken" className="fs-16" /> Mark Paid
-                </button>
+                <SaleStatusChip status="mark_paid" onClick={() => setActiveModal('MARK_PAID')} />
               )}
             </div>
           </div>

@@ -12,12 +12,12 @@ import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const OutForDeliveryModal = ({ show, onHide, saleId }) => {
     const [markOutForDelivery, { isLoading }] = useMarkOutForDeliveryMutation();
-    const { data: couriersData, error: couriersError } = useGetAllCouriersQuery();
+    const { data: couriersData, error: couriersError } = useGetAllCouriersQuery(undefined, { skip: !show });
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (couriersError) toast.error(extractApiErrorMessage(couriersError));
-    }, [couriersError]);
+        if (show && couriersError) toast.error(extractApiErrorMessage(couriersError));
+    }, [show, couriersError]);
 
     const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
 

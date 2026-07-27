@@ -1,13 +1,14 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { Card, CardFooter } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useDeleteCourierMutation, useGetAllCouriersQuery } from '../../../../../services/authenticateendpoint/courier';
 import { IconButton } from '@mui/material';
 import LoaderSpinner from '../../../../../components/loaders/LoaderSpinner';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 
 const CourierList = () => {
     const { data, isLoading, error, refetch } = useGetAllCouriersQuery();
@@ -16,6 +17,15 @@ const CourierList = () => {
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [courierIdToDelete, setCourierIdToDelete] = useState(null);
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10);
+
+    const totalItems = data?.length || 0;
+    const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+    const pagedData = useMemo(
+        () => (data || []).slice((page - 1) * limit, page * limit),
+        [data, page, limit]
+    );
 
     useEffect(() => {
         if (error) toast.error(extractApiErrorMessage(error));
@@ -68,7 +78,7 @@ const CourierList = () => {
                         </thead>
                         <tbody style={{ textAlign: 'left' }}>
                             {isLoading && <LoaderSpinner show={isLoading} colSpan={4} />}
-                            {!isLoading && data?.map((item) => (
+                            {!isLoading && pagedData.map((item) => (
                                 <tr key={item?._id}>
                                     <td>
                                         <div className="form-check ms-1">
@@ -119,27 +129,13 @@ const CourierList = () => {
                     </table>
                 </div>
             </div>
-            <CardFooter className="border-top">
-                <nav aria-label="Page navigation example">
-                    <ul className="pagination justify-content-end mb-0">
-                        <li className="page-item">
-                            <Link className="page-link" to="">
-                                Previous
-                            </Link>
-                        </li>
-                        <li className="page-item active">
-                            <Link className="page-link" to="">
-                                1
-                            </Link>
-                        </li>
-                        <li className="page-item">
-                            <Link className="page-link" to="">
-                                Next
-                            </Link>
-                        </li>
-                    </ul>
-                </nav>
-            </CardFooter>
+            <CustomTablePaginations
+                limit={limit}
+                setLimit={setLimit}
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+            />
             <DeleteConfirmModal
                 show={showDeleteModal}
                 onConfirm={handleConfirmDelete}

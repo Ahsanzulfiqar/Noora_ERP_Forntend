@@ -8,6 +8,7 @@ import { useGetSalesQuery } from '@/services/authenticateendpoint/sales'
 import { useAuth } from '@/hooks/useAuth'
 import MarkPaidModal from './MarkPaidModal'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
+import SaleStatusChip from '@/components/SaleStatusChip'
 
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
@@ -156,9 +157,7 @@ const SalesTableExpanded = ({ filter }) => {
                     <td className="fw-semibold">{item.courier?.courierName || 'N/A'}</td>
                     <td>{item.courier?.trackingNo || 'N/A'}</td>
                     <td>
-                      <Badge bg={getStatusColor(item.status || 'draft')} className="text-capitalize px-2 py-1">
-                        {item.status || 'Draft'}
-                      </Badge>
+                      <SaleStatusChip status={item.status || 'draft'} />
                     </td>
                     <td className="fw-bold text-success">${(item.totalAmount || 0).toFixed(2)}</td>
                     <td>
@@ -203,14 +202,7 @@ const SalesTableExpanded = ({ filter }) => {
                           </button>
                         )}
                         {isDeliveredUnpaid(item) && (
-                          <button
-                            type="button"
-                            className="btn btn-success btn-sm"
-                            onClick={() => setPaySale(item)}
-                          >
-                            <IconifyIcon icon="solar:dollar-broken" className="fs-16 me-1" />
-                            Mark Paid
-                          </button>
+                          <SaleStatusChip status="mark_paid" onClick={() => setPaySale(item)} />
                         )}
                       </div>
                     </td>

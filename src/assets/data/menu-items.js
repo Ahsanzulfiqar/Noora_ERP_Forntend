@@ -1,3 +1,86 @@
+export const SELLER_MENU_ITEMS = [
+  {
+    key: 'main',
+    label: 'MAIN',
+    isTitle: true,
+  },
+  {
+    key: 'seller-dashboard',
+    label: 'Dashboard',
+    icon: 'solar:widget-2-bold-duotone',
+    url: '/seller/dashboard',
+  },
+  {
+    key: 'sales-section',
+    label: 'SALES',
+    isTitle: true,
+  },
+  {
+    key: 'seller-new-sale',
+    label: 'New Sale',
+    icon: 'solar:cart-plus-bold-duotone',
+    url: '/sales/sales-add',
+  },
+  {
+    key: 'seller-orders',
+    label: 'Orders',
+    icon: 'solar:clipboard-list-bold-duotone',
+    url: '/seller/orders',
+  },
+  {
+    key: 'seller-customers',
+    label: 'Customers',
+    icon: 'solar:users-group-rounded-bold-duotone',
+    url: '/seller/customers',
+  },
+  {
+    key: 'products-section',
+    label: 'PRODUCTS',
+    isTitle: true,
+  },
+  {
+    key: 'seller-products',
+    label: 'Products',
+    icon: 'solar:t-shirt-bold-duotone',
+    url: '/seller/products',
+    isDisabled: true,
+  },
+  {
+    key: 'seller-stock',
+    label: 'Stock',
+    icon: 'solar:box-bold-duotone',
+    url: '/seller/stock',
+  },
+  {
+    key: 'reports-section',
+    label: 'REPORTS',
+    isTitle: true,
+  },
+  {
+    key: 'seller-performance',
+    label: 'My Performance',
+    icon: 'solar:chart-2-bold-duotone',
+    url: '/seller/performance',
+  },
+  {
+    key: 'seller-commissions',
+    label: 'My Commissions',
+    icon: 'solar:dollar-bold-duotone',
+    url: '/seller/commissions',
+  },
+  {
+    key: 'profile-section',
+    label: 'PROFILE',
+    isTitle: true,
+  },
+  {
+    key: 'seller-profile',
+    label: 'My Profile',
+    icon: 'solar:user-bold-duotone',
+    url: '/profile',
+  },
+]
+
 export const MENU_ITEMS = [
   {
     key: 'general',

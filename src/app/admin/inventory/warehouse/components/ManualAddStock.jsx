@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button } from 'react-bootstrap';
+import { useEffect, useMemo } from 'react';
+import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button, Spinner } from 'react-bootstrap';
 import { Formik, Form, FieldArray } from 'formik';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Plus, Trash2 } from 'lucide-react';
 import Box from '@mui/material/Box';
@@ -16,18 +16,39 @@ import FormikDateField from '@/components/formikfield/FormikDateField';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
-import { useAddOpeningStockMutation } from '@/services/authenticateendpoint/stock';
+import {
+    useAddOpeningStockMutation,
+    useGetWarehouseStockByIdQuery,
+    useUpdateInventoryMutation,
+} from '@/services/authenticateendpoint/stock';
 import StatusAlert from '@/components/StatusAlert';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 
 const emptyBatch = { batchNo: '', expiryDate: '', quantity: 0, unitCost: 0 };
 
+const toDateInputValue = (iso) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toISOString().slice(0, 10);
+};
+
 const ManualAddStock = () => {
     const navigate = useNavigate();
-    const [addOpeningStock, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] = useAddOpeningStockMutation();
+    const { inventoryId } = useParams();
+    const isEdit = Boolean(inventoryId);
+
+    const [addOpeningStock, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] =
+        useAddOpeningStockMutation();
+    const [updateInventory, { isLoading: isUpdating, error: updateError, isSuccess: updateSuccess }] =
+        useUpdateInventoryMutation();
 
     const { data: warehouses, error: warehousesError } = useGetAllWarehousesQuery();
     const { data: products, error: productsError } = useGetAllProductsQuery();
+    const { data: stockData, isLoading: isLoadingStock, error: stockError } = useGetWarehouseStockByIdQuery(
+        inventoryId,
+        { skip: !isEdit, refetchOnMountOrArgChange: true },
+    );
 
     useEffect(() => {
         if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
@@ -36,19 +57,48 @@ const ManualAddStock = () => {
         if (productsError) toast.error(extractApiErrorMessage(productsError));
     }, [productsError]);
     useEffect(() => {
+        if (stockError) toast.error(extractApiErrorMessage(stockError));
+    }, [stockError]);
+    useEffect(() => {
         if (createError) toast.error(extractApiErrorMessage(createError));
     }, [createError]);
+    useEffect(() => {
+        if (updateError) toast.error(extractApiErrorMessage(updateError));
+    }, [updateError]);
 
-    const warehouseOptions = warehouses?.map(w => ({ label: w.name, value: w._id })) || [];
-    const productOptions = products?.map(p => ({ label: p.name, value: p._id })) || [];
+    const warehouseOptions = useMemo(
+        () => warehouses?.map((w) => ({ label: w.name, value: w._id })) || [],
+        [warehouses],
+    );
+    const productOptions = useMemo(
+        () => products?.map((p) => ({ label: p.name, value: p._id })) || [],
+        [products],
+    );
 
-    const initialValues = {
-        warehouseId: '',
-        productId: '',
-        variantId: '',
-        note: '',
-        batches: [{ ...emptyBatch }],
-    };
+    const initialValues = useMemo(() => {
+        if (isEdit && stockData) {
+            const batches = (stockData.batches || []).map((b) => ({
+                batchNo: b.batchNo || '',
+                expiryDate: toDateInputValue(b.expiryDate),
+                quantity: Number(b.quantity ?? 0),
+                unitCost: Number(b.unitCost ?? 0),
+            }));
+            return {
+                warehouseId: stockData.warehouse || '',
+                productId: stockData.product || '',
+                variantId: stockData.variant || '',
+                note: '',
+                batches: batches.length ? batches : [{ ...emptyBatch }],
+            };
+        }
+        return {
+            warehouseId: '',
+            productId: '',
+            variantId: '',
+            note: '',
+            batches: [{ ...emptyBatch }],
+        };
+    }, [isEdit, stockData]);
 
     const validationSchema = Yup.object({
         warehouseId: Yup.string().required('Required'),
@@ -60,28 +110,57 @@ const ManualAddStock = () => {
                 Yup.object({
                     batchNo: Yup.string().required('Required'),
                     expiryDate: Yup.date().required('Required'),
-                    quantity: Yup.number().min(1, 'Must be at least 1').required('Required'),
+                    quantity: Yup.number()
+                        .min(isEdit ? 0 : 1, isEdit ? 'Must be 0 or more' : 'Must be at least 1')
+                        .required('Required'),
                     unitCost: Yup.number().min(0, 'Must be 0 or more').required('Required'),
-                })
+                }),
             )
             .min(1, 'At least one batch is required'),
     });
 
+    if (isEdit && isLoadingStock) {
+        return (
+            <Col xl={12}>
+                <Card>
+                    <CardBody className="text-center py-5">
+                        <Spinner animation="border" variant="primary" />
+                    </CardBody>
+                </Card>
+            </Col>
+        );
+    }
+
+    if (isEdit && !stockData) {
+        return (
+            <Col xl={12}>
+                <Card>
+                    <CardBody>
+                        <p className="mb-0">Inventory not found.</p>
+                    </CardBody>
+                </Card>
+            </Col>
+        );
+    }
+
+    const successPath = isEdit ? `/inventory/warehouse-detail/${inventoryId}` : '/inventory/warehouse';
+
     return (
         <Col xl={12}>
             <StatusAlert
-                isSuccess={createSuccess}
-                error={createError}
-                message="Inventory added successfully"
-                path="/inventory/warehouse"
+                isSuccess={isEdit ? updateSuccess : createSuccess}
+                error={isEdit ? updateError : createError}
+                message={isEdit ? 'Inventory updated successfully' : 'Inventory added successfully'}
+                path={successPath}
                 redirect={true}
             />
             <Card>
                 <CardHeader>
-                    <CardTitle as="h4">Add Manual Inventory</CardTitle>
+                    <CardTitle as="h4">{isEdit ? 'Update Inventory' : 'Add Manual Inventory'}</CardTitle>
                 </CardHeader>
                 <CardBody>
                     <Formik
+                        enableReinitialize
                         initialValues={initialValues}
                         validationSchema={validationSchema}
                         onSubmit={async (values) => {
@@ -91,16 +170,23 @@ const ManualAddStock = () => {
                                     productId: values.productId,
                                     variantId: values.variantId || null,
                                     note: values.note,
-                                    batches: values.batches.map(b => ({
+                                    batches: values.batches.map((b) => ({
                                         batchNo: b.batchNo,
                                         expiryDate: new Date(b.expiryDate).toISOString(),
                                         quantity: Number(b.quantity),
                                         unitCost: Number(b.unitCost),
                                     })),
                                 };
-                                await addOpeningStock(data).unwrap();
+                                if (isEdit) {
+                                    await updateInventory(data).unwrap();
+                                } else {
+                                    await addOpeningStock(data).unwrap();
+                                }
                             } catch (err) {
-                                console.error('Failed to add inventory:', err);
+                                console.error(
+                                    isEdit ? 'Failed to update inventory:' : 'Failed to add inventory:',
+                                    err,
+                                );
                             }
                         }}
                     >
@@ -110,8 +196,10 @@ const ManualAddStock = () => {
                                 setFieldValue={setFieldValue}
                                 warehouseOptions={warehouseOptions}
                                 productOptions={productOptions}
-                                isCreating={isCreating}
+                                isSubmitting={isEdit ? isUpdating : isCreating}
                                 navigate={navigate}
+                                isEdit={isEdit}
+                                cancelPath={successPath}
                             />
                         )}
                     </Formik>
@@ -126,8 +214,10 @@ const ManualAddStockForm = ({
     setFieldValue,
     warehouseOptions,
     productOptions,
-    isCreating,
-    navigate
+    isSubmitting,
+    navigate,
+    isEdit,
+    cancelPath,
 }) => {
     const { data: variants } = useGetVariantsByProductQuery(values.productId, {
         skip: !values.productId
@@ -138,7 +228,12 @@ const ManualAddStockForm = ({
         <Form>
             <Row className="mb-4">
                 <Col md={4}>
-                    <FormikSelectField name="warehouseId" label="Warehouse" options={warehouseOptions} />
+                    <FormikSelectField
+                        name="warehouseId"
+                        label="Warehouse"
+                        options={warehouseOptions}
+                        disabled={isEdit}
+                    />
                 </Col>
                 <Col md={4}>
                     <FormikSelectField
@@ -146,6 +241,7 @@ const ManualAddStockForm = ({
                         label="Product"
                         options={productOptions}
                         onChange={() => setFieldValue('variantId', '')}
+                        disabled={isEdit}
                     />
                 </Col>
                 <Col md={4}>
@@ -153,7 +249,7 @@ const ManualAddStockForm = ({
                         name="variantId"
                         label="Variant"
                         options={variantOptions}
-                        disabled={!values.productId}
+                        disabled={isEdit || !values.productId}
                     />
                 </Col>
             </Row>
@@ -186,7 +282,7 @@ const ManualAddStockForm = ({
                                             <FormikTextField
                                                 name={`batches.${index}.batchNo`}
                                                 label="Batch No"
-                                                placeholder="OPEN-001"
+                                                placeholder={isEdit ? 'BATCH-001' : 'OPEN-001'}
                                             />
                                         </Grid>
                                         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
@@ -229,16 +325,24 @@ const ManualAddStockForm = ({
 
             <Row className="mb-4">
                 <Col md={12}>
-                    <FormikTextField name="note" label="Note" as="textarea" rows={3} placeholder="Enter any notes..." />
+                    <FormikTextField
+                        name="note"
+                        label="Note"
+                        as="textarea"
+                        rows={3}
+                        placeholder={isEdit ? 'Reason for update / stock correction...' : 'Enter any notes...'}
+                    />
                 </Col>
             </Row>
 
             <div className="p-3 bg-light mt-4 rounded d-flex justify-content-end gap-2">
-                <Button variant="outline-secondary" onClick={() => navigate('/inventory/warehouse')}>
+                <Button variant="outline-secondary" onClick={() => navigate(cancelPath)}>
                     Cancel
                 </Button>
-                <Button type="submit" variant="primary" disabled={isCreating}>
-                    {isCreating ? 'Adding...' : 'Add Inventory'}
+                <Button type="submit" variant="primary" disabled={isSubmitting}>
+                    {isSubmitting
+                        ? isEdit ? 'Updating...' : 'Adding...'
+                        : isEdit ? 'Update Inventory' : 'Add Inventory'}
                 </Button>
             </div>
         </Form>

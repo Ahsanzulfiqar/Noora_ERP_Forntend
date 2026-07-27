@@ -80,6 +80,15 @@ const RoleView = lazy(() => import('../app/admin/role/role-view/page'))
 // Permissions Routes
 const Permissions = lazy(() => import('../app/admin/permissions/page'))
 
+// Seller Portal Routes
+const SellerDashboard = lazy(() => import('@/app/seller/dashboard/page'))
+const SellerPerformance = lazy(() => import('@/app/seller/performance/page'))
+const SellerOrders = lazy(() => import('@/app/seller/orders/page'))
+const SellerCustomers = lazy(() => import('@/app/seller/customers/page'))
+const SellerProducts = lazy(() => import('@/app/seller/products/page'))
+const SellerStock = lazy(() => import('@/app/seller/stock/page'))
+const SellerCommissions = lazy(() => import('@/app/seller/commissions/page'))
+
 // Accounts Routes
 const ChartOfAccounts = lazy(() => import('@/app/admin/accounts/chart-of-accounts/page'))
 const JournalEntry = lazy(() => import('@/app/admin/accounts/journal/new/page'))
@@ -331,6 +340,11 @@ const InventoryRoutes = [
     element: <WarehouseInventoryDetail />,
   },
   {
+    name: 'Inventory Edit',
+    path: '/inventory/warehouse-edit/:inventoryId',
+    element: <WarehouseAddManual />,
+  },
+  {
     name: 'Transfer Stock',
     path: '/inventory/transfer-stock',
     element: <TransferStock />,
@@ -487,7 +501,43 @@ const RoleRoutes = [
     element: <RoleAdd />,
   },
 ]
-const SellerRoutes = []
+const SellerRoutes = [
+  {
+    name: 'Seller Dashboard',
+    path: '/seller/dashboard',
+    element: <SellerDashboard />,
+  },
+  {
+    name: 'Seller Performance',
+    path: '/seller/performance',
+    element: <SellerPerformance />,
+  },
+  {
+    name: 'Seller Orders',
+    path: '/seller/orders',
+    element: <SellerOrders />,
+  },
+  {
+    name: 'Seller Customers',
+    path: '/seller/customers',
+    element: <SellerCustomers />,
+  },
+  {
+    name: 'Seller Products',
+    path: '/seller/products',
+    element: <SellerProducts />,
+  },
+  {
+    name: 'Seller Stock',
+    path: '/seller/stock',
+    element: <SellerStock />,
+  },
+  {
+    name: 'Seller Commissions',
+    path: '/seller/commissions',
+    element: <SellerCommissions />,
+  },
+]
 export const authRoutes = [
   {
     name: 'Sign In',

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Card, CardHeader, Table, Form, Row, Col, Button, Spinner, Alert, Badge } from 'react-bootstrap'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetTrialBalanceQuery } from '@/services/authenticateendpoint/account'
+import { FilterButton } from '@/components/Filters'
 
 const formatNumber = (value) =>
     Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -105,9 +106,14 @@ const TrialBalanceTable = () => {
                             </Button>
                         </Col>
                         <Col lg={2} md={6}>
-                            <Button variant="outline-secondary" className="w-100" onClick={handleClear}>
-                                Clear
-                            </Button>
+                            <FilterButton
+                                icon="bx:x"
+                                variant="light"
+                                onClick={handleClear}
+                                className="w-100 justify-content-center"
+                            >
+                                Clear All
+                            </FilterButton>
                         </Col>
                     </Row>
 

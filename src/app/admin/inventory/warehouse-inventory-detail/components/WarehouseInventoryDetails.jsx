@@ -5,9 +5,13 @@ import { Card, CardBody, CardTitle, Col, Row, Table } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import { useAuth } from '@/hooks/useAuth';
+import { ROLES } from '@/assets/data/roles';
 
 const WarehouseInventoryDetails = () => {
     const { inventoryId } = useParams();
+    const { role } = useAuth();
+    const isAdmin = role === ROLES.ADMIN;
     const { data: stockData, isLoading, error, refetch } = useGetWarehouseStockByIdQuery(inventoryId);
 
     useEffect(() => {
@@ -45,10 +49,21 @@ const WarehouseInventoryDetails = () => {
                     <CardBody>
                         <div className="d-flex align-items-center justify-content-between mb-3">
                             <CardTitle as="h4">Stock Information</CardTitle>
-                            <Link to="/inventory/warehouse" className="btn btn-sm btn-outline-secondary">
-                                <IconifyIcon icon="solar:arrow-left-broken" className="me-1 align-middle" />
-                                Back to List
-                            </Link>
+                            <div className="d-flex gap-2">
+                                {isAdmin && (
+                                    <Link
+                                        to={`/inventory/warehouse-edit/${inventoryId}`}
+                                        className="btn btn-sm btn-primary"
+                                    >
+                                        <IconifyIcon icon="solar:pen-2-broken" className="me-1 align-middle" />
+                                        Update Inventory
+                                    </Link>
+                                )}
+                                <Link to="/inventory/warehouse" className="btn btn-sm btn-outline-secondary">
+                                    <IconifyIcon icon="solar:arrow-left-broken" className="me-1 align-middle" />
+                                    Back to List
+                                </Link>
+                            </div>
                         </div>
                         <Row className="g-3">
                             <Col md={6}>
@@ -67,31 +82,31 @@ const WarehouseInventoryDetails = () => {
                             <Col md={3}>
                                 <div className="border p-3 rounded">
                                     <h6 className="text-muted mb-1">Total Quantity</h6>
-                                    <h4 className="mb-0 text-primary">{stockData.quantity}</h4>
+                                    <h4 className="mb-0 text-dark">{stockData.quantity}</h4>
                                 </div>
                             </Col>
                             <Col md={3}>
                                 <div className="border p-3 rounded">
                                     <h6 className="text-muted mb-1">Reserved</h6>
-                                    <h4 className="mb-0 text-warning">{stockData.reserved}</h4>
+                                    <h4 className="mb-0 text-dark">{stockData.reserved}</h4>
                                 </div>
                             </Col>
                             <Col md={3}>
                                 <div className="border p-3 rounded">
                                     <h6 className="text-muted mb-1">Available</h6>
-                                    <h4 className="mb-0 text-success">{stockData.quantity - stockData.reserved}</h4>
+                                    <h4 className="mb-0 text-dark">{stockData.quantity - stockData.reserved}</h4>
                                 </div>
                             </Col>
                             <Col md={3}>
                                 <div className="border p-3 rounded">
                                     <h6 className="text-muted mb-1">Reorder Level</h6>
-                                    <h4 className="mb-0 text-danger">{stockData.reorderLevel}</h4>
+                                    <h4 className="mb-0 text-dark">{stockData.reorderLevel}</h4>
                                 </div>
                             </Col>
                             <Col md={3}>
                                 <div className="border p-3 rounded">
                                     <h6 className="text-muted mb-1">Avg Price</h6>
-                                    <h4 className="mb-0 text-info">{stockData.avgCost ? Number(stockData.avgCost).toFixed(2) : '0'}</h4>
+                                    <h4 className="mb-0 text-dark">{stockData.avgCost ? Number(stockData.avgCost).toFixed(2) : '0'}</h4>
                                 </div>
                             </Col>
                         </Row>

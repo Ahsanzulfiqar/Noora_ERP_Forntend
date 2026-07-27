@@ -1,12 +1,13 @@
 import PageTItle from '@/components/PageTItle';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardBody, CardTitle, CardHeader } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useGetAllUsersQuery, useDeactivateUserMutation, useActivateUserMutation } from '@/services/authenticateendpoint/users';
 import { Badge, Col, Row, Spinner, Table, Button, Form, Modal } from 'react-bootstrap';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 
 
 const RoleListPage = () => {
@@ -16,6 +17,15 @@ const RoleListPage = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
+  const totalItems = userData?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+  const pagedUsers = useMemo(
+    () => (userData || []).slice((page - 1) * limit, page * limit),
+    [userData, page, limit]
+  );
 
   useEffect(() => {
     if (error) toast.error(extractApiErrorMessage(error));
@@ -93,7 +103,7 @@ const RoleListPage = () => {
               </tr>
             </thead>
             <tbody>
-              {userData?.map((item, idx) => <tr key={item._id || idx}>
+              {pagedUsers.map((item, idx) => <tr key={item._id || idx}>
                 <td className='text-capitalize'>{item.name}</td>
                 <td>{item.email}</td>
                 <td className='text-capitalize'>{item.role}</td>
@@ -150,14 +160,13 @@ const RoleListPage = () => {
           </table>
         </div>
       </CardBody>
-      <Row className="g-0 align-items-center justify-content-between text-center text-sm-start p-3 border-top">
-        <div className="col-sm">
-          <div className="text-muted">
-            Showing <span className="fw-semibold">{userData?.length || 0}</span> Results
-          </div>
-        </div>
-        {/* Pagination logic would go here if needed, but for now we show all results from API */}
-      </Row>
+      <CustomTablePaginations
+        limit={limit}
+        setLimit={setLimit}
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+      />
     </Card>
 
     {/* Confirmation Modal */}

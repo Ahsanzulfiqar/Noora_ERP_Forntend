@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, CardBody, CardHeader, CardTitle, Col, Row, Button, Table } from 'react-bootstrap';
+import { Alert, Card, CardBody, CardHeader, CardTitle, Col, Row, Button, Table } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Formik, Form, FieldArray, Field } from 'formik';
 import { Icon } from '@iconify/react';
@@ -153,7 +153,34 @@ const SaleAdd = () => {
     subTotal: saleData?.subTotal || 0,
     taxAmount: saleData?.taxAmount || 0,
     totalAmount: saleData?.totalAmount || 0,
+    discount: saleData?.discount || 0,
+    deliveryCharges: saleData?.deliveryCharges || 0,
   };
+
+  // Editability gating (matches UpdateSale mutations)
+  const isEdit = Boolean(salesId);
+  const saleStatus = saleData?.status || 'draft';
+  const isDraft = saleStatus === 'draft';
+  const isConfirmedEdit = isEdit && !isDraft;
+  // Fields updatable by Mutation 1 (draft): items, discount, deliveryCharges
+  // Fields updatable by Mutation 2 (confirmed): customerName, phone, city, address, discount, deliveryCharges, notes
+  const draftOnlyDisabled = isEdit && isDraft;         // draft: disable everything EXCEPT items/discount/deliveryCharges
+  const confirmedOnlyDisabled = isConfirmedEdit;       // confirmed: disable everything EXCEPT customer fields + discount/deliveryCharges + notes
+  const disableSeller = draftOnlyDisabled || confirmedOnlyDisabled;
+  const disableProject = draftOnlyDisabled || confirmedOnlyDisabled;
+  const disableWarehouse = draftOnlyDisabled || confirmedOnlyDisabled;
+  const disableInvoiceNo = draftOnlyDisabled || confirmedOnlyDisabled;
+  const disableCustomerName = draftOnlyDisabled;                    // enabled on confirmed
+  const disableCustomerPhone = draftOnlyDisabled;                   // enabled on confirmed
+  const disableCountry = draftOnlyDisabled || confirmedOnlyDisabled;
+  const disableCity = draftOnlyDisabled;                            // enabled on confirmed
+  const disableAddress = draftOnlyDisabled;                         // enabled on confirmed
+  const disableCourier = draftOnlyDisabled || confirmedOnlyDisabled;
+  const disableTax = draftOnlyDisabled || confirmedOnlyDisabled;
+  const disableNotes = draftOnlyDisabled;                           // enabled on confirmed
+  const disableDeliveryNotes = draftOnlyDisabled || confirmedOnlyDisabled;
+  const disableDiscount = false;                                    // editable in both mutations
+  const disableDeliveryCharges = false;                             // editable in both mutations
 
   useEffect(() => {
     if (isSeller && userId) {
@@ -181,9 +208,9 @@ const SaleAdd = () => {
 
 
 
-  const calculateTotals = (items, taxAmount, setFieldValue) => {
+  const calculateTotals = (items, taxAmount, discount, deliveryCharges, setFieldValue) => {
     const subTotal = items.reduce((sum, item) => sum + (item.quantity * item.salePrice), 0);
-    const totalAmount = subTotal + (Number(taxAmount) || 0);
+    const totalAmount = subTotal + (Number(taxAmount) || 0) - (Number(discount) || 0) + (Number(deliveryCharges) || 0);
     setFieldValue('subTotal', subTotal);
     setFieldValue('totalAmount', totalAmount);
 
@@ -220,7 +247,7 @@ const SaleAdd = () => {
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
-      const payload = {
+      const createPayload = {
         sellerId: values.seller,
         projectId: values.project,
         warehouseId: values.warehouse,
@@ -244,19 +271,35 @@ const SaleAdd = () => {
       };
 
       if (salesId) {
-        const updatePayload = {
-          ...payload,
-          status: values.status,
-          courier: {
-            courierName: values.courierName || '',
-            trackingNo: values.trackingNo || '',
-            trackingUrl: values.trackingUrl || '',
-          },
-          deliveryNotes: values.deliveryNotes || '',
-        };
+        const isDraft = (saleData?.status || 'draft') === 'draft';
+        let updatePayload;
+        if (isDraft) {
+          // Draft: user can edit items, discount, deliveryCharges
+          updatePayload = {
+            items: values.items.map(item => ({
+              productId: item.product,
+              variantId: item.variant || null,
+              quantity: Number(item.quantity),
+              salePrice: Number(item.salePrice),
+            })),
+            discount: Number(values.discount) || 0,
+            deliveryCharges: Number(values.deliveryCharges) || 0,
+          };
+        } else {
+          // Confirmed / non-draft: only customer info + charges/notes editable
+          updatePayload = {
+            customerName: values.customerName,
+            phone: values.customerPhone,
+            city: values.city,
+            address: values.address,
+            discount: Number(values.discount) || 0,
+            deliveryCharges: Number(values.deliveryCharges) || 0,
+            notes: values.notes,
+          };
+        }
         await updateSale({ id: salesId, data: updatePayload }).unwrap();
       } else {
-        await createSale(payload).unwrap();
+        await createSale(createPayload).unwrap();
         resetForm();
         setShowItemForm(false);
       }
@@ -292,8 +335,8 @@ const SaleAdd = () => {
           console.log('errors', errors);
 
           useEffect(() => {
-            calculateTotals(values.items, values.taxAmount, setFieldValue);
-          }, [values.items, values.taxAmount, setFieldValue]);
+            calculateTotals(values.items, values.taxAmount, values.discount, values.deliveryCharges, setFieldValue);
+          }, [values.items, values.taxAmount, values.discount, values.deliveryCharges, setFieldValue]);
 
           return (
             <Form>
@@ -322,6 +365,7 @@ const SaleAdd = () => {
                                 setSelectedSellerId(value);
                               }}
                               placeholder="Select Seller"
+                              disabled={disableSeller}
                             />
                           )}
                         </Field>
@@ -346,6 +390,7 @@ const SaleAdd = () => {
                                 }
                               }}
                               placeholder="Select Project"
+                              disabled={disableProject}
                             />
                           )}
                         </Field>
@@ -363,6 +408,7 @@ const SaleAdd = () => {
                             options={warehouseOptions}
                             onChange={(value) => setFieldValue('warehouse', value)}
                             placeholder="Select Warehouse"
+                            disabled={disableWarehouse}
                           />
                         )}
                       </Field>
@@ -372,6 +418,7 @@ const SaleAdd = () => {
                         label="Invoice No / Order Number"
                         name="invoiceNo"
                         placeholder="Enter Invoice Number"
+                        disabled={disableInvoiceNo}
                       />
                     </Col>
                     <Col lg={4}>
@@ -379,6 +426,7 @@ const SaleAdd = () => {
                         label="Customer Name"
                         name="customerName"
                         placeholder="Enter Customer Name"
+                        disabled={disableCustomerName}
                       />
                     </Col>
                     <Col lg={4}>
@@ -386,6 +434,7 @@ const SaleAdd = () => {
                         label="Customer Phone"
                         name="customerPhone"
                         placeholder="Enter Customer Phone"
+                        disabled={disableCustomerPhone}
                       />
                     </Col>
                     <Col lg={4}>
@@ -416,6 +465,7 @@ const SaleAdd = () => {
                               }
                             }}
                             placeholder="Select Country"
+                            disabled={disableCountry}
                           />
                         )}
                       </Field>
@@ -432,7 +482,7 @@ const SaleAdd = () => {
                             options={cityOptions}
                             onChange={(value) => setFieldValue('city', value)}
                             placeholder={selectedCountry ? "Select City" : "Select Country First"}
-                            disabled={!selectedCountry}
+                            disabled={disableCity || !selectedCountry}
                           />
                         )}
                       </Field>
@@ -452,6 +502,7 @@ const SaleAdd = () => {
                                 options={courierOptions}
                                 onChange={(value) => setFieldValue('courierName', value)}
                                 placeholder="Select Courier"
+                                disabled={disableCourier}
                               />
                             )}
                           </Field>
@@ -461,6 +512,7 @@ const SaleAdd = () => {
                             label="Tracking No"
                             name="trackingNo"
                             placeholder="Enter Tracking Number"
+                            disabled={disableCourier}
                           />
                         </Col>
                         <Col lg={4}>
@@ -468,6 +520,7 @@ const SaleAdd = () => {
                             label="Tracking URL"
                             name="trackingUrl"
                             placeholder="Enter Tracking URL"
+                            disabled={disableCourier}
                           />
                         </Col>
                       </>
@@ -478,6 +531,7 @@ const SaleAdd = () => {
                         label="Address"
                         name="address"
                         placeholder="Enter Full Address"
+                        disabled={disableAddress}
                       />
                     </Col>
 
@@ -488,6 +542,7 @@ const SaleAdd = () => {
                           name="deliveryNotes"
                           placeholder="Enter Delivery Notes"
                           rows={3}
+                          disabled={disableDeliveryNotes}
                         />
                       </Col>
                     )}
@@ -495,29 +550,39 @@ const SaleAdd = () => {
                 </CardBody>
               </Card>
 
+              {salesId && saleData?.status && saleData.status !== 'draft' && (
+                <Alert variant="warning" className="mb-3">
+                  Sale is confirmed you cannot edit product
+                </Alert>
+              )}
+
               <Card className="mb-4">
                 <FieldArray name="items">
-                  {({ push, remove, replace }) => (
+                  {({ push, remove, replace }) => {
+                    const itemsLocked = Boolean(salesId && saleData?.status && saleData.status !== 'draft');
+                    return (
                     <>
                       <CardHeader className="d-flex justify-content-between align-items-center">
                         <CardTitle as={'h4'}>Items</CardTitle>
-                        <IconButton
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => setShowItemForm(!showItemForm)}
-                          sx={{
-                            backgroundColor: showItemForm ? '#ff4d4d' : '#5c7186',
-                            borderRadius: '7px',
-                            '&:hover': {
-                              backgroundColor: showItemForm ? '#ff3333' : '#7b8792ff !important',
-                              '& svg': {
-                                stroke: '#ffffffff !important'
+                        {!itemsLocked && (
+                          <IconButton
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => setShowItemForm(!showItemForm)}
+                            sx={{
+                              backgroundColor: showItemForm ? '#ff4d4d' : '#5c7186',
+                              borderRadius: '7px',
+                              '&:hover': {
+                                backgroundColor: showItemForm ? '#ff3333' : '#7b8792ff !important',
+                                '& svg': {
+                                  stroke: '#ffffffff !important'
+                                }
                               }
-                            }
-                          }}
-                        >
-                          {showItemForm ? <X color="white" size={20} strokeWidth={2} /> : <Plus color="white" size={20} strokeWidth={2} />}
-                        </IconButton>
+                            }}
+                          >
+                            {showItemForm ? <X color="white" size={20} strokeWidth={2} /> : <Plus color="white" size={20} strokeWidth={2} />}
+                          </IconButton>
+                        )}
                       </CardHeader>
                       <CardBody>
                         {showItemForm && (
@@ -721,6 +786,7 @@ const SaleAdd = () => {
                                     <td className="text-center d-flex">
                                       <IconButton
                                         type="button"
+                                        disabled={itemsLocked}
                                         onClick={() => {
                                           setNewItem(item);
                                           setEditingIndex(index);
@@ -732,6 +798,7 @@ const SaleAdd = () => {
                                       </IconButton>
                                       <IconButton
                                         type="button"
+                                        disabled={itemsLocked}
                                         onClick={() => remove(index)}
                                         sx={{ backgroundColor: '#ffdcdcff' }}
                                       >
@@ -752,7 +819,8 @@ const SaleAdd = () => {
                         </div>
                       </CardBody>
                     </>
-                  )}
+                    );
+                  }}
                 </FieldArray>
               </Card>
 
@@ -767,6 +835,7 @@ const SaleAdd = () => {
                         name="notes"
                         placeholder="Enter any additional notes..."
                         rows={4}
+                        disabled={disableNotes}
                       />
                     </CardBody>
                   </Card>
@@ -787,6 +856,25 @@ const SaleAdd = () => {
                           name="taxAmount"
                           type="number"
                           placeholder="0.00"
+                          disabled={disableTax}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <FormikTextField
+                          label="Discount"
+                          name="discount"
+                          type="number"
+                          placeholder="0.00"
+                          disabled={disableDiscount}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <FormikTextField
+                          label="Delivery Charges"
+                          name="deliveryCharges"
+                          type="number"
+                          placeholder="0.00"
+                          disabled={disableDeliveryCharges}
                         />
                       </div>
                       <hr />

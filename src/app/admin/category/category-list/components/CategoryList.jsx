@@ -11,6 +11,7 @@ import StatusAlert from '@/components/StatusAlert';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import ViewDetailModal from '../../components/ViewDetailModal';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import { FilterSelect, FilterSearch } from '@/components/Filters';
 
 const CategoryList = () => {
     const navigate = useNavigate();
@@ -129,22 +130,22 @@ const CategoryList = () => {
                     <CardHeader className="d-flex justify-content-between align-items-center">
                         <CardTitle as={'h4'}>Categories ({data?.total || 0})</CardTitle>
                         <div className="d-flex gap-2 align-items-center">
-                            <Form.Select
-                                size="sm"
+                            <FilterSelect
                                 value={isActive}
-                                onChange={handleStatusChange}
+                                onChange={(v) => handleStatusChange({ target: { value: v } })}
+                                options={[
+                                    { value: '', label: 'All Status' },
+                                    { value: 'true', label: 'Active' },
+                                    { value: 'false', label: 'Inactive' },
+                                ]}
+                                size="sm"
                                 style={{ width: '130px' }}
-                            >
-                                <option value="">All Status</option>
-                                <option value="true">Active</option>
-                                <option value="false">Inactive</option>
-                            </Form.Select>
-                            <Form.Control
-                                type="text"
+                            />
+                            <FilterSearch
+                                value={search}
+                                onChange={(v) => handleSearchChange({ target: { value: v } })}
                                 placeholder="Search categories..."
                                 size="sm"
-                                value={search}
-                                onChange={handleSearchChange}
                                 style={{ width: '200px' }}
                             />
                             <Link to="/admin/category/category-add" className="btn btn-sm btn-primary">

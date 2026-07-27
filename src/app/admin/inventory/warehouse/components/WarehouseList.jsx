@@ -13,6 +13,7 @@ import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 import { useAuth } from '@/hooks/useAuth';
 import { ROLES } from '@/assets/data/roles';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import { FilterSelect } from '@/components/Filters';
 
 const WarehouseList = () => {
   const { role } = useAuth();
@@ -86,66 +87,54 @@ const WarehouseList = () => {
             <CardTitle as={'h4'}>Warehouse Inventory Stock ({totalItems})</CardTitle>
           </div>
           <div className="d-flex gap-2 align-items-center">
-            <Form.Group className="mb-0">
-              <Form.Select
-                name="warehouseId"
-                size="sm"
-                value={filters.warehouseId}
-                onChange={handleFilterChange}
-              >
-                <option value="">All Warehouses</option>
-                {warehousesData?.map(w => (
-                  <option key={w._id} value={w._id}>{w.name}</option>
-                ))}
-              </Form.Select>
-            </Form.Group>
+            <FilterSelect
+              size="sm"
+              value={filters.warehouseId}
+              onChange={(v) => handleFilterChange({ target: { name: 'warehouseId', value: v } })}
+              options={[
+                { value: '', label: 'All Warehouses' },
+                ...(warehousesData?.map((w) => ({ value: w._id, label: w.name })) || []),
+              ]}
+            />
 
-            <Form.Group className="mb-0">
-              <Form.Select
-                name="productId"
-                size="sm"
-                value={filters.productId}
-                onChange={handleFilterChange}
-              >
-                <option value="">All Products</option>
-                {productsData?.map(p => (
-                  <option key={p._id} value={p._id}>{p.name}</option>
-                ))}
-              </Form.Select>
-            </Form.Group>
+            <FilterSelect
+              size="sm"
+              value={filters.productId}
+              onChange={(v) => handleFilterChange({ target: { name: 'productId', value: v } })}
+              options={[
+                { value: '', label: 'All Products' },
+                ...(productsData?.map((p) => ({ value: p._id, label: p.name })) || []),
+              ]}
+            />
 
-            <Form.Group className="mb-0">
-              <Form.Select
-                name="variantId"
-                size="sm"
-                value={filters.variantId}
-                onChange={handleFilterChange}
-                disabled={!filters.productId}
-              >
-                <option value="">All Variants</option>
-                {variantsData?.map(v => (
-                  <option key={v._id} value={v._id}>{v.name}</option>
-                ))}
-              </Form.Select>
-            </Form.Group>
+            <FilterSelect
+              size="sm"
+              value={filters.variantId}
+              onChange={(v) => handleFilterChange({ target: { name: 'variantId', value: v } })}
+              disabled={!filters.productId}
+              options={[
+                { value: '', label: 'All Variants' },
+                ...(variantsData?.map((v) => ({ value: v._id, label: v.name })) || []),
+              ]}
+            />
 
             {isTransferStockView ? (
               isSales ? (
-                <button type="button" className="btn btn-sm btn-primary disabled" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
+                <button type="button" className="btn btn-sm btn-primary disabled text-nowrap" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
                   Transfer Stock
                 </button>
               ) : (
-                <Link to="/inventory/transfer-stock/add" className="btn btn-sm btn-primary">
+                <Link to="/inventory/transfer-stock/add" className="btn btn-sm btn-primary text-nowrap">
                   Transfer Stock
                 </Link>
               )
             ) : (
               isSales ? (
-                <button type="button" className="btn btn-sm btn-primary disabled" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
+                <button type="button" className="btn btn-sm btn-primary disabled text-nowrap" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
                   Add Inventory
                 </button>
               ) : (
-                <Link to="/inventory/warehouse-add" className="btn btn-sm btn-primary">
+                <Link to="/inventory/warehouse-add" className="btn btn-sm btn-primary text-nowrap">
                   Add Inventory
                 </Link>
               )
@@ -215,7 +204,7 @@ const WarehouseList = () => {
                           </Link>
                           {isAdmin && (
                             <>
-                              <Link to="" className="btn btn-soft-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                              <Link to={`/inventory/warehouse-edit/${item._id}`} className="btn btn-soft-primary btn-sm">
                                 <IconifyIcon icon="solar:pen-2-broken" className="align-middle fs-18" />
                               </Link>
                               <Link to="" className="btn btn-soft-danger btn-sm">

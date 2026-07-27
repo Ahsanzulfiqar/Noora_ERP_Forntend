@@ -142,9 +142,9 @@ const AccountList = () => {
 
     const getStatusBadge = (isActive) =>
         isActive ? (
-            <Badge bg="success-subtle" className="text-success">Active</Badge>
+            <Badge bg="success">Active</Badge>
         ) : (
-            <Badge bg="danger-subtle" className="text-danger">Inactive</Badge>
+            <Badge bg="danger">Inactive</Badge>
         )
 
     const renderParent = (account) => {

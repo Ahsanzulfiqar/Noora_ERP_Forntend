@@ -35,6 +35,7 @@ const MODE_CONFIG = {
     sourceField: 'receivedToAccountId',
     counterpartLabel: 'Income Type (Account)',
     counterpartField: 'incomeAccountId',
+    counterpartType: 'INCOME',
     drLabel: 'Dr',
     crLabel: 'Cr',
     successMessage: 'Money In created successfully',
@@ -50,6 +51,7 @@ const MODE_CONFIG = {
     sourceField: 'paidFromAccountId',
     counterpartLabel: 'Expense Type (Account)',
     counterpartField: 'expenseAccountId',
+    counterpartType: 'EXPENSE',
     drLabel: 'Dr',
     crLabel: 'Cr',
     successMessage: 'Money Out created successfully',
@@ -119,6 +121,27 @@ const MoneyTransactionForm = ({ mode }) => {
           account,
         })),
     [accounts],
+  )
+
+  const childAccountOptions = useMemo(
+    () =>
+      accountOptions.filter(
+        (option) => Boolean(option.account?.parentId) && option.account?.isActive !== false,
+      ),
+    [accountOptions],
+  )
+
+  const sourceAccountOptions = useMemo(
+    () => childAccountOptions.filter((option) => String(option.account?.type || '').toUpperCase() === 'ASSET'),
+    [childAccountOptions],
+  )
+
+  const counterpartAccountOptions = useMemo(
+    () =>
+      childAccountOptions.filter(
+        (option) => String(option.account?.type || '').toUpperCase() === config.counterpartType,
+      ),
+    [childAccountOptions, config.counterpartType],
   )
 
   const accountById = useMemo(() => {
@@ -230,8 +253,8 @@ const MoneyTransactionForm = ({ mode }) => {
                       styles={moneyTransactionStyles}
                       classNamePrefix="react-select"
                       isLoading={isLoadingAccounts || isFetchingAccounts}
-                      options={accountOptions}
-                      value={accountOptions.find((option) => option.value === sourceAccountId) || null}
+                      options={sourceAccountOptions}
+                      value={sourceAccountOptions.find((option) => option.value === sourceAccountId) || null}
                       onChange={(option) => setSourceAccountId(option?.value || '')}
                       placeholder="Select account"
                     />
@@ -247,8 +270,8 @@ const MoneyTransactionForm = ({ mode }) => {
                       styles={moneyTransactionStyles}
                       classNamePrefix="react-select"
                       isLoading={isLoadingAccounts || isFetchingAccounts}
-                      options={accountOptions}
-                      value={accountOptions.find((option) => option.value === counterpartAccountId) || null}
+                      options={counterpartAccountOptions}
+                      value={counterpartAccountOptions.find((option) => option.value === counterpartAccountId) || null}
                       onChange={(option) => setCounterpartAccountId(option?.value || '')}
                       placeholder="Select account"
                     />
