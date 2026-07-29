@@ -11,6 +11,7 @@ import AdminLayout from '@/layout/AdminLayout';
 
 const getLandingPath = (role) => {
   if (role === ROLES.SELLER) return '/seller/dashboard';
+  if (role === ROLES.WAREHOUSE) return '/warehouse/dashboard';
   return '/dashboard';
 };
 

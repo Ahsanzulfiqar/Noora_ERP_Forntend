@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Badge, Card, CardBody, CardHeader, Col, Dropdown, Form, Nav, Row, Spinner, Table, Tab } from 'react-bootstrap'
+import { Badge, Card, CardBody, CardHeader, Col, Dropdown, Nav, Row, Spinner, Table, Tab } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import PageTItle from '@/components/PageTItle'
@@ -15,6 +15,7 @@ import {
 import CompactKpiTile from '../components/CompactKpiTile'
 import SaleStatusChip from '@/components/SaleStatusChip'
 import { FilterSelect, FilterSearch, FilterButton } from '@/components/Filters'
+import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 
 const initials = (n) =>
   (n || '?')
@@ -418,72 +419,13 @@ const SellerCustomersPage = () => {
                   </tbody>
                 </Table>
               </div>
-              <div className="d-flex justify-content-between align-items-center px-3 py-2 border-top flex-wrap gap-2">
-                <div className="text-muted small">
-                  Showing {filtered.length ? (tablePage - 1) * rowsPerPage + 1 : 0} to{' '}
-                  {Math.min(tablePage * rowsPerPage, filtered.length)} of{' '}
-                  {formatCount(filtered.length)} customers
-                </div>
-                <div className="d-flex align-items-center gap-2">
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary btn-sm"
-                    disabled={tablePage === 1}
-                    onClick={() => setTablePage((p) => Math.max(1, p - 1))}
-                  >
-                    <IconifyIcon icon="bx:chevron-left" />
-                  </button>
-                  {Array.from({ length: Math.min(3, totalPagesTbl) }).map((_, i) => {
-                    const num = i + 1
-                    return (
-                      <button
-                        key={num}
-                        type="button"
-                        className={`btn btn-sm ${tablePage === num ? 'btn-primary' : 'btn-outline-secondary'}`}
-                        onClick={() => setTablePage(num)}
-                      >
-                        {num}
-                      </button>
-                    )
-                  })}
-                  {totalPagesTbl > 3 && <span className="text-muted">…</span>}
-                  {totalPagesTbl > 3 && (
-                    <button
-                      type="button"
-                      className={`btn btn-sm ${tablePage === totalPagesTbl ? 'btn-primary' : 'btn-outline-secondary'}`}
-                      onClick={() => setTablePage(totalPagesTbl)}
-                    >
-                      {totalPagesTbl}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary btn-sm"
-                    disabled={tablePage >= totalPagesTbl}
-                    onClick={() => setTablePage((p) => Math.min(totalPagesTbl, p + 1))}
-                  >
-                    <IconifyIcon icon="bx:chevron-right" />
-                  </button>
-                </div>
-                <div className="d-flex align-items-center gap-2">
-                  <span className="text-muted small">Rows per page:</span>
-                  <Form.Select
-                    size="sm"
-                    value={rowsPerPage}
-                    onChange={(e) => {
-                      setRowsPerPage(Number(e.target.value))
-                      setTablePage(1)
-                    }}
-                    style={{ width: 80 }}
-                  >
-                    {[10, 20, 50, 100].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </div>
-              </div>
+              <CustomTablePaginations
+                limit={rowsPerPage}
+                setLimit={setRowsPerPage}
+                page={tablePage}
+                setPage={setTablePage}
+                totalPages={totalPagesTbl}
+              />
             </CardBody>
           </Card>
         </Col>
