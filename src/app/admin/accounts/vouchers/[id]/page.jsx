@@ -4,6 +4,7 @@ import PageTItle from '@/components/PageTItle'
 import { Card, CardHeader, CardTitle, Table, Row, Col, Badge, Button, Spinner, Alert } from 'react-bootstrap'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAccountsQuery, useGetVoucherByIdQuery } from '@/services/authenticateendpoint/account'
+import { currencyLabel, formatAmount } from '@/helpers/currency'
 
 const VoucherDetailPage = () => {
     const { id } = useParams()
@@ -94,24 +95,24 @@ const VoucherDetailPage = () => {
                                     <thead className="bg-light">
                                         <tr>
                                             <th>Account Name</th>
-                                            <th className="text-end">Debit</th>
-                                            <th className="text-end">Credit</th>
+                                            <th className="text-end">Debit {currencyLabel()}</th>
+                                            <th className="text-end">Credit {currencyLabel()}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {lines.map((line) => (
                                             <tr key={line._id || line.accountId}>
                                                 <td>{resolveAccountName(line.accountId)}</td>
-                                                <td className="text-end">{Number(line.debit || 0).toFixed(2)}</td>
-                                                <td className="text-end">{Number(line.credit || 0).toFixed(2)}</td>
+                                                <td className="text-end">{formatAmount(line.debit)}</td>
+                                                <td className="text-end">{formatAmount(line.credit)}</td>
                                             </tr>
                                         ))}
                                     </tbody>
                                     <tfoot className="fw-bold bg-light">
                                         <tr>
                                             <td>Total</td>
-                                            <td className="text-end">{totalDebit.toFixed(2)}</td>
-                                            <td className="text-end">{totalCredit.toFixed(2)}</td>
+                                            <td className="text-end">{formatAmount(totalDebit)}</td>
+                                            <td className="text-end">{formatAmount(totalCredit)}</td>
                                         </tr>
                                     </tfoot>
                                 </Table>

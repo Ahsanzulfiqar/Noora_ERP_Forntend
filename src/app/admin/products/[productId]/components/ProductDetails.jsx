@@ -5,7 +5,7 @@ import { useGetProductByIdQuery } from '../../../../../services/authenticateendp
 import { useFilterCategoriesQuery, useFilterSubCategoriesQuery } from '../../../../../services/authenticateendpoint/category';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import product1 from '@/assets/images/product/noimage.png';
-import { currency } from '@/context/constants';
+import { formatCurrency } from '@/helpers/currency';
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput';
 import { Col, Card, CardBody, Spinner, Alert, Row, CardHeader, Table, Badge } from 'react-bootstrap';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
@@ -176,11 +176,11 @@ const ProductDetails = () => {
                     <Row className="align-items-center">
                       <Col>
                         <p className="text-primary-emphasis mb-1 fs-14">Selling Price</p>
-                        <h3 className="fw-bold text-primary mb-0">{currency}{salePrice ? Number(salePrice).toLocaleString() : '0.00'}</h3>
+                        <h3 className="fw-bold text-primary mb-0">{formatCurrency(salePrice)}</h3>
                       </Col>
                       <Col className="border-start border-primary-subtle ps-4">
                         <p className="text-primary-emphasis mb-1 fs-14">Purchase Price</p>
-                        <h4 className="fw-semibold text-muted mb-0">{currency}{purchasePrice ? Number(purchasePrice).toLocaleString() : '0.00'}</h4>
+                        <h4 className="fw-semibold text-muted mb-0">{formatCurrency(purchasePrice)}</h4>
                       </Col>
                     </Row>
                   </div>

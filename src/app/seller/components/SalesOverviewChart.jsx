@@ -1,5 +1,6 @@
 import ReactApexChart from 'react-apexcharts'
 import { Card, CardBody, CardHeader, Form, Spinner } from 'react-bootstrap'
+import { formatAmountCompact, formatCurrencyRounded } from '@/helpers/currency'
 
 const formatDate = (v) => {
   if (!v) return ''
@@ -44,12 +45,12 @@ const SalesOverviewChart = ({
     },
     yaxis: {
       labels: {
-        formatter: (val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}K` : val),
+        formatter: (val) => formatAmountCompact(val),
       },
     },
     grid: { strokeDashArray: 3, xaxis: { lines: { show: false } } },
     tooltip: {
-      y: { formatter: (val) => `Rs. ${Number(val).toLocaleString()}` },
+      y: { formatter: (val) => formatCurrencyRounded(val) },
     },
   }
 

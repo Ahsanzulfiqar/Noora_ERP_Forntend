@@ -10,7 +10,8 @@ import {
   useGetPurchaseByIdQuery,
   usePostToStockMutation,
 } from '@/services/authenticateendpoint/purchases'
-import { formatCount, formatPKR } from '@/app/seller/components/formatters'
+import { formatCount } from '@/app/seller/components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 import PostToStockModal from '@/app/admin/purchases/purchaseDetail/components/PostToStockModal'
 import WarehousePageHeader from '../../components/WarehousePageHeader'
 import { useSelectedWarehouse } from '../../hooks/useSelectedWarehouse'
@@ -76,7 +77,12 @@ const WarehouseReceiveStockPage = () => {
 
       <Card className="mb-0">
         <CardHeader className="border-bottom">
-          <FilterToolbar>
+          <FilterToolbar
+            onClear={() => {
+              setSearch('')
+              setPage(1)
+            }}
+          >
             <FilterSearch
               value={search}
               onChange={setSearch}
@@ -134,7 +140,7 @@ const WarehouseReceiveStockPage = () => {
                           : '—'}
                       </td>
                       <td>{formatCount((p.items || []).length)}</td>
-                      <td className="fw-semibold">{formatPKR(p.totalAmount)}</td>
+                      <td className="fw-semibold">{formatCurrencyRounded(p.totalAmount)}</td>
                       <td>
                         <Badge bg="warning-subtle" className="text-warning px-2 py-1">
                           Confirmed

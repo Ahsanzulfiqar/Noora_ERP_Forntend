@@ -5,6 +5,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
+import { formatCurrency } from '@/helpers/currency';
 const ReceivedOrderData = () => {
   const receivedOrderData = useFetchData(getAllOrders);
   const [page, setPage] = useState(1);
@@ -52,7 +53,7 @@ const ReceivedOrderData = () => {
                       <td>{item.id}/80</td>
                       <td>{item.customer?.name}</td>
                       <td>{item.orders}</td>
-                      <td>${item.product?.price}.00</td>
+                      <td>{formatCurrency(item.product?.price)}</td>
                       <td>
                         <span className={`badge bg-${item.paymentStatus == 'Paid' ? 'secondary' : item.paymentStatus == 'Unpaid' ? 'warning' : 'primary'} text-white py-1 px-2`}>
                           {item.paymentStatus}

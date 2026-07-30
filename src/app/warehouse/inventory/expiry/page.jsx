@@ -7,12 +7,15 @@ import { formatCount } from '@/app/seller/components/formatters'
 import WarehousePageHeader from '../../components/WarehousePageHeader'
 import { useSelectedWarehouse } from '../../hooks/useSelectedWarehouse'
 
+// Labelled in months, filtered in days: a "month" here is 30 days. The keys stay
+// as day counts because that is what the `days` comparison below and the Clear All
+// default both use.
 const WINDOWS = [
   { key: 'all', label: 'All' },
   { key: 'expired', label: 'Expired' },
-  { key: '30', label: '< 30 days' },
-  { key: '60', label: '< 60 days' },
-  { key: '90', label: '< 90 days' },
+  { key: '30', label: '1 Month' },
+  { key: '60', label: '2 Months' },
+  { key: '90', label: '3 Months' },
 ]
 
 const dayDiff = (date) => {
@@ -100,7 +103,13 @@ const WarehouseExpiryAlertPage = () => {
 
       <Card className="mb-0">
         <CardHeader className="border-bottom">
-          <FilterToolbar>
+          <FilterToolbar
+            onClear={() => {
+              setSearch('')
+              setWindow('90')
+              setPage(1)
+            }}
+          >
             <FilterSearch
               value={search}
               onChange={setSearch}

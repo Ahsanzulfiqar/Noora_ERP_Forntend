@@ -6,7 +6,8 @@ import { FilterSearch, FilterToolbar } from '@/components/Filters'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import SaleStatusChip from '@/components/SaleStatusChip'
 import { useGetSalesQuery } from '@/services/authenticateendpoint/sales'
-import { formatCount, formatPKR } from '@/app/seller/components/formatters'
+import { formatCount } from '@/app/seller/components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 import OutForDeliveryModal from '@/app/admin/sales/salesId/components/modals/OutForDeliveryModal'
 import WarehousePageHeader from '../../components/WarehousePageHeader'
 import { useSelectedWarehouse } from '../../hooks/useSelectedWarehouse'
@@ -54,7 +55,12 @@ const WarehouseDispatchOrdersPage = () => {
 
       <Card className="mb-0">
         <CardHeader className="border-bottom">
-          <FilterToolbar>
+          <FilterToolbar
+            onClear={() => {
+              setSearch('')
+              setPage(1)
+            }}
+          >
             <FilterSearch
               value={search}
               onChange={setSearch}
@@ -110,7 +116,7 @@ const WarehouseDispatchOrdersPage = () => {
                       <td>{s.customerPhone || '—'}</td>
                       <td>{s.city || '—'}</td>
                       <td>{formatCount((s.items || []).length)}</td>
-                      <td className="fw-semibold">{formatPKR(s.totalAmount)}</td>
+                      <td className="fw-semibold">{formatCurrencyRounded(s.totalAmount)}</td>
                       <td>
                         <SaleStatusChip status={s.status || 'draft'} />
                       </td>

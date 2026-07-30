@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react'
 import { Card, CardHeader, Table, Form, Row, Col, Button, Spinner, Alert, Badge } from 'react-bootstrap'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetTrialBalanceQuery } from '@/services/authenticateendpoint/account'
-import { FilterButton } from '@/components/Filters'
+import { FilterClearAll, FilterDateRange } from '@/components/Filters'
+import { currencyLabel, formatAmount } from '@/helpers/currency'
 
-const formatNumber = (value) =>
-    Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const formatNumber = (value) => formatAmount(value)
 
 const toDisplayDate = (value) => {
     if (!value) return '-'
@@ -76,27 +76,18 @@ const TrialBalanceTable = () => {
             <Card.Body className="p-0">
                 <div className="px-3 px-lg-4 pt-3 pt-lg-4 pb-4">
                     <Row className="g-3 align-items-end">
-                        <Col lg={3} md={6}>
+                        <Col lg={6} md={6}>
                             <Form.Group>
                                 <Form.Label className="fw-medium">
-                                    From <span className="text-danger">*</span>
+                                    Date Range <span className="text-danger">*</span>
                                 </Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    value={fromDate}
-                                    onChange={(e) => setFromDate(e.target.value)}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col lg={3} md={6}>
-                            <Form.Group>
-                                <Form.Label className="fw-medium">
-                                    To <span className="text-danger">*</span>
-                                </Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    value={toDate}
-                                    onChange={(e) => setToDate(e.target.value)}
+                                <FilterDateRange
+                                    from={fromDate}
+                                    to={toDate}
+                                    onChange={({ from, to }) => {
+                                        setFromDate(from)
+                                        setToDate(to)
+                                    }}
                                 />
                             </Form.Group>
                         </Col>
@@ -106,14 +97,7 @@ const TrialBalanceTable = () => {
                             </Button>
                         </Col>
                         <Col lg={2} md={6}>
-                            <FilterButton
-                                icon="bx:x"
-                                variant="light"
-                                onClick={handleClear}
-                                className="w-100 justify-content-center"
-                            >
-                                Clear All
-                            </FilterButton>
+                            <FilterClearAll onClear={handleClear} className="w-100 justify-content-center" />
                         </Col>
                     </Row>
 
@@ -163,9 +147,9 @@ const TrialBalanceTable = () => {
                                     <th className="ps-4">Code</th>
                                     <th>Account Name</th>
                                     <th>Type</th>
-                                    <th className="text-end">Debit (AED)</th>
-                                    <th className="text-end">Credit (AED)</th>
-                                    <th className="text-end pe-4">Balance (AED)</th>
+                                    <th className="text-end">Debit {currencyLabel()}</th>
+                                    <th className="text-end">Credit {currencyLabel()}</th>
+                                    <th className="text-end pe-4">Balance {currencyLabel()}</th>
                                 </tr>
                             </thead>
                             <tbody>

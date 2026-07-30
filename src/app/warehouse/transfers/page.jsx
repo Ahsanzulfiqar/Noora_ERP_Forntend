@@ -152,7 +152,12 @@ const WarehouseStockTransfersPage = () => {
           </Nav>
         </CardHeader>
         <CardBody className="border-bottom p-2">
-          <FilterToolbar>
+          <FilterToolbar
+            onClear={() => {
+              setSearch('')
+              setPage(1)
+            }}
+          >
             <FilterSearch
               value={search}
               onChange={setSearch}

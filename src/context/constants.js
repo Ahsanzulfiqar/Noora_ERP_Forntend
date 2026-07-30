@@ -1,4 +1,5 @@
-export const currency = '$';
+export const currency = 'AED';
+export const currencyLocale = 'en-AE';
 export const currentYear = new Date().getFullYear();
 export const developedByLink = 'https://techzaa.getappui.com/';
 export const developedBy = 'Techzaa';

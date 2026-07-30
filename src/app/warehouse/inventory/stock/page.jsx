@@ -4,7 +4,8 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { FilterSearch, FilterToolbar } from '@/components/Filters'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/warehouse'
-import { formatCount, formatPKR } from '@/app/seller/components/formatters'
+import { formatCount } from '@/app/seller/components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 import WarehousePageHeader from '../../components/WarehousePageHeader'
 import { useSelectedWarehouse } from '../../hooks/useSelectedWarehouse'
 
@@ -45,7 +46,12 @@ const WarehouseStockPage = () => {
 
       <Card className="mb-0">
         <CardHeader className="border-bottom">
-          <FilterToolbar>
+          <FilterToolbar
+            onClear={() => {
+              setSearch('')
+              setPage(1)
+            }}
+          >
             <FilterSearch
               value={search}
               onChange={setSearch}
@@ -110,7 +116,7 @@ const WarehouseStockPage = () => {
                           </td>
                           <td>{formatCount(r.reserved || 0)}</td>
                           <td>{formatCount(r.reorderLevel || 0)}</td>
-                          <td>{formatPKR(r.avgCost || 0)}</td>
+                          <td>{formatCurrencyRounded(r.avgCost || 0)}</td>
                           <td>{formatCount((r.batches || []).length)}</td>
                           <td className="pe-3 text-end">
                             {(r.batches || []).length > 0 && (
@@ -156,7 +162,7 @@ const WarehouseStockPage = () => {
                                             : '—'}
                                         </td>
                                         <td>{formatCount(b.quantity)}</td>
-                                        <td>{formatPKR(b.unitCost || 0)}</td>
+                                        <td>{formatCurrencyRounded(b.unitCost || 0)}</td>
                                       </tr>
                                     ))}
                                   </tbody>

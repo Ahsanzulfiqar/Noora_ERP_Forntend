@@ -8,7 +8,8 @@ import { useGetSalesQuery } from '@/services/authenticateendpoint/sales'
 import { useGetAllPurchasesQuery } from '@/services/authenticateendpoint/purchases'
 import { useGetStockTransfersQuery } from '@/services/authenticateendpoint/stockTransfer'
 import CompactKpiTile from '@/app/seller/components/CompactKpiTile'
-import { formatCount, formatPKR } from '@/app/seller/components/formatters'
+import { formatCount } from '@/app/seller/components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 import WarehousePageHeader from '../components/WarehousePageHeader'
 import { useSelectedWarehouse } from '../hooks/useSelectedWarehouse'
 
@@ -93,7 +94,7 @@ const WarehouseDashboardPage = () => {
     {
       label: 'Stock Units',
       value: formatCount(stats.totalUnits),
-      sub: formatPKR(stats.totalValue),
+      sub: formatCurrencyRounded(stats.totalValue),
       icon: 'bx:package',
       color: 'success',
       isEmpty: !warehouseId,
@@ -224,7 +225,7 @@ const WarehouseDashboardPage = () => {
                       <tr key={s._id}>
                         <td className="ps-3 fw-semibold">{s.invoiceNo || 'N/A'}</td>
                         <td>{s.customerName || '—'}</td>
-                        <td className="fw-semibold">{formatPKR(s.totalAmount)}</td>
+                        <td className="fw-semibold">{formatCurrencyRounded(s.totalAmount)}</td>
                         <td className="pe-3">
                           <SaleStatusChip status={s.status || 'draft'} />
                         </td>
@@ -270,7 +271,7 @@ const WarehouseDashboardPage = () => {
                         <td className="ps-3 fw-semibold">{p.invoiceNo || 'N/A'}</td>
                         <td>{p.supplierName || '—'}</td>
                         <td>{formatCount((p.items || []).length)}</td>
-                        <td className="pe-3 fw-semibold">{formatPKR(p.totalAmount)}</td>
+                        <td className="pe-3 fw-semibold">{formatCurrencyRounded(p.totalAmount)}</td>
                       </tr>
                     ))}
                   </tbody>

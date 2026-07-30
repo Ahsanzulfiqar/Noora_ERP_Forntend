@@ -12,7 +12,8 @@ import {
 } from 'react-bootstrap'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetWarehouseStockQuery } from '@/services/authenticateendpoint/warehouse'
-import { formatCount, formatPKR } from '@/app/seller/components/formatters'
+import { formatCount } from '@/app/seller/components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 import WarehousePageHeader from '../../components/WarehousePageHeader'
 import { useSelectedWarehouse } from '../../hooks/useSelectedWarehouse'
 
@@ -147,9 +148,9 @@ const WarehouseStockReportsPage = () => {
                             <td>{formatCount(r.quantity)}</td>
                             <td>{formatCount(r.reserved || 0)}</td>
                             <td>{formatCount(r.reorderLevel || 0)}</td>
-                            <td>{formatPKR(r.avgCost || 0)}</td>
+                            <td>{formatCurrencyRounded(r.avgCost || 0)}</td>
                             <td className="pe-3 fw-semibold">
-                              {formatPKR((Number(r.quantity) || 0) * (Number(r.avgCost) || 0))}
+                              {formatCurrencyRounded((Number(r.quantity) || 0) * (Number(r.avgCost) || 0))}
                             </td>
                           </tr>
                         ))

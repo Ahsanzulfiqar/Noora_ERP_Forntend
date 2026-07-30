@@ -11,7 +11,8 @@ import {
   useGetSalesQuery,
   useMarkDeliveredMutation,
 } from '@/services/authenticateendpoint/sales'
-import { formatCount, formatPKR } from '@/app/seller/components/formatters'
+import { formatCount } from '@/app/seller/components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 import WarehousePageHeader from '../../components/WarehousePageHeader'
 import { useSelectedWarehouse } from '../../hooks/useSelectedWarehouse'
 
@@ -77,7 +78,12 @@ const WarehouseDeliveryOrdersPage = () => {
 
       <Card className="mb-0">
         <CardHeader className="border-bottom">
-          <FilterToolbar>
+          <FilterToolbar
+            onClear={() => {
+              setSearch('')
+              setPage(1)
+            }}
+          >
             <FilterSearch
               value={search}
               onChange={setSearch}
@@ -138,7 +144,7 @@ const WarehouseDeliveryOrdersPage = () => {
                       <td>{s.courier?.courierName || '—'}</td>
                       <td>{s.courier?.trackingNo || '—'}</td>
                       <td>{formatCount((s.items || []).length)}</td>
-                      <td className="fw-semibold">{formatPKR(s.totalAmount)}</td>
+                      <td className="fw-semibold">{formatCurrencyRounded(s.totalAmount)}</td>
                       <td>
                         <SaleStatusChip status={s.status || 'draft'} />
                       </td>

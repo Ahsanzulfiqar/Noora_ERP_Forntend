@@ -8,13 +8,13 @@ import { useGetSalesQuery } from '@/services/authenticateendpoint/sales'
 import { useGetProjectsBySellerQuery } from '@/services/authenticateendpoint/project'
 import {
   formatCount,
-  formatPKR,
   getStatusColor,
   prettyLabel,
 } from '../components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 import CompactKpiTile from '../components/CompactKpiTile'
 import SaleStatusChip from '@/components/SaleStatusChip'
-import { FilterSelect, FilterSearch, FilterButton } from '@/components/Filters'
+import { FilterSelect, FilterSearch, FilterClearAll } from '@/components/Filters'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 
 const initials = (n) =>
@@ -190,7 +190,7 @@ const SellerCustomersPage = () => {
     },
     {
       label: 'Outstanding Balance',
-      value: formatPKR(stats.outstandingTotal),
+      value: formatCurrencyRounded(stats.outstandingTotal),
       sub: `From ${formatCount(stats.outstandingCount)} customers`,
       color: 'danger',
       icon: 'bx:wallet',
@@ -269,19 +269,15 @@ const SellerCustomersPage = () => {
                   ]}
                   style={{ width: 160, height: 40 }}
                 />
-                <FilterButton
-                  icon="bx:x"
-                  variant="light"
-                  onClick={() => {
+                <FilterClearAll
+                  onClear={() => {
                     setSearch('')
                     setCustomerStatus('')
                     setCityFilter('')
                     setProjectId('')
+                    setTablePage(1)
                   }}
-                  style={{ height: 40 }}
-                >
-                  Clear All
-                </FilterButton>
+                />
               </div>
             </CardHeader>
             <CardBody className="p-0">
@@ -353,7 +349,7 @@ const SellerCustomersPage = () => {
                             <td>{c.phone || '—'}</td>
                             <td>{c.city || '—'}</td>
                             <td>{formatCount(c.totalOrders)}</td>
-                            <td className="fw-semibold">{formatPKR(c.totalSpent)}</td>
+                            <td className="fw-semibold">{formatCurrencyRounded(c.totalSpent)}</td>
                             <td>
                               {c.lastOrder
                                 ? c.lastOrder.toLocaleDateString('en-GB', {
@@ -516,13 +512,13 @@ const SellerCustomersPage = () => {
                   <Col>
                     <div className="text-center border rounded p-2">
                       <small className="text-muted d-block">Total Spent</small>
-                      <div className="fw-bold text-dark">{formatPKR(selected.totalSpent)}</div>
+                      <div className="fw-bold text-dark">{formatCurrencyRounded(selected.totalSpent)}</div>
                     </div>
                   </Col>
                   <Col>
                     <div className="text-center border rounded p-2">
                       <small className="text-muted d-block">Due Amount</small>
-                      <div className="fw-bold text-danger">{formatPKR(selected.dueAmount)}</div>
+                      <div className="fw-bold text-danger">{formatCurrencyRounded(selected.dueAmount)}</div>
                     </div>
                   </Col>
                 </Row>
@@ -573,7 +569,7 @@ const SellerCustomersPage = () => {
                                         })
                                       : '—'}
                                   </td>
-                                  <td className="fw-semibold">{formatPKR(o.totalAmount)}</td>
+                                  <td className="fw-semibold">{formatCurrencyRounded(o.totalAmount)}</td>
                                   <td>
                                     <SaleStatusChip status={o.status || 'draft'} />
                                   </td>

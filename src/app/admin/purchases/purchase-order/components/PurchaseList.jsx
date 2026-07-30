@@ -1,5 +1,5 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { currency } from '@/context/constants';
+import { formatCurrency } from '@/helpers/currency';
 import { getAllOrders } from '@/helpers/data';
 import { useFetchData } from '@/hooks/useFetchData';
 import { useState, useMemo } from 'react';
@@ -56,7 +56,7 @@ const PurchaseList = () => {
                       month: 'short',
                       year: 'numeric'
                     })}</td>
-                      <td>{currency}289.00</td>
+                      <td>{formatCurrency(289)}</td>
                       <td>
                         <span className={`badge bg-${item.orderStatus == 'Canceled' ? 'danger-subtle' : item.orderStatus == 'Packaging' ? 'warning-subtle' : 'success-subtle'} text-${item.orderStatus == 'Canceled' ? 'danger' : item.orderStatus == 'Packaging' ? 'warning' : 'success'} py-1 px-2`}>
                           {item.status}

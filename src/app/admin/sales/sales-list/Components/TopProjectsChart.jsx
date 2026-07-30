@@ -1,5 +1,6 @@
 import ReactApexChart from 'react-apexcharts'
 import { Card, CardBody, CardTitle, Form } from 'react-bootstrap'
+import { formatAmountCompact, formatCurrencyRounded } from '@/helpers/currency'
 
 const TopProjectsChart = ({ data = [] }) => {
   const rows = Array.isArray(data) ? data : []
@@ -19,12 +20,12 @@ const TopProjectsChart = ({ data = [] }) => {
       axisTicks: { show: false },
       labels: {
         style: { fontSize: '11px' },
-        formatter: (val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}K` : val),
+        formatter: (val) => formatAmountCompact(val),
       },
     },
     yaxis: { labels: { style: { fontSize: '11px' } } },
     grid: { strokeDashArray: 3, xaxis: { lines: { show: false } } },
-    tooltip: { y: { formatter: (val) => `AED ${val.toLocaleString()}` } },
+    tooltip: { y: { formatter: (val) => formatCurrencyRounded(val) } },
     noData: { text: 'No data', style: { color: '#9ca3af' } },
   }
 

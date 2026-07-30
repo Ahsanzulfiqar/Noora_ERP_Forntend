@@ -1,5 +1,5 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { currency } from '@/context/constants';
+import { formatCurrency } from '@/helpers/currency';
 import { useState, useEffect } from 'react';
 import { Alert, Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'react-bootstrap';
 import product1 from '@/assets/images/product/noimage.png';
@@ -95,11 +95,11 @@ const ProductDetails = ({ variant, productvarientId }) => {
                     <Row className="align-items-center">
                       <Col>
                         <p className="text-primary-emphasis mb-1 fs-14">Selling Price</p>
-                        <h3 className="fw-bold text-primary mb-0">{currency}{variant.salePrice ? Number(variant.salePrice).toLocaleString() : '0.00'}</h3>
+                        <h3 className="fw-bold text-primary mb-0">{formatCurrency(variant.salePrice)}</h3>
                       </Col>
                       <Col className="border-start border-primary-subtle ps-4">
                         <p className="text-primary-emphasis mb-1 fs-14">Purchase Price</p>
-                        <h4 className="fw-semibold text-muted mb-0">{currency}{variant.purchasePrice ? Number(variant.purchasePrice).toLocaleString() : '0.00'}</h4>
+                        <h4 className="fw-semibold text-muted mb-0">{formatCurrency(variant.purchasePrice)}</h4>
                       </Col>
                     </Row>
                   </div>

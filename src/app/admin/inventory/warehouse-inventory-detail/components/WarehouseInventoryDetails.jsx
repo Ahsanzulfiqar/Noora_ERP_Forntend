@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 import { useAuth } from '@/hooks/useAuth';
 import { ROLES } from '@/assets/data/roles';
+import { formatCurrency } from '@/helpers/currency';
 
 const WarehouseInventoryDetails = () => {
     const { inventoryId } = useParams();
@@ -106,7 +107,7 @@ const WarehouseInventoryDetails = () => {
                             <Col md={3}>
                                 <div className="border p-3 rounded">
                                     <h6 className="text-muted mb-1">Avg Price</h6>
-                                    <h4 className="mb-0 text-dark">{stockData.avgCost ? Number(stockData.avgCost).toFixed(2) : '0'}</h4>
+                                    <h4 className="mb-0 text-dark">{formatCurrency(stockData.avgCost)}</h4>
                                 </div>
                             </Col>
                         </Row>

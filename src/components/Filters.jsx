@@ -1,12 +1,9 @@
-import { Button, Dropdown, Form } from 'react-bootstrap'
+import { useMemo } from 'react'
+import { Button, Form } from 'react-bootstrap'
+import Flatpickr from 'react-flatpickr'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 
-/**
- * Shared filter widgets. Import individually:
- *   import { FilterSelect, FilterSearch, FilterDateRange, FilterDate, FilterButton, FilterToolbar } from '@/components/Filters'
- */
 
-// ---------- FilterSelect ----------
 export const FilterSelect = ({
   value,
   onChange,
@@ -86,54 +83,124 @@ export const FilterSearch = ({
 }
 
 // ---------- FilterDateRange ----------
-const fmtDate = (v) => {
-  if (!v) return ''
-  const [y, m, d] = v.split('-')
-  return `${d}/${m}/${y}`
+const pad = (n) => String(n).padStart(2, '0')
+
+// Local-time ISO date (YYYY-MM-DD). Deliberately not Date#toISOString(), which
+// converts to UTC and can shift the day by one either side of midnight.
+const toIso = (d) =>
+  d instanceof Date && !Number.isNaN(d.getTime())
+    ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+    : ''
+
+// Parse YYYY-MM-DD as a *local* date. `new Date('2026-07-01')` is parsed as UTC
+// midnight, which lands on the previous day in negative-offset timezones.
+const fromIso = (v) => {
+  if (!v) return null
+  const [y, m, d] = String(v).split('-').map(Number)
+  if (!y || !m || !d) return null
+  const date = new Date(y, m - 1, d)
+  return Number.isNaN(date.getTime()) ? null : date
 }
+
 
 export const FilterDateRange = ({
   from = '',
   to = '',
   onChange,
-  placeholder = 'Date range',
-  height = 40,
+  label,
+  placeholder = 'Select date range',
+  size,
+  disabled = false,
+  minDate,
+  maxDate,
+  months = 1,
+  style,
   className = '',
+  inline = false,
 }) => {
-  const label =
-    from || to ? `${fmtDate(from) || '—'} - ${fmtDate(to) || '—'}` : placeholder
-  const setFrom = (v) => onChange?.({ from: v || '', to })
-  const setTo = (v) => onChange?.({ from, to: v || '' })
+  const selected = useMemo(() => {
+    const dates = [fromIso(from), fromIso(to)].filter(Boolean)
+    return dates.length ? dates : null
+  }, [from, to])
+  const hasValue = Boolean(from || to)
+  const height = size === 'sm' ? 32 : 40
+  const iconTop = size === 'sm' ? 7 : 11
 
+  const commit = (dates) => {
+    if (!dates?.length) return onChange?.({ from: '', to: '' })
+    const start = toIso(dates[0])
+    const end = dates.length > 1 ? toIso(dates[1]) : start
+    return onChange?.({ from: start, to: end })
+  }
+
+  const picker = (
+    <div className="position-relative" style={style}>
+      <IconifyIcon
+        icon="bx:calendar"
+        className="position-absolute"
+        style={{ top: iconTop, left: 10, color: '#9ca3af', pointerEvents: 'none', zIndex: 3 }}
+      />
+      <Flatpickr
+        className="form-control"
+        value={selected}
+        placeholder={placeholder}
+        disabled={disabled}
+        options={{
+          mode: 'range',
+          dateFormat: 'd/m/Y',
+          showMonths: months,
+          minDate,
+          maxDate,
+          // rangeSeparator lives on the locale (self.l10n.rangeSeparator), not at the
+          // top level — setting it in options is silently ignored. Partial locale
+          // objects are merged over the defaults, so this only overrides the separator.
+          locale: { rangeSeparator: ' → ' },
+        }}
+        // Fires with 1 date on the first click, 2 on the second.
+        onChange={(dates) => {
+          if (dates.length === 2) commit(dates)
+        }}
+        // Closing after a single click means the user wants that one day.
+        onClose={(dates) => {
+          if (dates.length === 1) commit(dates)
+        }}
+        // No background override here — .form-control follows data-bs-theme, and
+        // hardcoding one would render a white input in dark mode.
+        style={{
+          width: '100%',
+          height,
+          paddingLeft: 32,
+          paddingRight: hasValue && !disabled ? 30 : 12,
+        }}
+      />
+      {hasValue && !disabled && (
+        <Button
+          variant="link"
+          className="position-absolute p-0 text-muted d-flex align-items-center"
+          style={{ top: 0, right: 8, height, zIndex: 3 }}
+          onClick={() => commit([])}
+          title="Clear date range"
+          aria-label="Clear date range"
+        >
+          <IconifyIcon icon="bx:x" className="fs-18" />
+        </Button>
+      )}
+    </div>
+  )
+
+  if (inline) {
+    return (
+      <div className={`d-flex align-items-center gap-2 ${className}`}>
+        {label && <Form.Label className="mb-0 text-nowrap">{label}:</Form.Label>}
+        {picker}
+      </div>
+    )
+  }
   return (
-    <Dropdown autoClose="outside">
-      <Dropdown.Toggle
-        variant="outline-secondary"
-        className={`d-flex align-items-center gap-2 arrow-none ${className}`}
-        style={{ height }}
-      >
-        <IconifyIcon icon="bx:calendar" className="fs-18" />
-        <span>{label}</span>
-      </Dropdown.Toggle>
-      <Dropdown.Menu className="p-3" style={{ minWidth: 260 }}>
-        <Form.Group className="mb-2">
-          <Form.Label className="text-muted small mb-1">From</Form.Label>
-          <Form.Control
-            type="date"
-            value={from || ''}
-            onChange={(e) => setFrom(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label className="text-muted small mb-1">To</Form.Label>
-          <Form.Control
-            type="date"
-            value={to || ''}
-            onChange={(e) => setTo(e.target.value)}
-          />
-        </Form.Group>
-      </Dropdown.Menu>
-    </Dropdown>
+    <div className={className}>
+      {label && <Form.Label className="text-muted small mb-1">{label}</Form.Label>}
+      {picker}
+    </div>
   )
 }
 
@@ -204,15 +271,42 @@ export const FilterButton = ({
     </Button>
   )
 }
+export const FilterClearAll = ({
+  onClear,
+  children = 'Clear All',
+  icon = 'bx:x',
+  variant = 'light',
+  size,
+  disabled = false,
+  style,
+  className = '',
+}) => (
+  <FilterButton
+    icon={icon}
+    variant={variant}
+    size={size}
+    onClick={onClear}
+    disabled={disabled}
+    style={{ height: size === 'sm' ? 32 : 40, ...style }}
+    className={className}
+  >
+    {children}
+  </FilterButton>
+)
 
 // ---------- FilterToolbar ----------
 export const FilterToolbar = ({
   children,
   actions,
+  onClear,
+  clearLabel,
   gap = 2,
   className = '',
   wrap = 'wrap',
 }) => {
+  // A toolbar given onClear renders the shared Clear All itself, so pages never
+  // repeat the markup. Explicit `actions` still render alongside it.
+  const hasActions = Boolean(actions) || Boolean(onClear)
   return (
     <div
       className={`d-flex align-items-center gap-${gap} justify-content-between ${wrap === 'wrap' ? 'flex-wrap' : 'flex-nowrap'} ${className}`}
@@ -222,8 +316,11 @@ export const FilterToolbar = ({
       >
         {children}
       </div>
-      {actions && (
-        <div className={`d-flex align-items-center gap-${gap} flex-shrink-0`}>{actions}</div>
+      {hasActions && (
+        <div className={`d-flex align-items-center gap-${gap} flex-shrink-0`}>
+          {actions}
+          {onClear && <FilterClearAll onClear={onClear}>{clearLabel}</FilterClearAll>}
+        </div>
       )}
     </div>
   )

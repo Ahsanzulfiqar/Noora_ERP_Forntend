@@ -5,6 +5,7 @@ import Stats from './components/Stats';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
 import { useAuth } from '@/hooks/useAuth';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import { FilterDateRange, FilterClearAll } from '@/components/Filters';
 
 const getDefaultDates = () => {
   const to = new Date();
@@ -53,26 +54,26 @@ return (
                       ))}
                     </Form.Select>
                   </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <label className="mb-0 text-muted fw-semibold fs-13">From:</label>
-                    <Form.Control
-                      type="date"
-                      size="sm"
-                      value={from}
-                      onChange={(e) => setFrom(e.target.value)}
-                      style={{ width: 150 }}
-                    />
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <label className="mb-0 text-muted fw-semibold fs-13">To:</label>
-                    <Form.Control
-                      type="date"
-                      size="sm"
-                      value={to}
-                      onChange={(e) => setTo(e.target.value)}
-                      style={{ width: 150 }}
-                    />
-                  </div>
+                  <FilterDateRange
+                    inline
+                    label="Date Range"
+                    size="sm"
+                    from={from}
+                    to={to}
+                    onChange={({ from: nextFrom, to: nextTo }) => {
+                      setFrom(nextFrom)
+                      setTo(nextTo)
+                    }}
+                    style={{ width: 240 }}
+                  />
+                  <FilterClearAll
+                    size="sm"
+                    onClear={() => {
+                      setSelectedWarehouse(null)
+                      setFrom('')
+                      setTo('')
+                    }}
+                  />
                 </div>
               </CardBody>
             </Card>

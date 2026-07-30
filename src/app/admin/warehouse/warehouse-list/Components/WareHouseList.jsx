@@ -1,5 +1,5 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { currency } from '@/context/constants';
+import { formatCurrency } from '@/helpers/currency';
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
@@ -45,10 +45,7 @@ const ProductCard = ({
         </div>
       </div>
     </td>
-    <td>
-      {currency}
-      {price}.00
-    </td>
+    <td>{formatCurrency(price)}</td>
     <td>
       <p className="mb-1 text-muted">
         <span className="text-dark fw-medium">{stockLeft} Item</span> Left

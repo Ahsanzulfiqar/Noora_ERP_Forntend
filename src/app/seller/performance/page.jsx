@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useGetSalesQuery } from '@/services/authenticateendpoint/sales'
 import { useGetProjectsBySellerQuery } from '@/services/authenticateendpoint/project'
 import CompactKpiTile from '../components/CompactKpiTile'
-import { FilterSelect, FilterDate } from '@/components/Filters'
+import { FilterSelect, FilterDateRange, FilterClearAll } from '@/components/Filters'
 import SalesOverviewChart from '../components/SalesOverviewChart'
 import OrdersStatusDonut from '../components/OrdersStatusDonut'
 import RecentOrdersTable from '../components/RecentOrdersTable'
@@ -21,13 +21,13 @@ import {
 import {
   endOfMonth,
   formatCount,
-  formatPKR,
   getPeriodRange,
   getPreviousPeriodRange,
   PERIODS,
   startOfMonth,
   toIsoDate,
 } from '../components/formatters'
+import { formatAmountCompact, formatCurrencyRounded } from '@/helpers/currency'
 
 const pctChange = (curr, prev) => {
   const c = Number(curr) || 0
@@ -137,7 +137,7 @@ const SellerPerformancePage = () => {
   const kpis = [
     {
       label: 'Total Sales',
-      value: formatPKR(curr.totalRevenue),
+      value: formatCurrencyRounded(curr.totalRevenue),
       icon: 'bx:dollar-circle',
       color: 'success',
       delta: pctChange(curr.totalRevenue, prev.totalRevenue),
@@ -155,7 +155,7 @@ const SellerPerformancePage = () => {
     },
     {
       label: 'Average Order Value',
-      value: formatPKR(curr.averageOrderValue),
+      value: formatCurrencyRounded(curr.averageOrderValue),
       icon: 'bx:line-chart',
       color: 'warning',
       delta: pctChange(curr.averageOrderValue, prev.averageOrderValue),
@@ -202,11 +202,11 @@ const SellerPerformancePage = () => {
     colors: ['#22c55e', '#cbd5e1'],
     xaxis: { categories: weekLabels, axisBorder: { show: false }, axisTicks: { show: false } },
     yaxis: {
-      labels: { formatter: (val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}K` : val) },
+      labels: { formatter: (val) => formatAmountCompact(val) },
     },
     legend: { position: 'top' },
     grid: { strokeDashArray: 3 },
-    tooltip: { y: { formatter: (val) => `Rs. ${Number(val).toLocaleString()}` } },
+    tooltip: { y: { formatter: (val) => formatCurrencyRounded(val) } },
   }
 
   return (
@@ -233,23 +233,27 @@ const SellerPerformancePage = () => {
           />
         </Col>
         <Col md="auto">
-          <FilterDate
-            inline
-            label="From"
+          <FilterDateRange
             size="sm"
-            value={dateFrom || ''}
-            onChange={(v) => setDateFrom(v || '')}
-            style={{ width: 150 }}
+            from={dateFrom || ''}
+            to={dateTo || ''}
+            onChange={({ from, to }) => {
+              setDateFrom(from)
+              setDateTo(to)
+            }}
+            style={{ width: 240 }}
           />
         </Col>
         <Col md="auto">
-          <FilterDate
-            inline
-            label="To"
+          <FilterClearAll
             size="sm"
-            value={dateTo || ''}
-            onChange={(v) => setDateTo(v || '')}
-            style={{ width: 150 }}
+            onClear={() => {
+              setProjectId('')
+              setDateFrom('')
+              setDateTo('')
+              setOverviewPeriod('this_month')
+              setComparePeriod('this_month')
+            }}
           />
         </Col>
       </Row>
@@ -298,7 +302,7 @@ const SellerPerformancePage = () => {
                     <div key={c.name}>
                       <div className="d-flex justify-content-between align-items-center mb-1">
                         <span className="fw-semibold small">{c.name}</span>
-                        <span className="fw-semibold small">{formatPKR(c.total)}</span>
+                        <span className="fw-semibold small">{formatCurrencyRounded(c.total)}</span>
                       </div>
                       <div className="progress" style={{ height: 4 }}>
                         <div
@@ -350,7 +354,7 @@ const SellerPerformancePage = () => {
                 <>
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                      <div className="text-dark fw-bold fs-18">{formatPKR(compareCurr.totalRevenue)}</div>
+                      <div className="text-dark fw-bold fs-18">{formatCurrencyRounded(compareCurr.totalRevenue)}</div>
                       <small className="text-muted">Current</small>
                     </div>
                     <div className="text-center">
@@ -369,7 +373,7 @@ const SellerPerformancePage = () => {
                       </div>
                     </div>
                     <div className="text-end">
-                      <div className="text-muted fw-bold fs-18">{formatPKR(comparePrevStats.totalRevenue)}</div>
+                      <div className="text-muted fw-bold fs-18">{formatCurrencyRounded(comparePrevStats.totalRevenue)}</div>
                       <small className="text-muted">Previous</small>
                     </div>
                   </div>
@@ -408,25 +412,25 @@ const SellerPerformancePage = () => {
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />{' '}
                       Paid Amount
                     </span>
-                    <span className="fw-semibold">{formatPKR(curr.paidAmount)}</span>
+                    <span className="fw-semibold">{formatCurrencyRounded(curr.paidAmount)}</span>
                   </div>
                   <div className="d-flex justify-content-between">
                     <span className="d-flex align-items-center gap-2">
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', display: 'inline-block' }} />{' '}
                       COD Pending
                     </span>
-                    <span className="fw-semibold">{formatPKR(curr.codPending)}</span>
+                    <span className="fw-semibold">{formatCurrencyRounded(curr.codPending)}</span>
                   </div>
                   <div className="d-flex justify-content-between">
                     <span className="d-flex align-items-center gap-2">
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />{' '}
                       Balance
                     </span>
-                    <span className="fw-semibold">{formatPKR(curr.balanceAmount)}</span>
+                    <span className="fw-semibold">{formatCurrencyRounded(curr.balanceAmount)}</span>
                   </div>
                   <div className="border-top mt-2 pt-2 d-flex justify-content-between">
                     <span className="fw-bold">Total</span>
-                    <span className="fw-bold text-dark">{formatPKR(curr.totalRevenue)}</span>
+                    <span className="fw-bold text-dark">{formatCurrencyRounded(curr.totalRevenue)}</span>
                   </div>
                 </div>
               )}

@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TableNoData from '@/components/TableNoData';
 import CustomTablePaginations from '@/components/table/CustomTablePaginations';
+import { formatCurrency } from '@/helpers/currency';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant';
@@ -13,7 +14,7 @@ import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 import { useAuth } from '@/hooks/useAuth';
 import { ROLES } from '@/assets/data/roles';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
-import { FilterSelect } from '@/components/Filters';
+import { FilterSelect, FilterClearAll } from '@/components/Filters';
 
 const WarehouseList = () => {
   const { role } = useAuth();
@@ -118,6 +119,14 @@ const WarehouseList = () => {
               ]}
             />
 
+            <FilterClearAll
+              size="sm"
+              onClear={() => {
+                setFilters({ warehouseId: '', productId: '', variantId: '' })
+                setPage(1)
+              }}
+            />
+
             {isTransferStockView ? (
               isSales ? (
                 <button type="button" className="btn btn-sm btn-primary disabled text-nowrap" disabled aria-disabled="true" style={{ pointerEvents: 'none', opacity: 0.65 }}>
@@ -195,7 +204,7 @@ const WarehouseList = () => {
                       <td>{item.quantity || '0'}</td>
                       <td>{item.reserved || '0'}</td>
                       <td>{item.reorderLevel || '0'}</td>
-                      <td>{item.avgCost ? Number(item.avgCost).toFixed(2) : '0'}</td>
+                      <td>{formatCurrency(item.avgCost)}</td>
                       <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}</td>
                       <td>
                         <div className="d-flex gap-2">

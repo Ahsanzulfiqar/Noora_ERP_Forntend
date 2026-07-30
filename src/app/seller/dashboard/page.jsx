@@ -17,7 +17,8 @@ import {
   deriveUnitsSold,
   filterSalesByRange,
 } from '../components/deriveSellerStats'
-import { formatCount, formatPKR, getPeriodRange, PERIODS } from '../components/formatters'
+import { formatCount, getPeriodRange, PERIODS } from '../components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 
 const QUICK_ACTIONS = [
   { label: 'New Sale', icon: 'bx:plus', to: '/sales/sales-add', variant: 'primary' },
@@ -64,7 +65,7 @@ const SellerDashboardPage = () => {
   const kpis = [
     {
       label: 'Total Sales',
-      value: formatPKR(stats.totalRevenue),
+      value: formatCurrencyRounded(stats.totalRevenue),
       icon: 'bx:dollar-circle',
       color: 'success',
       isEmpty: monthSales.length === 0,
@@ -78,7 +79,7 @@ const SellerDashboardPage = () => {
     },
     {
       label: 'Average Order Value',
-      value: formatPKR(stats.averageOrderValue),
+      value: formatCurrencyRounded(stats.averageOrderValue),
       icon: 'bx:line-chart',
       color: 'warning',
       isEmpty: monthSales.length === 0,
@@ -216,7 +217,7 @@ const SellerDashboardPage = () => {
                             {p.productName || p.sku || 'Product'}
                           </div>
                           <div className="fw-semibold text-dark text-nowrap flex-shrink-0">
-                            {formatPKR(p.revenue)}
+                            {formatCurrencyRounded(p.revenue)}
                           </div>
                         </div>
                         <small className="text-muted">{formatCount(p.quantity)} units</small>

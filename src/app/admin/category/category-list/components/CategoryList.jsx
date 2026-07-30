@@ -11,7 +11,7 @@ import StatusAlert from '@/components/StatusAlert';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import ViewDetailModal from '../../components/ViewDetailModal';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
-import { FilterSelect, FilterSearch } from '@/components/Filters';
+import { FilterSelect, FilterSearch, FilterClearAll } from '@/components/Filters';
 
 const CategoryList = () => {
     const navigate = useNavigate();
@@ -147,6 +147,14 @@ const CategoryList = () => {
                                 placeholder="Search categories..."
                                 size="sm"
                                 style={{ width: '200px' }}
+                            />
+                            <FilterClearAll
+                                size="sm"
+                                onClear={() => {
+                                    setIsActive('')
+                                    setSearch('')
+                                    setPage(1)
+                                }}
                             />
                             <Link to="/admin/category/category-add" className="btn btn-sm btn-primary">
                                 Add Category
