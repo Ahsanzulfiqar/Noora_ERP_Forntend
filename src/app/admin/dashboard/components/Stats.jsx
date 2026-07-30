@@ -7,6 +7,7 @@ import { toast } from 'react-toastify'
 import { useGetAdminDashboardQuery } from '@/services/authenticateendpoint/dashboard'
 import { useAuth } from '@/hooks/useAuth'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
+import { currencyLabel, formatAmountCompact, formatCurrencyCompact } from '@/helpers/currency'
 
 const DUMMY_STATS = {
   revenue: 0,
@@ -17,12 +18,7 @@ const DUMMY_STATS = {
   payables: 0,
 }
 
-const formatAmount = (val) => {
-  if (val == null) return '—'
-  if (Math.abs(val) >= 1000000) return `$${(val / 1000000).toFixed(1)}M`
-  if (Math.abs(val) >= 1000) return `$${(val / 1000).toFixed(1)}k`
-  return `$${val.toLocaleString()}`
-}
+const formatAmount = (val) => (val == null ? '—' : formatCurrencyCompact(val))
 
 const StatsCard = ({ amount, icon, name }) => (
   <Col md={6}>
@@ -88,15 +84,10 @@ const Stats = ({ from, to, warehouseIds }) => {
   const minDisplay = maxVal > 0 ? maxVal * 0.04 : 10
   const displayValues = realValues.map((v) => (v === 0 ? minDisplay : v))
 
-  const fmtTooltip = (val, { dataPointIndex }) => {
-    const real = realValues[dataPointIndex]
-    if (real >= 1000000) return `$${(real / 1000000).toFixed(2)}M`
-    if (real >= 1000) return `$${(real / 1000).toFixed(2)}k`
-    return `$${real.toLocaleString()}`
-  }
+  const fmtTooltip = (val, { dataPointIndex }) => formatCurrencyCompact(realValues[dataPointIndex], { decimals: 2 })
 
   const chartOptions = {
-    series: [{ name: 'Amount ($)', data: displayValues }],
+    series: [{ name: `Amount ${currencyLabel()}`, data: displayValues }],
     chart: {
       height: 313,
       type: 'bar',
@@ -121,11 +112,7 @@ const Stats = ({ from, to, warehouseIds }) => {
       max: maxVal > 0 ? undefined : 100,
       axisBorder: { show: false },
       labels: {
-        formatter: (val) => {
-          if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`
-          if (val >= 1000) return `$${(val / 1000).toFixed(1)}k`
-          return `$${val}`
-        },
+        formatter: (val) => formatAmountCompact(val, { decimals: 1 }),
       },
     },
     grid: {

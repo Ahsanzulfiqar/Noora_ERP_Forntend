@@ -1,3 +1,132 @@
+export const WAREHOUSE_MENU_ITEMS = [
+  {
+    key: 'main',
+    label: 'MAIN',
+    isTitle: true,
+  },
+  {
+    key: 'warehouse-dashboard',
+    label: 'Dashboard',
+    icon: 'solar:widget-2-bold-duotone',
+    url: '/warehouse/dashboard',
+  },
+  {
+    key: 'inventory-section',
+    label: 'INVENTORY',
+    isTitle: true,
+  },
+  {
+    key: 'warehouse-inventory',
+    label: 'Inventory',
+    icon: 'solar:box-bold-duotone',
+    children: [
+      {
+        key: 'warehouse-inventory-stock',
+        label: 'Stock',
+        url: '/warehouse/inventory/stock',
+        parentKey: 'warehouse-inventory',
+      },
+      {
+        key: 'warehouse-inventory-ledger',
+        label: 'Stock Ledger',
+        url: '/warehouse/inventory/ledger',
+        parentKey: 'warehouse-inventory',
+      },
+      {
+        key: 'warehouse-inventory-low-stock',
+        label: 'Low Stock',
+        url: '/warehouse/inventory/low-stock',
+        parentKey: 'warehouse-inventory',
+      },
+      {
+        key: 'warehouse-inventory-expiry',
+        label: 'Expiry Alert',
+        url: '/warehouse/inventory/expiry',
+        parentKey: 'warehouse-inventory',
+      },
+    ],
+  },
+  {
+    key: 'operations-section',
+    label: 'OPERATIONS',
+    isTitle: true,
+  },
+  {
+    key: 'warehouse-purchases',
+    label: 'Purchases',
+    icon: 'solar:card-send-bold-duotone',
+    children: [
+      {
+        key: 'warehouse-purchases-receive',
+        label: 'Receive Stock',
+        url: '/warehouse/purchases/receive',
+        parentKey: 'warehouse-purchases',
+      },
+    ],
+  },
+  {
+    key: 'warehouse-sales',
+    label: 'Sales',
+    icon: 'solar:cart-3-bold-duotone',
+    children: [
+      {
+        key: 'warehouse-sales-dispatch',
+        label: 'Dispatch Orders',
+        url: '/warehouse/sales/dispatch',
+        parentKey: 'warehouse-sales',
+      },
+      {
+        key: 'warehouse-sales-delivery',
+        label: 'Delivery Orders',
+        url: '/warehouse/sales/delivery',
+        parentKey: 'warehouse-sales',
+      },
+    ],
+  },
+  {
+    key: 'warehouse-transfers',
+    label: 'Transfers',
+    icon: 'solar:transfer-horizontal-bold-duotone',
+    children: [
+      {
+        key: 'warehouse-transfers-list',
+        label: 'Stock Transfers',
+        url: '/warehouse/transfers',
+        parentKey: 'warehouse-transfers',
+      },
+    ],
+  },
+  {
+    key: 'reports-section',
+    label: 'REPORTS',
+    isTitle: true,
+  },
+  {
+    key: 'warehouse-reports',
+    label: 'Reports',
+    icon: 'solar:chart-2-bold-duotone',
+    children: [
+      {
+        key: 'warehouse-reports-stock',
+        label: 'Stock Reports',
+        url: '/warehouse/reports/stock',
+        parentKey: 'warehouse-reports',
+      },
+    ],
+  },
+  {
+    key: 'profile-section',
+    label: 'PROFILE',
+    isTitle: true,
+  },
+  {
+    key: 'warehouse-profile',
+    label: 'My Profile',
+    icon: 'solar:user-bold-duotone',
+    url: '/profile',
+  },
+]
+
 export const SELLER_MENU_ITEMS = [
   {
     key: 'main',

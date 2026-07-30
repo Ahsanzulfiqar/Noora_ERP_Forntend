@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ReactApexChart from 'react-apexcharts'
 import { Card, CardBody, CardTitle, Form } from 'react-bootstrap'
+import { formatAmountCompact, formatCurrencyRounded } from '@/helpers/currency'
 
 const formatDateLabel = (dateStr) => {
   if (!dateStr) return ''
@@ -29,14 +30,14 @@ const SalesTrendChart = ({ data = [] }) => {
     },
     yaxis: {
       labels: {
-        formatter: (val) => (val >= 1000 ? `${(val / 1000).toFixed(0)}K` : val),
+        formatter: (val) => formatAmountCompact(val),
       },
     },
     grid: { strokeDashArray: 3, xaxis: { lines: { show: false } } },
     tooltip: {
       y: {
         formatter: (val) =>
-          metric === 'revenue' ? `AED ${val.toLocaleString()}` : val.toLocaleString(),
+          metric === 'revenue' ? formatCurrencyRounded(val) : val.toLocaleString(),
       },
     },
     noData: { text: 'No data', style: { color: '#9ca3af' } },

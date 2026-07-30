@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/hooks/useAuth';
 import { ROLES } from '@/assets/data/roles';
+import { formatCurrency } from '@/helpers/currency';
 
 // Endpoints
 import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/authenticateendpoint/sales';
@@ -780,7 +781,7 @@ const SaleAdd = () => {
                                     <td>{item.variantName || 'No variant'}</td>
                                     <td>{item.sku}</td>
                                     <td>{item.quantity}</td>
-                                    <td>${item.salePrice?.toFixed(2)}</td>
+                                    <td>{formatCurrency(item.salePrice)}</td>
                                     {/* <td>{item.batchNo || '-'}</td> */}
                                     {/* <td>{item.expiryDate || '-'}</td> */}
                                     <td className="text-center d-flex">
@@ -848,7 +849,7 @@ const SaleAdd = () => {
                     <CardBody>
                       <div className="d-flex justify-content-between mb-2">
                         <span>Sub Total:</span>
-                        <span className="fw-bold">${values.subTotal.toFixed(2)}</span>
+                        <span className="fw-bold">{formatCurrency(values.subTotal)}</span>
                       </div>
                       <div className="mb-3">
                         <FormikTextField
@@ -880,7 +881,7 @@ const SaleAdd = () => {
                       <hr />
                       <div className="d-flex justify-content-between mt-2">
                         <span className="h5">Total Amount:</span>
-                        <span className="h5 fw-bold text-primary">${values.totalAmount.toFixed(2)}</span>
+                        <span className="h5 fw-bold text-primary">{formatCurrency(values.totalAmount)}</span>
                       </div>
                     </CardBody>
                   </Card>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import product1 from '@/assets/images/product/noimage.png';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { currency } from '@/context/constants';
+import { formatCurrency } from '@/helpers/currency';
 import { Card, CardBody, CardFooter, Col, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { categoryOptions } from '../utils';
@@ -114,11 +114,11 @@ const ProductDetails = ({ values }) => {
           )}
           <h4 className="fw-semibold text-dark mt-2 d-flex align-items-center gap-1">
             <span >Purchase Price:</span>
-            <span className='badge bg-secondary text-light fs-14 py-1 px-2'>{currency}{purchasePrice || '0.00'}</span>
+            <span className='badge bg-secondary text-light fs-14 py-1 px-2'>{formatCurrency(purchasePrice)}</span>
           </h4>
           <h4 className="fw-semibold text-dark mt-2 d-flex align-items-center gap-1">
             <span>Sale Price:</span>
-            <span className='badge bg-secondary text-light fs-14 py-1 px-2'>{currency}{salePrice || '0.00'}</span>
+            <span className='badge bg-secondary text-light fs-14 py-1 px-2'>{formatCurrency(salePrice)}</span>
           </h4>
           <h4 className="fw-semibold text-dark mt-2 d-flex align-items-center gap-1">
             <span>pack Size:</span>

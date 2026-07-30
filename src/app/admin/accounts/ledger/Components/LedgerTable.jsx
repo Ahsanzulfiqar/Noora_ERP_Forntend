@@ -3,6 +3,8 @@ import { Card, CardHeader, Table, Form, Row, Col, Button } from 'react-bootstrap
 import { Link } from 'react-router-dom'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAccountsQuery } from '@/services/authenticateendpoint/account'
+import { currencyLabel, formatAmount } from '@/helpers/currency'
+import { FilterDateRange, FilterClearAll } from '@/components/Filters'
 
 const SAMPLE_LEDGER_ROWS = [
     { id: 1, date: '2026-05-01', voucherNo: 'JV-000001', memo: 'Opening balance', debit: 10000, credit: 0, balance: 10000 },
@@ -13,7 +15,7 @@ const SAMPLE_LEDGER_ROWS = [
     { id: 6, date: '2026-05-24', voucherNo: 'OUT-000002', memo: 'Electricity bill', debit: 0, credit: 300, balance: 14400 },
 ]
 
-const fmt = (n) => Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const fmt = (n) => formatAmount(n)
 
 const LedgerTable = () => {
     const [accountId, setAccountId] = useState('')
@@ -71,26 +73,37 @@ const LedgerTable = () => {
                             </Form.Select>
                         </Form.Group>
                     </Col>
-                    <Col md={3}>
+                    <Col md={4}>
                         <Form.Group>
                             <Form.Label>
-                                Date From <span className="text-danger">*</span>
+                                Date Range <span className="text-danger">*</span>
                             </Form.Label>
-                            <Form.Control type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                        </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                        <Form.Group>
-                            <Form.Label>
-                                Date To <span className="text-danger">*</span>
-                            </Form.Label>
-                            <Form.Control type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+                            <FilterDateRange
+                                from={dateFrom}
+                                to={dateTo}
+                                onChange={({ from, to }) => {
+                                    setDateFrom(from)
+                                    setDateTo(to)
+                                }}
+                            />
                         </Form.Group>
                     </Col>
                     <Col md={2}>
                         <Button variant="primary" className="w-100" onClick={handleSearch}>
                             <IconifyIcon icon="solar:magnifer-broken" className="me-1" /> Search
                         </Button>
+                    </Col>
+                    <Col md={2}>
+                        <FilterClearAll
+                            className="w-100 justify-content-center"
+                            onClear={() => {
+                                setAccountId('')
+                                setDateFrom('')
+                                setDateTo('')
+                                setRows([])
+                                setHasSearched(false)
+                            }}
+                        />
                     </Col>
                 </Row>
 
@@ -103,9 +116,9 @@ const LedgerTable = () => {
                                         <th>Date</th>
                                         <th>Voucher No.</th>
                                         <th>Description / Memo</th>
-                                        <th className="text-end">Debit (AED)</th>
-                                        <th className="text-end">Credit (AED)</th>
-                                        <th className="text-end">Balance (AED)</th>
+                                        <th className="text-end">Debit {currencyLabel()}</th>
+                                        <th className="text-end">Credit {currencyLabel()}</th>
+                                        <th className="text-end">Balance {currencyLabel()}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

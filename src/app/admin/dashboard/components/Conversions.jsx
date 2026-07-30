@@ -3,7 +3,7 @@ import ReactApexChart from 'react-apexcharts';
 import { pagesList } from '../data';
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { currency } from '@/context/constants';
+import { formatCurrency } from '@/helpers/currency';
 import { Link } from 'react-router-dom';
 const Conversions = () => {
   const chartOptions = {
@@ -213,7 +213,7 @@ const Conversions = () => {
               <tbody>
                 <tr>
                   <td>24 April, 2024</td>
-                  <td>{currency}120.55</td>
+                  <td>{formatCurrency(120.55)}</td>
                   <td>
                     <span className="badge bg-success">Cr</span>
                   </td>
@@ -221,7 +221,7 @@ const Conversions = () => {
                 </tr>
                 <tr>
                   <td>24 April, 2024</td>
-                  <td>{currency}9.68</td>
+                  <td>{formatCurrency(9.68)}</td>
                   <td>
                     <span className="badge bg-success">Cr</span>
                   </td>
@@ -229,7 +229,7 @@ const Conversions = () => {
                 </tr>
                 <tr>
                   <td>20 April, 2024</td>
-                  <td>{currency}105.22</td>
+                  <td>{formatCurrency(105.22)}</td>
                   <td>
                     <span className="badge bg-danger">Dr</span>
                   </td>
@@ -237,7 +237,7 @@ const Conversions = () => {
                 </tr>
                 <tr>
                   <td>18 April, 2024</td>
-                  <td>{currency}80.59</td>
+                  <td>{formatCurrency(80.59)}</td>
                   <td>
                     <span className="badge bg-success">Cr</span>
                   </td>
@@ -245,7 +245,7 @@ const Conversions = () => {
                 </tr>
                 <tr>
                   <td>18 April, 2024</td>
-                  <td>{currency}750.95</td>
+                  <td>{formatCurrency(750.95)}</td>
                   <td>
                     <span className="badge bg-danger">Dr</span>
                   </td>
@@ -253,7 +253,7 @@ const Conversions = () => {
                 </tr>
                 <tr>
                   <td>17 April, 2024</td>
-                  <td>{currency}455.62</td>
+                  <td>{formatCurrency(455.62)}</td>
                   <td>
                     <span className="badge bg-danger">Dr</span>
                   </td>
@@ -261,7 +261,7 @@ const Conversions = () => {
                 </tr>
                 <tr>
                   <td>17 April, 2024</td>
-                  <td>{currency}102.77</td>
+                  <td>{formatCurrency(102.77)}</td>
                   <td>
                     <span className="badge bg-success">Cr</span>
                   </td>
@@ -269,7 +269,7 @@ const Conversions = () => {
                 </tr>
                 <tr>
                   <td>16 April, 2024</td>
-                  <td>{currency}79.49</td>
+                  <td>{formatCurrency(79.49)}</td>
                   <td>
                     <span className="badge bg-success">Cr</span>
                   </td>
@@ -277,7 +277,7 @@ const Conversions = () => {
                 </tr>
                 <tr>
                   <td>05 April, 2024</td>
-                  <td>{currency}980.00</td>
+                  <td>{formatCurrency(980.00)}</td>
                   <td>
                     <span className="badge bg-danger">Dr</span>
                   </td>

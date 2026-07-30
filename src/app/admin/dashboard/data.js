@@ -1,4 +1,4 @@
-import { currency } from '@/context/constants';
+import { formatCurrencyCompact } from '@/helpers/currency';
 export const stateData = [{
   icon: 'solar:cart-5-bold-duotone',
   name: 'Total Orders',
@@ -20,7 +20,7 @@ export const stateData = [{
 }, {
   icon: 'bx:dollar-circle',
   name: 'Booked Revenue',
-  amount: `${currency}123.6k`,
+  amount: formatCurrencyCompact(123600),
   variant: 'danger',
   change: '10.6'
 }];

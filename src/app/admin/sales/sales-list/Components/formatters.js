@@ -1,7 +1,4 @@
-export const formatCurrency = (val) => {
-  const n = Number(val) || 0
-  return `AED ${n.toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-}
+export { formatCurrency } from '@/helpers/currency'
 
 export const formatNumber = (val) => {
   const n = Number(val) || 0

@@ -1,6 +1,7 @@
 import { Badge, Card, CardBody, CardHeader, Spinner, Table } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import { formatPKR, getPaymentColor, prettyLabel } from './formatters'
+import { getPaymentColor, prettyLabel } from './formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 import SaleStatusChip from '@/components/SaleStatusChip'
 
 const RecentOrdersTable = ({ sales = [], isLoading }) => {
@@ -46,7 +47,7 @@ const RecentOrdersTable = ({ sales = [], isLoading }) => {
                     </td>
                     <td>{s.customerName || <span className="text-muted">No data</span>}</td>
                     <td>{s.createdAt ? new Date(s.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td>
-                    <td className="fw-semibold">{formatPKR(s.totalAmount)}</td>
+                    <td className="fw-semibold">{formatCurrencyRounded(s.totalAmount)}</td>
                     <td>
                       <SaleStatusChip status={s.status || 'draft'} />
                     </td>

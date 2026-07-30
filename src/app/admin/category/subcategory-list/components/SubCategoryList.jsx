@@ -10,7 +10,7 @@ import StatusAlert from '@/components/StatusAlert';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import ViewDetailModal from '../../components/ViewDetailModal';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
-import { FilterSelect, FilterSearch } from '@/components/Filters';
+import { FilterSelect, FilterSearch, FilterClearAll } from '@/components/Filters';
 
 const SubCategoryList = () => {
     const navigate = useNavigate();
@@ -129,6 +129,14 @@ const SubCategoryList = () => {
                                 placeholder="Search sub-categories..."
                                 size="sm"
                                 style={{ width: '200px' }}
+                            />
+                            <FilterClearAll
+                                size="sm"
+                                onClear={() => {
+                                    setIsActive('')
+                                    setSearch('')
+                                    setPage(1)
+                                }}
                             />
                             <Button size="sm" variant="primary" onClick={() => navigate('/admin/category/subcategory-add')}>
                                 Add Sub-Category

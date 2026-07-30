@@ -1,4 +1,4 @@
-import { MENU_ITEMS, SELLER_MENU_ITEMS } from '@/assets/data/menu-items';
+import { MENU_ITEMS, SELLER_MENU_ITEMS, WAREHOUSE_MENU_ITEMS } from '@/assets/data/menu-items';
 import { ROLES } from '@/assets/data/roles';
 import { isPathAllowedForRole } from '@/routes/roleAccess';
 
@@ -18,15 +18,14 @@ export const getMenuItems = (role) => {
   if (role === ROLES.SELLER) {
     return SELLER_MENU_ITEMS;
   }
+  if (role === ROLES.WAREHOUSE) {
+    return WAREHOUSE_MENU_ITEMS;
+  }
   if (role === ROLES.SALES) {
     return MENU_ITEMS.filter((item) => ['dashboard', 'sales', 'inventory'].includes(item.key))
   }
   if (role === ROLES.MANAGER) {
     return MENU_ITEMS.filter((item) => ['dashboard', 'projects', 'sales', 'inventory', 'purchases', 'sellers', 'report'].includes(item.key))
-  }
-  if (role === ROLES.WAREHOUSE) {
-    const withoutDuplicates = MENU_ITEMS.filter((item) => item.key !== 'gcc-sale');
-    return filterMenuByAllowedPaths(withoutDuplicates, role);
   }
   return MENU_ITEMS
 }

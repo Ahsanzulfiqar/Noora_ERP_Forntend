@@ -25,8 +25,8 @@ export const dashboardAPI = api.injectEndpoints({
             }
           `,
           variables: {
-            from,
-            to,
+            from: from || null,
+            to: to || null,
             ...(warehouseIds && warehouseIds.length > 0 ? { warehouseIds } : {}),
           },
         },

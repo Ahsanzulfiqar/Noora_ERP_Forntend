@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import GlobalSpinner from '../../../../../components/loaders/GlobalSpinner';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
-import { FilterSelect } from '@/components/Filters';
+import { FilterSelect, FilterClearAll } from '@/components/Filters';
 
 const StockList = () => {
     const [page, setPage] = useState(1);
@@ -68,8 +68,8 @@ const StockList = () => {
             </CardHeader>
             <CardBody>
                 {/* Filter Section */}
-                <Row className="mb-4">
-                    <Col md={4}>
+                <Row className="mb-4 align-items-end">
+                    <Col md={3}>
                         <FilterSelect
                             label="Warehouse"
                             value={selectedWarehouse}
@@ -80,7 +80,7 @@ const StockList = () => {
                             ]}
                         />
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
                         <FilterSelect
                             label="Product"
                             value={selectedProduct}
@@ -91,7 +91,7 @@ const StockList = () => {
                             ]}
                         />
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
                         <FilterSelect
                             label="Variant"
                             value={selectedVariant}
@@ -101,6 +101,17 @@ const StockList = () => {
                                 { value: '', label: 'All Variants' },
                                 ...(variantsData?.map((v) => ({ value: v._id, label: v.name })) || []),
                             ]}
+                        />
+                    </Col>
+                    <Col md={3}>
+                        <FilterClearAll
+                            className="w-100 justify-content-center"
+                            onClear={() => {
+                                setSelectedWarehouse('')
+                                setSelectedProduct('')
+                                setSelectedVariant('')
+                                setPage(1)
+                            }}
                         />
                     </Col>
                 </Row>

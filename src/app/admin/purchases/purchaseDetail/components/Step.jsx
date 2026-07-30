@@ -1,5 +1,5 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { currency } from '@/context/constants';
+import { formatCurrency } from '@/helpers/currency';
 import { Card, CardBody, Col, Row } from 'react-bootstrap';
 const Step = () => {
   return <Row>
@@ -13,7 +13,7 @@ const Step = () => {
                     <IconifyIcon icon="solar:kick-scooter-bold-duotone" className="fs-35 text-primary" />
                   </div>
                   <div>
-                    <p className="text-dark fw-medium fs-16 mb-1">Free shipping for all orders over {currency}200</p>
+                    <p className="text-dark fw-medium fs-16 mb-1">Free shipping for all orders over {formatCurrency(200)}</p>
                     <p className="mb-0">Only in this week</p>
                   </div>
                 </div>
@@ -25,7 +25,7 @@ const Step = () => {
                   </div>
                   <div>
                     <p className="text-dark fw-medium fs-16 mb-1">Special discounts for customers</p>
-                    <p className="mb-0">Coupons up to $ 100</p>
+                    <p className="mb-0">Coupons up to {formatCurrency(100)}</p>
                   </div>
                 </div>
               </Col>

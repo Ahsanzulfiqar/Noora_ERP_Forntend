@@ -4,6 +4,7 @@ import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import Select from 'react-select'
 import Flatpickr from 'react-flatpickr'
 import IconButton from '@mui/material/IconButton'
+import { currencyLabel, formatAmount } from '@/helpers/currency'
 
 const DUMMY_ACCOUNTS = [
     { value: 1, label: '1001 - Cash in Hand' },
@@ -111,8 +112,8 @@ const VoucherForm = () => {
                         <thead className="bg-light">
                             <tr>
                                 <th style={{ width: '50%' }}>Account</th>
-                                <th>Debit</th>
-                                <th>Credit</th>
+                                <th>Debit {currencyLabel()}</th>
+                                <th>Credit {currencyLabel()}</th>
                                 <th style={{ width: '50px' }}></th>
                             </tr>
                         </thead>
@@ -168,10 +169,10 @@ const VoucherForm = () => {
             <div className="card-footer bg-light sticky-bottom shadow-sm border-top d-flex justify-content-between align-items-center py-2 px-3">
                 <div className="d-flex gap-4">
                     <div className="text-muted fw-medium">
-                        Total Debit: <span className="text-dark fs-16 ml-2 font-weight-bold">{totalDebit.toFixed(2)}</span>
+                        Total Debit: <span className="text-dark fs-16 ml-2 font-weight-bold">{formatAmount(totalDebit)}</span>
                     </div>
                     <div className="text-muted fw-medium">
-                        Total Credit: <span className="text-dark fs-16 ml-2 font-weight-bold">{totalCredit.toFixed(2)}</span>
+                        Total Credit: <span className="text-dark fs-16 ml-2 font-weight-bold">{formatAmount(totalCredit)}</span>
                     </div>
                 </div>
                 <div>

@@ -1,5 +1,5 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { currency } from '@/context/constants';
+import { formatCurrency } from '@/helpers/currency';
 import { Card, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
@@ -37,8 +37,8 @@ const ProductCard = ({
     </td> */}
 
     <td>{item?.name}</td>
-    <td>{item?.salePrice}</td>
-    <td>{item?.purchasePrice}</td>
+    <td>{formatCurrency(item?.salePrice)}</td>
+    <td>{formatCurrency(item?.purchasePrice)}</td>
     <td>{item?.sku}</td>
     <td><span className={item?.isActive ? 'badge bg-success' : 'badge bg-danger'}>{item?.isActive ? 'Active' : 'Inactive'}</span></td>
     <td>

@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth'
 import MarkPaidModal from './MarkPaidModal'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
 import SaleStatusChip from '@/components/SaleStatusChip'
+import { formatCurrency } from '@/helpers/currency'
 
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
@@ -152,14 +153,14 @@ const SalesTableExpanded = ({ filter }) => {
               ) : (
                 rows.map((item) => (
                   <tr key={item._id}>
-                    <td className="ps-3 fw-bold text-primary">{item.invoiceNo || 'N/A'}</td>
+                    <td className="ps-3 fw-bold text-dark">{item.invoiceNo || 'N/A'}</td>
                     <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}</td>
                     <td className="fw-semibold">{item.courier?.courierName || 'N/A'}</td>
                     <td>{item.courier?.trackingNo || 'N/A'}</td>
                     <td>
                       <SaleStatusChip status={item.status || 'draft'} />
                     </td>
-                    <td className="fw-bold text-success">${(item.totalAmount || 0).toFixed(2)}</td>
+                    <td className="fw-bold text-dark">{formatCurrency(item.totalAmount)}</td>
                     <td>
                       {item.payment ? (
                         <div className="d-flex align-items-center gap-1">

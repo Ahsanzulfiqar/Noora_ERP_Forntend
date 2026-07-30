@@ -3,7 +3,8 @@ import { Badge, Card, CardBody, CardHeader, Col, Form, Row, Spinner, Table } fro
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import PageTItle from '@/components/PageTItle'
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product'
-import { formatCount, formatPKR } from '../components/formatters'
+import { formatCount } from '../components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 
 const SellerProductsPage = () => {
   const [search, setSearch] = useState('')
@@ -97,7 +98,7 @@ const SellerProductsPage = () => {
                       </td>
                       <td>{p.sku || '—'}</td>
                       <td>{p.brand || '—'}</td>
-                      <td className="fw-semibold">{formatPKR(p.salePrice)}</td>
+                      <td className="fw-semibold">{formatCurrencyRounded(p.salePrice)}</td>
                       <td className="pe-3">
                         <Badge bg={p.isActive ? 'success' : 'secondary'} className="px-2 py-1">
                           {p.isActive ? 'Active' : 'Inactive'}

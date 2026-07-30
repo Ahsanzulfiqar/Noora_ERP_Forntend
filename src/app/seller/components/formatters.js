@@ -1,8 +1,3 @@
-export const formatPKR = (val) => {
-  const n = Number(val) || 0
-  return `Rs. ${n.toLocaleString('en-PK', { maximumFractionDigits: 0 })}`
-}
-
 export const formatCount = (val) => {
   const n = Number(val) || 0
   return n.toLocaleString('en-US')

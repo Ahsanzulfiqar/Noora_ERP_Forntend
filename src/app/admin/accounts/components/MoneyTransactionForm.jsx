@@ -9,6 +9,7 @@ import {
   useCreateMoneyOutMutation,
   useGetAccountsQuery,
 } from '@/services/authenticateendpoint/account'
+import { currencyLabel, formatCurrency } from '@/helpers/currency'
 
 const todayAsInputValue = () => {
   const now = new Date()
@@ -16,12 +17,7 @@ const todayAsInputValue = () => {
   return local.toISOString().slice(0, 10)
 }
 
-const currencyFormatter = new Intl.NumberFormat('en-PK', {
-  style: 'currency',
-  currency: 'AED',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})
+const currencyFormatter = { format: (value) => formatCurrency(value) }
 
 const MODE_CONFIG = {
   in: {
@@ -281,7 +277,7 @@ const MoneyTransactionForm = ({ mode }) => {
                 <Col md={4}>
                   <Form.Group>
                     <Form.Label>
-                      Amount (AED) <span className="text-danger">*</span>
+                      Amount {currencyLabel()} <span className="text-danger">*</span>
                     </Form.Label>
                     <Form.Control
                       type="number"

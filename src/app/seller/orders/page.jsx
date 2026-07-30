@@ -9,16 +9,16 @@ import { useGetSalesQuery } from '@/services/authenticateendpoint/sales'
 import { useGetProjectsBySellerQuery } from '@/services/authenticateendpoint/project'
 import CompactKpiTile from '../components/CompactKpiTile'
 import SaleStatusChip from '@/components/SaleStatusChip'
-import { FilterSelect, FilterSearch, FilterDate, FilterButton } from '@/components/Filters'
+import { FilterSelect, FilterSearch, FilterDateRange, FilterClearAll } from '@/components/Filters'
 import {
   formatCount,
-  formatPKR,
   getPaymentColor,
   getStatusColor,
   prettyLabel,
   startOfMonth,
   toIsoDate,
 } from '../components/formatters'
+import { formatCurrencyRounded } from '@/helpers/currency'
 
 const STATUS_TABS = [
   { key: '', label: 'All Orders', icon: 'bx:receipt', color: 'success' },
@@ -176,25 +176,19 @@ const SellerOrdersPage = () => {
                 style={{ width: 160, height: 40 }}
               />
 
-              <FilterDate
-                inline
-                label="From"
-                value={dateFrom}
-                onChange={setDateFrom}
-                style={{ width: 160, height: 40 }}
-              />
-              <FilterDate
-                inline
-                label="To"
-                value={dateTo}
-                onChange={setDateTo}
-                style={{ width: 160, height: 40 }}
+              <FilterDateRange
+                from={dateFrom}
+                to={dateTo}
+                onChange={({ from, to }) => {
+                  setDateFrom(from)
+                  setDateTo(to)
+                  setPage(1)
+                }}
+                style={{ width: 260 }}
               />
 
-              <FilterButton
-                icon="bx:x"
-                variant="light"
-                onClick={() => {
+              <FilterClearAll
+                onClear={() => {
                   setProjectId('')
                   setStatus('')
                   setSearch('')
@@ -202,10 +196,7 @@ const SellerOrdersPage = () => {
                   setDateTo('')
                   setPage(1)
                 }}
-                style={{ height: 40 }}
-              >
-                Clear All
-              </FilterButton>
+              />
             </div>
 
             <Link
@@ -278,7 +269,7 @@ const SellerOrdersPage = () => {
                           : '—'}
                       </td>
                       <td>{formatCount(s.items?.length || 0) || '—'}</td>
-                      <td className="fw-semibold">{formatPKR(s.totalAmount)}</td>
+                      <td className="fw-semibold">{formatCurrencyRounded(s.totalAmount)}</td>
                       <td>
                         <SaleStatusChip status={s.status || 'draft'} />
                       </td>

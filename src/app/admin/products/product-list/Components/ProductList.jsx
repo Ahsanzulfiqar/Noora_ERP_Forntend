@@ -1,5 +1,5 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
-import { currency } from '@/context/constants'
+import { formatCurrency } from '@/helpers/currency'
 import { Card, CardFooter, CardHeader, CardTitle, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Form } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDeleteProductMutation, useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product'
@@ -9,7 +9,7 @@ import { toast } from 'react-toastify'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import LoaderSpinner from '@/components/loaders/LoaderSpinner'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
-import { FilterSearch } from '@/components/Filters'
+import { FilterSearch, FilterClearAll } from '@/components/Filters'
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const [deleteProduct] = useDeleteProductMutation();
@@ -42,14 +42,8 @@ const ProductCard = ({ product }) => {
       <td>{sku}</td>
       {/* <td>{category}</td>
       <td>{subCategory}</td> */}
-      <td>
-        {currency}
-        {purchasePrice}
-      </td>
-      <td>
-        {currency}
-        {salePrice}
-      </td>
+      <td>{formatCurrency(purchasePrice)}</td>
+      <td>{formatCurrency(salePrice)}</td>
       {/* <td>
         {attributes?.map((attr, index) => (
           <span key={index} className="badge bg-light text-dark me-1">
@@ -133,6 +127,13 @@ const ProductList = () => {
           placeholder="Search by name, brand, or SKU..."
           size="sm"
           style={{ width: '240px' }}
+        />
+        <FilterClearAll
+          size="sm"
+          onClear={() => {
+            setSearch('')
+            setPage(1)
+          }}
         />
         <Link to="/products/product-add" className="btn btn-sm btn-primary">
           Add Product

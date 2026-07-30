@@ -1,5 +1,6 @@
 import ReactApexChart from 'react-apexcharts'
 import { Card, CardBody, CardTitle } from 'react-bootstrap'
+import { formatAmountCompact, formatCurrencyRounded } from '@/helpers/currency'
 
 const TopSellersChart = ({ data = [], orientation = 'horizontal' }) => {
   const horizontal = orientation === 'horizontal'
@@ -23,7 +24,7 @@ const TopSellersChart = ({ data = [], orientation = 'horizontal' }) => {
       : ['#3b82f6', '#3b82f6', '#3b82f6', '#3b82f6', '#3b82f6'],
     dataLabels: {
       enabled: !horizontal,
-      formatter: (val) => (val >= 1000 ? `${(val / 1000).toFixed(1)}K` : val),
+      formatter: (val) => formatAmountCompact(val, { decimals: 1 }),
       offsetY: -20,
       style: { fontSize: '11px', colors: ['#374151'] },
     },
@@ -48,7 +49,7 @@ const TopSellersChart = ({ data = [], orientation = 'horizontal' }) => {
     },
     grid: { strokeDashArray: 3, xaxis: { lines: { show: false } } },
     legend: { show: false },
-    tooltip: { y: { formatter: (val) => `AED ${val.toLocaleString()}` } },
+    tooltip: { y: { formatter: (val) => formatCurrencyRounded(val) } },
     noData: { text: 'No data', style: { color: '#9ca3af' } },
   }
 

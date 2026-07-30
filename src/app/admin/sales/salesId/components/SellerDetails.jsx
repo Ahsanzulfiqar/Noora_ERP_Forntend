@@ -1,6 +1,7 @@
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import { ROLES } from '@/assets/data/roles';
 import useUserRole from '@/hooks/useUserRole';
+import { formatCurrency } from '@/helpers/currency';
 import { Card, CardBody, Col, Row, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useState, useMemo, useEffect } from 'react';
@@ -44,7 +45,7 @@ const formatDate = (value, withTime = true) => {
   return `${datePart}, ${timePart}`;
 };
 
-const currency = (n) => `$${Number(n || 0).toFixed(2)}`;
+const currency = (n) => formatCurrency(n);
 
 const StatusBadge = ({ status }) => {
   const key = (status || '').toUpperCase();

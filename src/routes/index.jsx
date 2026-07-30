@@ -89,6 +89,18 @@ const SellerProducts = lazy(() => import('@/app/seller/products/page'))
 const SellerStock = lazy(() => import('@/app/seller/stock/page'))
 const SellerCommissions = lazy(() => import('@/app/seller/commissions/page'))
 
+// Warehouse Portal Routes
+const WarehouseDashboard = lazy(() => import('@/app/warehouse/dashboard/page'))
+const WarehouseStock = lazy(() => import('@/app/warehouse/inventory/stock/page'))
+const WarehouseStockLedger = lazy(() => import('@/app/warehouse/inventory/ledger/page'))
+const WarehouseLowStock = lazy(() => import('@/app/warehouse/inventory/low-stock/page'))
+const WarehouseExpiryAlert = lazy(() => import('@/app/warehouse/inventory/expiry/page'))
+const WarehouseReceiveStock = lazy(() => import('@/app/warehouse/purchases/receive/page'))
+const WarehouseDispatchOrders = lazy(() => import('@/app/warehouse/sales/dispatch/page'))
+const WarehouseDeliveryOrders = lazy(() => import('@/app/warehouse/sales/delivery/page'))
+const WarehouseStockTransfers = lazy(() => import('@/app/warehouse/transfers/page'))
+const WarehouseStockReports = lazy(() => import('@/app/warehouse/reports/stock/page'))
+
 // Accounts Routes
 const ChartOfAccounts = lazy(() => import('@/app/admin/accounts/chart-of-accounts/page'))
 const JournalEntry = lazy(() => import('@/app/admin/accounts/journal/new/page'))
@@ -501,6 +513,58 @@ const RoleRoutes = [
     element: <RoleAdd />,
   },
 ]
+const WarehouseRoutes = [
+  {
+    name: 'Warehouse Dashboard',
+    path: '/warehouse/dashboard',
+    element: <WarehouseDashboard />,
+  },
+  {
+    name: 'Warehouse Stock',
+    path: '/warehouse/inventory/stock',
+    element: <WarehouseStock />,
+  },
+  {
+    name: 'Warehouse Stock Ledger',
+    path: '/warehouse/inventory/ledger',
+    element: <WarehouseStockLedger />,
+  },
+  {
+    name: 'Warehouse Low Stock',
+    path: '/warehouse/inventory/low-stock',
+    element: <WarehouseLowStock />,
+  },
+  {
+    name: 'Warehouse Expiry Alert',
+    path: '/warehouse/inventory/expiry',
+    element: <WarehouseExpiryAlert />,
+  },
+  {
+    name: 'Warehouse Receive Stock',
+    path: '/warehouse/purchases/receive',
+    element: <WarehouseReceiveStock />,
+  },
+  {
+    name: 'Warehouse Dispatch Orders',
+    path: '/warehouse/sales/dispatch',
+    element: <WarehouseDispatchOrders />,
+  },
+  {
+    name: 'Warehouse Delivery Orders',
+    path: '/warehouse/sales/delivery',
+    element: <WarehouseDeliveryOrders />,
+  },
+  {
+    name: 'Warehouse Stock Transfers',
+    path: '/warehouse/transfers',
+    element: <WarehouseStockTransfers />,
+  },
+  {
+    name: 'Warehouse Stock Reports',
+    path: '/warehouse/reports/stock',
+    element: <WarehouseStockReports />,
+  },
+]
 const SellerRoutes = [
   {
     name: 'Seller Dashboard',
@@ -598,6 +662,7 @@ export const appRoutes = [
   ...PurchaseRoutes,
   ...RoleRoutes,
   ...SellerRoutes,
+  ...WarehouseRoutes,
   ...SellersRoutes,
   ...SalesRoutes,
   ...AccountsRoutes,

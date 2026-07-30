@@ -9,7 +9,7 @@ import avatar8 from '@/assets/images/users/avatar-8.jpg';
 import avatar9 from '@/assets/images/users/avatar-9.jpg';
 export const helpData = [{
   title: 'Getting Started with Larkon',
-  description: 'Welcome to Larkon Dive into basic for a swift on boarding experience',
+  description: 'Welcome to Larkon Dive into basic for a swift on boarding experience.',
   avatar: avatar1,
   icon: 'solar:round-arrow-right-bold',
   name: 'Aston Martin',

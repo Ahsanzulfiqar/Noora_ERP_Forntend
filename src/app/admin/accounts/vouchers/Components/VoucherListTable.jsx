@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import IconButton from '@mui/material/IconButton'
 import { useGetVouchersQuery } from '@/services/authenticateendpoint/account'
-import { FilterSelect, FilterSearch, FilterDate } from '@/components/Filters'
+import { FilterSelect, FilterSearch, FilterDateRange, FilterClearAll } from '@/components/Filters'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 
 const toDisplayDate = (value) => {
@@ -67,7 +67,7 @@ const VoucherListTable = () => {
                         Failed to load vouchers.
                     </Alert>
                 )}
-                <Row className="mb-3">
+                <Row className="mb-3 align-items-end">
                     <Col md={3}>
                         <Form.Label>Voucher No</Form.Label>
                         <FilterSearch
@@ -90,15 +90,27 @@ const VoucherListTable = () => {
                         />
                     </Col>
                     <Col md={4}>
-                        <Form.Label>Date Range</Form.Label>
-                        <Row className="g-2">
-                            <Col md={6}>
-                                <FilterDate value={fromDate} onChange={setFromDate} />
-                            </Col>
-                            <Col md={6}>
-                                <FilterDate value={toDate} onChange={setToDate} />
-                            </Col>
-                        </Row>
+                        <FilterDateRange
+                            label="Date Range"
+                            from={fromDate}
+                            to={toDate}
+                            onChange={({ from, to }) => {
+                                setFromDate(from)
+                                setToDate(to)
+                            }}
+                        />
+                    </Col>
+                    <Col md={2}>
+                        <FilterClearAll
+                            className="w-100 justify-content-center"
+                            onClear={() => {
+                                setSearch('')
+                                setStatusFilter('')
+                                setFromDate('')
+                                setToDate('')
+                                setPage(1)
+                            }}
+                        />
                     </Col>
                 </Row>
 

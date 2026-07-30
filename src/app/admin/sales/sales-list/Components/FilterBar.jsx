@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Card, CardBody, Col, Form, Row, Button } from 'react-bootstrap'
+import { Card, CardBody, Col, Row } from 'react-bootstrap'
 import { toast } from 'react-toastify'
-import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAllUsersQuery } from '@/services/authenticateendpoint/users'
 import { useGetAllProjectsQuery } from '@/services/authenticateendpoint/project'
 import { useGetAllCouriersQuery } from '@/services/authenticateendpoint/courier'
 import { useAuth } from '@/hooks/useAuth'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
-import { FilterSelect, FilterDate } from '@/components/Filters'
+import { FilterSelect, FilterDateRange, FilterClearAll } from '@/components/Filters'
 
 const startOfMonth = () => {
   const d = new Date()
@@ -70,9 +69,8 @@ const FilterBar = ({ onApply }) => {
 
   const setField = (key, value) => setDraft((prev) => ({ ...prev, [key]: value }))
 
-  // Auto-apply whenever any filter changes (only when both dates are set)
-  useEffect(() => {
-    if (!draft.dateFrom || !draft.dateTo) return
+  // Auto-apply whenever any filter changes. No date guard needed: FilterDateRange
+ useEffect(() => {
     onApply?.({
       from: draft.dateFrom ? new Date(draft.dateFrom) : null,
       to: draft.dateTo ? new Date(draft.dateTo) : null,
@@ -87,9 +85,10 @@ const FilterBar = ({ onApply }) => {
 
   const handleClear = () => {
     setDraft({
-      dateFrom: toIsoDate(startOfMonth()),
-      dateTo: toIsoDate(new Date()),
+      dateFrom: '',
+      dateTo: '',
       projectId: '',
+      // A seller may only ever see their own sales, so this one stays pinned.
       sellerId: isSeller ? userId : '',
       status: '',
       courierId: '',
@@ -102,19 +101,11 @@ const FilterBar = ({ onApply }) => {
       <CardBody>
         <Row className="g-2 align-items-end">
           <Col md={6} lg>
-            <FilterDate
-              inline
-              label="From"
-              value={draft.dateFrom}
-              onChange={(v) => setField('dateFrom', v)}
-            />
-          </Col>
-          <Col md={6} lg>
-            <FilterDate
-              inline
-              label="To"
-              value={draft.dateTo}
-              onChange={(v) => setField('dateTo', v)}
+            <FilterDateRange
+              label="Date Range"
+              from={draft.dateFrom}
+              to={draft.dateTo}
+              onChange={({ from, to }) => setDraft((d) => ({ ...d, dateFrom: from, dateTo: to }))}
             />
           </Col>
           <Col md={6} lg>
@@ -160,10 +151,7 @@ const FilterBar = ({ onApply }) => {
             />
           </Col>
           <Col md={12} lg="auto" className="d-flex gap-2 justify-content-end ms-auto">
-            <Button variant="light" className="d-inline-flex align-items-center gap-1 text-nowrap" onClick={handleClear}>
-              <IconifyIcon icon="bx:x" />
-              <span>Clear All</span>
-            </Button>
+            <FilterClearAll onClear={handleClear} />
           </Col>
         </Row>
       </CardBody>
