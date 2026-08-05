@@ -109,7 +109,7 @@ const WarehouseDispatchOrdersPage = () => {
                     <tr key={s._id}>
                       <td className="ps-3 fw-semibold">
                         <Link to={`/sales/sales-detail/${s._id}`} className="text-dark">
-                          {s.invoiceNo || 'N/A'}
+                          {s.invoiceNo || '-'}
                         </Link>
                       </td>
                       <td>{s.customerName || '—'}</td>

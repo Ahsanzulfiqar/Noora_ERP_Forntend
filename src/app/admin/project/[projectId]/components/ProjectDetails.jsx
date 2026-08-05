@@ -53,7 +53,7 @@ const ProjectDetails = () => {
                     {data?.isActive ? 'Active' : 'Inactive'}
                   </Badge>
                   <span className="text-muted fs-14">•</span>
-                  <span className="text-muted fs-14">Channel: <span className="text-dark fw-medium">{data?.channel || 'N/A'}</span></span>
+                  <span className="text-muted fs-14">Channel: <span className="text-dark fw-medium">{data?.channel || '-'}</span></span>
                 </div>
               </div>
               <div>

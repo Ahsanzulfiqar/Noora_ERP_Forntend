@@ -128,7 +128,7 @@ const WarehouseReceiveStockPage = () => {
                 ) : (
                   paged.map((p) => (
                     <tr key={p._id}>
-                      <td className="ps-3 fw-semibold">{p.invoiceNo || 'N/A'}</td>
+                      <td className="ps-3 fw-semibold">{p.invoiceNo || '-'}</td>
                       <td>{p.supplierName || '—'}</td>
                       <td>
                         {p.purchaseDate

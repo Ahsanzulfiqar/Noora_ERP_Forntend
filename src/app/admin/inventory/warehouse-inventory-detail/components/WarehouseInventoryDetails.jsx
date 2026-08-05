@@ -71,7 +71,7 @@ const WarehouseInventoryDetails = () => {
                                 <div className="border p-3 rounded">
                                     <h6 className="text-muted mb-1">Product Details</h6>
                                     <h5 className="mb-1">{stockData.productName}</h5>
-                                    <p className="mb-0 text-muted">Variant: {stockData.variantName || 'N/A'}</p>
+                                    <p className="mb-0 text-muted">Variant: {stockData.variantName || '-'}</p>
                                 </div>
                             </Col>
                             <Col md={6}>
@@ -129,7 +129,7 @@ const WarehouseInventoryDetails = () => {
                                         {stockData.batches.map((batch, index) => (
                                             <tr key={index}>
                                                 <td>{batch.batchNo}</td>
-                                                <td>{batch.expiryDate ? new Date(batch.expiryDate).toLocaleDateString() : 'N/A'}</td>
+                                                <td>{batch.expiryDate ? new Date(batch.expiryDate).toLocaleDateString() : '-'}</td>
                                                 <td>{batch.quantity}</td>
                                             </tr>
                                         ))}

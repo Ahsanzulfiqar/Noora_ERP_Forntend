@@ -169,7 +169,7 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
               </li>
               <li>
                 <span className="fw-medium text-dark fw-bold">Purchase Date:&nbsp;</span>
-                {purchaseData?.purchaseDate ? new Date(purchaseData?.purchaseDate).toLocaleDateString() : 'N/A'}
+                {purchaseData?.purchaseDate ? new Date(purchaseData?.purchaseDate).toLocaleDateString() : '-'}
               </li>
               <li>
                 <span className="fw-medium text-dark fw-bold">Supplier:&nbsp;</span>
@@ -192,7 +192,7 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
               </li>
               <li>
                 <span className="fw-medium text-dark fw-bold">Notes:&nbsp;</span>
-                {purchaseData?.notes || 'N/A'}
+                {purchaseData?.notes || '-'}
               </li>
             </ul>
           </div>
@@ -217,9 +217,9 @@ const ItemDetails = ({ isLoadingPurchase, purchaseData }) => {
                     purchaseData?.items.map((item, index) => (
                       <tr key={index}>
                         <td>{item.productName}</td>
-                        <td>{item.variantName || 'N/A'}</td>
+                        <td>{item.variantName || '-'}</td>
                         <td>{item.batchNo}</td>
-                        <td>{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'N/A'}</td>
+                        <td>{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : '-'}</td>
                         <td>{item.quantity}</td>
                         <td>{item.purchasePrice}</td>
                         <td>{item.lineTotal}</td>

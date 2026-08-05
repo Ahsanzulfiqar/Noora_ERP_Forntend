@@ -31,11 +31,11 @@ const ItemDetails = ({ variant }) => {
               </li>
               <li>
                 <span className="fw-medium text-dark">Created At</span>
-                <span className="mx-2">:</span>{variant.createdAt ? new Date(variant.createdAt).toLocaleDateString() : 'N/A'}
+                <span className="mx-2">:</span>{variant.createdAt ? new Date(variant.createdAt).toLocaleDateString() : '-'}
               </li>
               <li>
                 <span className="fw-medium text-dark">Updated At</span>
-                <span className="mx-2">:</span>{variant.updatedAt ? new Date(variant.updatedAt).toLocaleDateString() : 'N/A'}
+                <span className="mx-2">:</span>{variant.updatedAt ? new Date(variant.updatedAt).toLocaleDateString() : '-'}
               </li>
               <li>
                 <span className="fw-medium text-dark">Status</span>

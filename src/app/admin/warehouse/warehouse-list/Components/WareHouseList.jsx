@@ -157,7 +157,7 @@ const WareHouseList = () => {
                 <td>{item?.country}</td>
                 <td>{item?.city}</td>
                 <td>{item?.ismain ? <span className="badge bg-success">Main</span> : <span className="badge bg-danger">Not Main</span>}</td>
-                <td>{item?.name || "N/A"}</td>
+                <td>{item?.name || "-"}</td>
                 <td>{item?.contact}</td>
                 <td style={{ textAlign: 'center', gap: '10px', display: 'flex', justifyContent: 'center' }} >
                   <IconButton

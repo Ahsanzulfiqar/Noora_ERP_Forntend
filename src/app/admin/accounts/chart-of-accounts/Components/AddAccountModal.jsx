@@ -8,6 +8,7 @@ import {
     useGetAccountsQuery,
     useGetAccountByIdQuery,
 } from '@/services/authenticateendpoint/account'
+import { FilterSelect } from '@/components/Filters'
 
 const TYPE_OPTIONS = [
     { value: 'ASSET', label: 'Asset' },
@@ -102,22 +103,17 @@ const AddAccountModal = ({ show, handleClose, account }) => {
 
                     <Form.Group className="mb-3">
                         <Form.Label>Type</Form.Label>
-                        <Form.Select
-                            name="type"
+                        <FilterSelect
                             value={formik.values.type}
-                            onChange={(e) => {
-                                formik.setFieldValue('type', e.target.value)
+                            onChange={(v) => {
+                                formik.setFieldValue('type', v)
                                 formik.setFieldValue('parentId', '')
                             }}
-                            isInvalid={formik.touched.type && !!formik.errors.type}
-                        >
-                            {TYPE_OPTIONS.map((o) => (
-                                <option key={o.value} value={o.value}>
-                                    {o.label}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        <Form.Control.Feedback type="invalid">{formik.errors.type}</Form.Control.Feedback>
+                            options={TYPE_OPTIONS}
+                        />
+                        {formik.touched.type && formik.errors.type && (
+                            <div className="text-danger small mt-1">{formik.errors.type}</div>
+                        )}
                     </Form.Group>
 
                     <Form.Group className="mb-3">
@@ -135,20 +131,16 @@ const AddAccountModal = ({ show, handleClose, account }) => {
 
                     <Form.Group className="mb-3">
                         <Form.Label>Parent Account (optional)</Form.Label>
-                        <Form.Select
-                            name="parentId"
+                        <FilterSelect
                             value={formik.values.parentId}
-                            onChange={formik.handleChange}
-                        >
-                            <option value="">— None —</option>
-                            {allActiveAccounts
-                                .filter((p) => p._id !== editAccount?._id && p.type === formik.values.type)
-                                .map((p) => (
-                                    <option key={p._id} value={p._id}>
-                                        #{p.code} — {p.name}
-                                    </option>
-                                ))}
-                        </Form.Select>
+                            onChange={(v) => formik.setFieldValue('parentId', v)}
+                            options={[
+                                { value: '', label: '— None —' },
+                                ...allActiveAccounts
+                                    .filter((p) => p._id !== editAccount?._id && p.type === formik.values.type)
+                                    .map((p) => ({ value: p._id, label: `#${p.code} — ${p.name}` })),
+                            ]}
+                        />
                         <Form.Text className="text-muted">
                             Only accounts of the same type can be a parent.
                         </Form.Text>

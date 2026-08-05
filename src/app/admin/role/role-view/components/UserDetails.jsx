@@ -10,7 +10,7 @@ const UserDetails = ({ user }) => {
 
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return '-';
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -81,7 +81,7 @@ const UserDetails = ({ user }) => {
                                                     </tr>
                                                     <tr>
                                                         <td className="fw-semibold">Phone:</td>
-                                                        <td>{user.phone || 'N/A'}</td>
+                                                        <td>{user.phone || '-'}</td>
                                                     </tr>
                                                     {/* <tr>
                                                         <td className="fw-semibold">User ID:</td>

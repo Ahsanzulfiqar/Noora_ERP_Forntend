@@ -134,13 +134,13 @@ const StockList = () => {
                             {stockData.length > 0 ? (
                                 stockData.map((item) => (
                                     <tr key={item._id}>
-                                        <td>{item.warehouseName || 'N/A'}</td>
-                                        <td>{item.productName || 'N/A'}</td>
-                                        <td>{item.variantName || 'N/A'}</td>
+                                        <td>{item.warehouseName || '-'}</td>
+                                        <td>{item.productName || '-'}</td>
+                                        <td>{item.variantName || '-'}</td>
                                         <td>{item.quantity ?? 0}</td>
                                         <td>{item.reserved ?? 0}</td>
                                         <td>{item.reorderLevel ?? 0}</td>
-                                        <td>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A'}</td>
+                                        <td>{item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : '-'}</td>
                                     </tr>
                                 ))
                             ) : (

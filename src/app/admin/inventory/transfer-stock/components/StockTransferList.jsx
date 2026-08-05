@@ -88,17 +88,17 @@ const StockTransferList = () => {
                   {!isLoading && paginated.length > 0 ? (
                     paginated.map((t) => (
                       <tr key={t._id}>
-                        <td>{t.transferNo || 'N/A'}</td>
-                        <td>{t.fromWarehouseName || 'N/A'}</td>
-                        <td>{t.toWarehouseName || 'N/A'}</td>
+                        <td>{t.transferNo || '-'}</td>
+                        <td>{t.fromWarehouseName || '-'}</td>
+                        <td>{t.toWarehouseName || '-'}</td>
                         <td>{t.items?.length || 0}</td>
                         <td>
                           <span className={statusBadgeClass(t.status)}>
-                            {t.status || 'N/A'}
+                            {t.status || '-'}
                           </span>
                         </td>
-                        <td>{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
-                        <td>{t.confirmedAt ? new Date(t.confirmedAt).toLocaleDateString() : 'N/A'}</td>
+                        <td>{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '-'}</td>
+                        <td>{t.confirmedAt ? new Date(t.confirmedAt).toLocaleDateString() : '-'}</td>
                         <td>
                           <div className="d-flex gap-2">
                             <Link

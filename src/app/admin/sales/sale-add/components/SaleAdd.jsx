@@ -12,7 +12,7 @@ import { formatCurrency } from '@/helpers/currency';
 import { useGetSaleByIdQuery, useCreateSaleMutation, useUpdateSaleMutation } from '../../../../../services/authenticateendpoint/sales';
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
 import { useGetProjectsBySellerQuery, useGetAllProjectsQuery } from '../../../../../services/authenticateendpoint/project';
-import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
+import { useGetAllWarehousesQuery, useGetWarehouseStockQuery } from '../../../../../services/authenticateendpoint/warehouse';
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
 import { useGetAllCouriersQuery } from '../../../../../services/authenticateendpoint/courier';
@@ -46,6 +46,12 @@ const SaleAdd = () => {
   const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
   const { data: productsData, error: productsError } = useGetAllProductsQuery();
   const { data: couriersData, error: couriersError } = useGetAllCouriersQuery(undefined, { skip: !isAdmin });
+
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState(saleData?.warehouse || '');
+  const { data: warehouseStockData } = useGetWarehouseStockQuery(
+    { filter: { warehouseId: selectedWarehouseId }, page: 1, limit: 1000 },
+    { skip: !selectedWarehouseId },
+  );
 
   const [newItem, setNewItem] = useState({
     product: '',
@@ -99,7 +105,12 @@ const SaleAdd = () => {
   const projectsSource = isSales ? allProjectsData : projectsBySellerData;
   const projectOptions = projectsSource?.map(p => ({ value: p._id, label: p.name })) || [];
   const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
-  const productOptions = productsData?.map(p => ({ value: p._id, label: p.sku ? `${p.name} (${p.sku})` : p.name, sku: p.sku, salePrice: p.salePrice })) || [];
+  const warehouseProductIds = new Set((warehouseStockData?.data || []).map(s => s.product));
+  const productOptions = selectedWarehouseId
+    ? (productsData || [])
+        .filter(p => warehouseProductIds.has(p._id))
+        .map(p => ({ value: p._id, label: p.sku ? `${p.name} (${p.sku})` : p.name, sku: p.sku, salePrice: p.salePrice }))
+    : [];
   const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
 
   // Get all countries from country-state-city package
@@ -190,6 +201,12 @@ const SaleAdd = () => {
       setSelectedSellerId(saleData.seller);
     }
   }, [saleData, isSeller, userId]);
+
+  useEffect(() => {
+    if (saleData?.warehouse) {
+      setSelectedWarehouseId(saleData.warehouse);
+    }
+  }, [saleData]);
 
   // Initialize cities when editing existing sale with country
   useEffect(() => {
@@ -407,7 +424,20 @@ const SaleAdd = () => {
                             id="warehouse"
                             {...field}
                             options={warehouseOptions}
-                            onChange={(value) => setFieldValue('warehouse', value)}
+                            onChange={(value) => {
+                              setFieldValue('warehouse', value);
+                              setSelectedWarehouseId(value);
+                              setNewItem({
+                                product: '',
+                                variant: '',
+                                productName: '',
+                                variantName: '',
+                                sku: '',
+                                quantity: 1,
+                                salePrice: 0,
+                                batchNo: '',
+                              });
+                            }}
                             placeholder="Select Warehouse"
                             disabled={disableWarehouse}
                           />
@@ -535,18 +565,6 @@ const SaleAdd = () => {
                         disabled={disableAddress}
                       />
                     </Col>
-
-                    {(role === 'Admin' || role === 'ADMIN') && (
-                      <Col lg={12}>
-                        <FormikTextArea
-                          label="Delivery Notes"
-                          name="deliveryNotes"
-                          placeholder="Enter Delivery Notes"
-                          rows={3}
-                          disabled={disableDeliveryNotes}
-                        />
-                      </Col>
-                    )}
                   </Row>
                 </CardBody>
               </Card>
@@ -594,9 +612,10 @@ const SaleAdd = () => {
                                   <label className="form-label fw-bold">Product</label>
                                   <ChoicesSearchFormInput
                                     label=""
-                                    placeholder="Select Product"
+                                    placeholder={selectedWarehouseId ? 'Select Product' : 'Select Warehouse first'}
                                     options={productOptions}
                                     value={newItem.product}
+                                    disabled={!selectedWarehouseId}
                                     onChange={(val) => {
                                       const product = productOptions.find(p => p.value === val);
                                       setNewItem({
@@ -612,6 +631,7 @@ const SaleAdd = () => {
                                   />
                                 </div>
                               </Col>
+                              {/* Variant field hidden — logic retained for backend payload
                               <Col md={4}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Variant</label>
@@ -643,6 +663,8 @@ const SaleAdd = () => {
                                   )}
                                 </div>
                               </Col>
+                              */}
+                              {/* SKU field hidden — logic retained for backend payload
                               <Col md={4}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">SKU</label>
@@ -655,7 +677,8 @@ const SaleAdd = () => {
                                   />
                                 </div>
                               </Col>
-                              <Col md={3}>
+                              */}
+                              <Col md={2}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Quantity</label>
                                   <input
@@ -676,6 +699,19 @@ const SaleAdd = () => {
                                     placeholder="Price"
                                     value={newItem.salePrice}
                                     onChange={(e) => setNewItem({ ...newItem, salePrice: Number(e.target.value) })}
+                                  />
+                                </div>
+                              </Col>
+                              <Col md={3}>
+                                <div className="form-group">
+                                  <label className="form-label fw-bold">Line Cost</label>
+                                  <input
+                                    type="text"
+                                    className="form-control bg-light"
+                                    value={formatCurrency((Number(newItem.quantity) || 0) * (Number(newItem.salePrice) || 0))}
+                                    readOnly
+                                    disabled
+                                    tabIndex={-1}
                                   />
                                 </div>
                               </Col>
@@ -764,8 +800,8 @@ const SaleAdd = () => {
                             <thead className="bg-light">
                               <tr>
                                 <th>Product</th>
-                                <th>Variant</th>
-                                <th>SKU</th>
+                                {/* <th>Variant</th> */}
+                                {/* <th>SKU</th> */}
                                 <th>Qty</th>
                                 <th>Price</th>
                                 {/* <th>Batch No</th> */}
@@ -778,8 +814,8 @@ const SaleAdd = () => {
                                 values.items.map((item, index) => (
                                   <tr key={index}>
                                     <td>{item.productName}</td>
-                                    <td>{item.variantName || 'No variant'}</td>
-                                    <td>{item.sku}</td>
+                                    {/* <td>{item.variantName || 'No variant'}</td> */}
+                                    {/* <td>{item.sku}</td> */}
                                     <td>{item.quantity}</td>
                                     <td>{formatCurrency(item.salePrice)}</td>
                                     {/* <td>{item.batchNo || '-'}</td> */}
@@ -827,19 +863,21 @@ const SaleAdd = () => {
 
               <Row>
                 <Col lg={8}>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle as={'h4'}>Notes</CardTitle>
-                    </CardHeader>
-                    <CardBody>
-                      <FormikTextArea
-                        name="notes"
-                        placeholder="Enter any additional notes..."
-                        rows={4}
-                        disabled={disableNotes}
-                      />
-                    </CardBody>
-                  </Card>
+                  {(role === 'Admin' || role === 'ADMIN') && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle as={'h4'}>Delivery Notes</CardTitle>
+                      </CardHeader>
+                      <CardBody>
+                        <FormikTextArea
+                          name="deliveryNotes"
+                          placeholder="Enter Delivery Notes"
+                          rows={4}
+                          disabled={disableDeliveryNotes}
+                        />
+                      </CardBody>
+                    </Card>
+                  )}
                 </Col>
                 <Col lg={4}>
                   <Card>

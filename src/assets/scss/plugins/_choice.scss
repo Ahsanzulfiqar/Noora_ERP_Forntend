@@ -259,3 +259,64 @@
           }
      }
 }
+
+// ---------- Global choices.js fixes ----------
+// Kill the default bottom margin so choices widgets align with adjacent
+// form-controls inside Form.Group rows.
+.choices {
+     margin-bottom: 0;
+
+     // Match Bootstrap form-control default height (~38px) so choices widgets
+     // stack neatly next to inputs, buttons, and date pickers in the same row.
+     .choices__inner {
+          min-height: 38px;
+          padding: 7px 30px 7px 12px !important;
+          display: flex;
+          align-items: center;
+     }
+
+     // Truncate the selected value display (the trigger) so long labels don't
+     // stretch the control horizontally.
+     .choices__list--single {
+          padding: 0 !important;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+     }
+
+     // Dropdown menu: expand to fit the longest option, but cap the width so it
+     // doesn't span the whole viewport. Never wrap option text character-by-
+     // character, which is what happens by default when the menu inherits a
+     // narrow control width.
+     .choices__list--dropdown {
+          min-width: 100%;
+          width: max-content;
+          max-width: 400px;
+          z-index: 1050;
+
+          .choices__item {
+               white-space: nowrap;
+          }
+     }
+
+     &.is-open {
+          z-index: 1050;
+     }
+}
+
+// ---------- FilterSelect small variant ----------
+// Overrides the shared 38px height with a 32px small variant to match the sm
+// buttons on list-page headers.
+.filter-select-sm {
+     min-width: 160px;
+
+     .choices .choices__inner {
+          min-height: 32px;
+          padding: 4px 26px 4px 10px !important;
+          font-size: 0.8125rem;
+     }
+     .choices[data-type*="select-one"]:after {
+          top: 16px;
+          font-size: 14px;
+     }
+}

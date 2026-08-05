@@ -6,6 +6,7 @@ import { useGetAllProductsQuery } from '../../../../../services/authenticateendp
 import { useGetWarehouseProductBatchesQuery } from '../../../../../services/authenticateendpoint/stock';
 import GlobalSpinner from '@/components/loaders/GlobalSpinner';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
+import { FilterSelect } from '@/components/Filters';
 
 const WareHouseBatchList = () => {
     const [selectedWarehouse, setSelectedWarehouse] = useState('');
@@ -48,33 +49,23 @@ const WareHouseBatchList = () => {
                     <Col md={6}>
                         <Form.Group>
                             <Form.Label>Select Warehouse</Form.Label>
-                            <Form.Select
+                            <FilterSelect
                                 value={selectedWarehouse}
-                                onChange={(e) => setSelectedWarehouse(e.target.value)}
-                            >
-                                <option value="">Select Warehouse</option>
-                                {warehouses?.map((warehouse) => (
-                                    <option key={warehouse._id} value={warehouse._id}>
-                                        {warehouse.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                                onChange={(v) => setSelectedWarehouse(v)}
+                                placeholder="Select Warehouse"
+                                options={(warehouses || []).map((w) => ({ value: w._id, label: w.name }))}
+                            />
                         </Form.Group>
                     </Col>
                     <Col md={6}>
                         <Form.Group>
                             <Form.Label>Select Product</Form.Label>
-                            <Form.Select
+                            <FilterSelect
                                 value={selectedProduct}
-                                onChange={(e) => setSelectedProduct(e.target.value)}
-                            >
-                                <option value="">Select Product</option>
-                                {products?.map((product) => (
-                                    <option key={product._id} value={product._id}>
-                                        {product.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                                onChange={(v) => setSelectedProduct(v)}
+                                placeholder="Select Product"
+                                options={(products || []).map((p) => ({ value: p._id, label: p.name }))}
+                            />
                         </Form.Group>
                     </Col>
                 </Row>

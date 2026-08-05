@@ -177,7 +177,6 @@ const WarehouseList = () => {
                   {/* <th>Stock ID</th> */}
                   <th>Warehouse</th>
                   <th>Product</th>
-                  <th>Variant</th>
                   <th>Quantity</th>
                   <th>Reserved</th>
                   <th>Reorder Level</th>
@@ -198,14 +197,13 @@ const WarehouseList = () => {
                         </div>
                       </td>
                       {/* <td>{item._id}</td> */}
-                      <td>{item.warehouseName || 'N/A'}</td>
-                      <td>{item.productName || 'N/A'}</td>
-                      <td>{item.variantName || 'N/A'}</td>
+                      <td>{item.warehouseName || '-'}</td>
+                      <td>{item.productName || '-'}</td>
                       <td>{item.quantity || '0'}</td>
                       <td>{item.reserved || '0'}</td>
                       <td>{item.reorderLevel || '0'}</td>
                       <td>{formatCurrency(item.avgCost)}</td>
-                      <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}</td>
+                      <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '-'}</td>
                       <td>
                         <div className="d-flex gap-2">
                           <Link to={`/inventory/warehouse-detail/${item._id}`} className="btn btn-light btn-sm">
