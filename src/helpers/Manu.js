@@ -1,4 +1,4 @@
-import { MENU_ITEMS, SELLER_MENU_ITEMS, WAREHOUSE_MENU_ITEMS } from '@/assets/data/menu-items';
+import { MENU_ITEMS, SELLER_MENU_ITEMS, WAREHOUSE_MENU_ITEMS, SALES_MENU_ITEMS } from '@/assets/data/menu-items';
 import { ROLES } from '@/assets/data/roles';
 import { isPathAllowedForRole } from '@/routes/roleAccess';
 
@@ -22,7 +22,7 @@ export const getMenuItems = (role) => {
     return WAREHOUSE_MENU_ITEMS;
   }
   if (role === ROLES.SALES) {
-    return MENU_ITEMS.filter((item) => ['dashboard', 'sales', 'inventory'].includes(item.key))
+    return SALES_MENU_ITEMS;
   }
   if (role === ROLES.MANAGER) {
     return MENU_ITEMS.filter((item) => ['dashboard', 'projects', 'sales', 'inventory', 'purchases', 'sellers', 'report'].includes(item.key))

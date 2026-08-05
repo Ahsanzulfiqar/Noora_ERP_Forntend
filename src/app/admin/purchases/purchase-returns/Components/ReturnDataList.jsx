@@ -86,7 +86,7 @@ const PurchaseListPage = () => {
                       month: 'short',
                       year: 'numeric'
                     })}</td>
-                      <td> ${item.product?.price} </td>
+                      <td>AED {item.product?.price}</td>
                       <td>{item.paymentMethod}</td>
                       <td>
                         {' '}

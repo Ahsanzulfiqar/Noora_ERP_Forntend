@@ -34,19 +34,18 @@ baseUrl: import.meta.env.VITE_GRAPHQL_URL ?? import.meta.env.VITE_API_URL,
 });
 
 // Detect token-expired / unauthenticated responses from the GraphQL backend.
-// Backend may return HTTP 401/403, or HTTP 200 with a GraphQL `errors[]` array
-// whose entries carry an extensions.code or a message like "jwt expired".
+// Only true authentication failures (bad/expired token) should trigger a logout.
+// Authorization failures (FORBIDDEN / 403) mean the user is authenticated but
+// their role isn't permitted for the operation — surface the error, don't log out.
 const AUTH_MESSAGE_PATTERNS = [
   'jwt expired',
   'token expired',
   'token has expired',
   'invalid token',
   'invalid signature',
-  'unauthorized',
   'unauthenticated',
   'not authenticated',
   'authentication required',
-  'access denied',
 ];
 
 const isAuthErrorPayload = (payload) => {
@@ -54,7 +53,7 @@ const isAuthErrorPayload = (payload) => {
   if (!Array.isArray(errs) || errs.length === 0) return false;
   return errs.some((e) => {
     const code = (e?.extensions?.code || '').toString().toUpperCase();
-    if (code === 'UNAUTHENTICATED' || code === 'UNAUTHORIZED' || code === 'FORBIDDEN') return true;
+    if (code === 'UNAUTHENTICATED') return true;
     const msg = (e?.message || '').toString().toLowerCase();
     return AUTH_MESSAGE_PATTERNS.some((p) => msg.includes(p));
   });
@@ -77,8 +76,8 @@ const forceLogout = () => {
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  // HTTP-level auth failure (401/403)
-  if (result.error && (result.error.status === 401 || result.error.status === 403)) {
+  // HTTP-level auth failure (401 only). 403 = permission denied, keep the session.
+  if (result.error && result.error.status === 401) {
     forceLogout();
     return result;
   }
