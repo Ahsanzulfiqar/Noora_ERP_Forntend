@@ -38,7 +38,9 @@ const useSignIn = () => {
   });
 
   const redirectUser = () => {
-    navigate('/dashboard');
+    navigate('/dashboard', {
+      replace: true
+    });
   };
 
   const login = handleSubmit(async values => {
