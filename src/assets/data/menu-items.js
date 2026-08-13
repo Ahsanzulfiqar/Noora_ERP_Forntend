@@ -210,6 +210,109 @@ export const SELLER_MENU_ITEMS = [
   },
 ]
 
+export const SALES_MENU_ITEMS = [
+  {
+    key: 'main',
+    label: 'MAIN',
+    isTitle: true,
+  },
+  {
+    key: 'sales-agent-dashboard',
+    label: 'Dashboard',
+    icon: 'solar:widget-2-bold-duotone',
+    url: '/sales-agent/dashboard',
+  },
+  {
+    key: 'sales-section',
+    label: 'SALES',
+    isTitle: true,
+  },
+  {
+    key: 'sales-agent-sales',
+    label: 'Sales',
+    icon: 'solar:cart-3-bold-duotone',
+    children: [
+      {
+        key: 'sales-agent-new-sale',
+        label: 'New Sale',
+        url: '/sales/sales-add',
+        parentKey: 'sales-agent-sales',
+      },
+      {
+        key: 'sales-agent-orders',
+        label: 'Orders',
+        url: '/sales-agent/orders',
+        parentKey: 'sales-agent-sales',
+      },
+      {
+        key: 'sales-agent-customers',
+        label: 'Customers',
+        url: '/sales-agent/customers',
+        parentKey: 'sales-agent-sales',
+      },
+    ],
+  },
+  {
+    key: 'products-section',
+    label: 'PRODUCTS',
+    isTitle: true,
+  },
+  {
+    key: 'sales-agent-products-group',
+    label: 'Products',
+    icon: 'solar:t-shirt-bold-duotone',
+    children: [
+      {
+        key: 'sales-agent-products',
+        label: 'Products',
+        url: '/sales-agent/products',
+        parentKey: 'sales-agent-products-group',
+      },
+      {
+        key: 'sales-agent-stock',
+        label: 'Stock Availability',
+        url: '/sales-agent/stock',
+        parentKey: 'sales-agent-products-group',
+      },
+    ],
+  },
+  {
+    key: 'reports-section',
+    label: 'REPORTS',
+    isTitle: true,
+  },
+  {
+    key: 'sales-agent-reports',
+    label: 'Reports',
+    icon: 'solar:chart-2-bold-duotone',
+    children: [
+      {
+        key: 'sales-agent-performance',
+        label: 'My Performance',
+        url: '/sales-agent/performance',
+        parentKey: 'sales-agent-reports',
+      },
+      {
+        key: 'sales-agent-my-sales',
+        label: 'My Sales',
+        url: '/sales-agent/my-sales',
+        parentKey: 'sales-agent-reports',
+      },
+    ],
+  },
+  {
+    key: 'profile-section',
+    label: 'PROFILE',
+    isTitle: true,
+  },
+  {
+    key: 'sales-agent-profile',
+    label: 'My Profile',
+    icon: 'solar:user-bold-duotone',
+    url: '/profile',
+  },
+]
+
 export const MENU_ITEMS = [
   {
     key: 'general',

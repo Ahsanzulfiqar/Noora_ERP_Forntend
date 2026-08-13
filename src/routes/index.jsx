@@ -602,6 +602,46 @@ const SellerRoutes = [
     element: <SellerCommissions />,
   },
 ]
+
+// Sales-agent portal reuses seller pages verbatim under a distinct URL space so
+// the SALES role gets its own sidenav without duplicating page code.
+const SalesAgentRoutes = [
+  {
+    name: 'Sales Agent Dashboard',
+    path: '/sales-agent/dashboard',
+    element: <SellerDashboard />,
+  },
+  {
+    name: 'Sales Agent Orders',
+    path: '/sales-agent/orders',
+    element: <SellerOrders />,
+  },
+  {
+    name: 'Sales Agent Customers',
+    path: '/sales-agent/customers',
+    element: <SellerCustomers />,
+  },
+  {
+    name: 'Sales Agent Products',
+    path: '/sales-agent/products',
+    element: <SellerProducts />,
+  },
+  {
+    name: 'Sales Agent Stock',
+    path: '/sales-agent/stock',
+    element: <SellerStock />,
+  },
+  {
+    name: 'Sales Agent Performance',
+    path: '/sales-agent/performance',
+    element: <SellerPerformance />,
+  },
+  {
+    name: 'Sales Agent My Sales',
+    path: '/sales-agent/my-sales',
+    element: <SellerOrders />,
+  },
+]
 export const authRoutes = [
   {
     name: 'Sign In',
@@ -662,6 +702,7 @@ export const appRoutes = [
   ...PurchaseRoutes,
   ...RoleRoutes,
   ...SellerRoutes,
+  ...SalesAgentRoutes,
   ...WarehouseRoutes,
   ...SellersRoutes,
   ...SalesRoutes,

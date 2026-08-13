@@ -39,7 +39,7 @@ const SaleAdd = () => {
 
   const isAdmin = role === 'Admin' || role === 'ADMIN';
   const { data: saleData, isLoading: isLoadingSale, error: saleError } = useGetSaleByIdQuery(salesId, { skip: !salesId });
-  const { data: usersData, error: usersError } = useGetAllUsersQuery(undefined, { skip: isSeller });
+  const { data: usersData, error: usersError } = useGetAllUsersQuery(undefined, { skip: isSeller || isSales });
   const [selectedSellerId, setSelectedSellerId] = useState(isSeller ? userId : (saleData?.seller || ''));
   const { data: projectsBySellerData, error: projectsBySellerError } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId || isSales });
   const { data: allProjectsData, error: allProjectsError } = useGetAllProjectsQuery(undefined, { skip: !isSales });
