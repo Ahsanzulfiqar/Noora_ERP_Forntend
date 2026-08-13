@@ -49,7 +49,7 @@ const currency = (n) => formatCurrency(n);
 
 const StatusBadge = ({ status }) => {
   const key = (status || '').toUpperCase();
-  const cfg = STATUS_BADGE[key] || { bg: '#e2e8f0', color: '#475569', label: key || 'N/A' };
+  const cfg = STATUS_BADGE[key] || { bg: '#e2e8f0', color: '#475569', label: key || '-' };
   return (
     <span
       className="text-uppercase fw-semibold"
@@ -371,7 +371,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                           </div>
                         </td>
                         <td className="text-muted">{item.sku || '—'}</td>
-                        <td className="text-muted">{item.variantName || item.variant || 'N/A'}</td>
+                        <td className="text-muted">{item.variantName || item.variant || '-'}</td>
                         <td className="text-center">{item.qty}</td>
                         <td>{currency(item.cost)}</td>
                         <td>{currency(item.price)}</td>

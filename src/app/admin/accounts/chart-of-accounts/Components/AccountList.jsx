@@ -14,6 +14,7 @@ import {
     useEnableAccountMutation,
     useDeleteAccountMutation,
 } from '@/services/authenticateendpoint/account'
+import { FilterSelect } from '@/components/Filters'
 
 const TYPE_OPTIONS = [
     { value: 'ASSET', label: 'Asset' },
@@ -225,21 +226,25 @@ const AccountList = () => {
                                 />
                             </Col>
                             <Col md={3}>
-                                <Form.Select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-                                    <option value="">All Types</option>
-                                    {TYPE_OPTIONS.map((o) => (
-                                        <option key={o.value} value={o.value}>
-                                            {o.label}
-                                        </option>
-                                    ))}
-                                </Form.Select>
+                                <FilterSelect
+                                    value={typeFilter}
+                                    onChange={(v) => setTypeFilter(v)}
+                                    options={[
+                                        { value: '', label: 'All Types' },
+                                        ...TYPE_OPTIONS,
+                                    ]}
+                                />
                             </Col>
                             <Col md={3}>
-                                <Form.Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="">All Status</option>
-                                </Form.Select>
+                                <FilterSelect
+                                    value={statusFilter}
+                                    onChange={(v) => setStatusFilter(v)}
+                                    options={[
+                                        { value: 'active', label: 'Active' },
+                                        { value: 'inactive', label: 'Inactive' },
+                                        { value: '', label: 'All Status' },
+                                    ]}
+                                />
                             </Col>
                         </Row>
                     </Card.Body>

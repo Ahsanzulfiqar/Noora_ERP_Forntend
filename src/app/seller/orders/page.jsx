@@ -255,7 +255,7 @@ const SellerOrdersPage = () => {
                           to={`/sales/sales-detail/${s._id}`}
                           className="text-dark fw-semibold"
                         >
-                          {s.invoiceNo || 'N/A'}
+                          {s.invoiceNo || '-'}
                         </Link>
                       </td>
                       <td>{s.customerName || <span className="text-muted">No data</span>}</td>

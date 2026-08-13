@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Row, Col, Card, CardBody, Form } from 'react-bootstrap';
+import { Row, Col, Card, CardBody } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Stats from './components/Stats';
 import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse';
 import { useAuth } from '@/hooks/useAuth';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
-import { FilterDateRange, FilterClearAll } from '@/components/Filters';
+import { FilterSelect, FilterDateRange, FilterClearAll } from '@/components/Filters';
 
 const getDefaultDates = () => {
   const to = new Date();
@@ -38,22 +38,21 @@ return (
             <Card>
               <CardBody className="py-2">
                 <div className="d-flex flex-wrap align-items-center gap-3">
-                  <div className="d-flex align-items-center gap-2">
-                    <label className="mb-0 text-muted fw-semibold fs-13">Warehouse:</label>
-                    <Form.Select
-                      size="sm"
-                      style={{ width: 180 }}
-                      value={selectedWarehouse || ''}
-                      onChange={(e) => setSelectedWarehouse(e.target.value || null)}
-                    >
-                      <option value="">All Warehouses</option>
-                      {warehouses.map((wh) => (
-                        <option key={wh._id} value={wh._id}>
-                          {wh.name} {wh.city ? `(${wh.city})` : ''}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </div>
+                  <FilterSelect
+                    inline
+                    label="Warehouse"
+                    size="sm"
+                    style={{ width: 200 }}
+                    value={selectedWarehouse || ''}
+                    onChange={(v) => setSelectedWarehouse(v || null)}
+                    options={[
+                      { value: '', label: 'All Warehouses' },
+                      ...warehouses.map((wh) => ({
+                        value: wh._id,
+                        label: `${wh.name}${wh.city ? ` (${wh.city})` : ''}`,
+                      })),
+                    ]}
+                  />
                   <FilterDateRange
                     inline
                     label="Date Range"

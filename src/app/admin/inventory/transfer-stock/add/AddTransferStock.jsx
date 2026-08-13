@@ -44,6 +44,7 @@ const AddTransferStock = () => {
     quantity: '',
     batchNo: '',
     expiryDate: '',
+    batchKey: '',
   })
 
   const { data: productVariants } = useGetVariantsByProductQuery(currentItem.product, {
@@ -63,9 +64,13 @@ const AddTransferStock = () => {
     batchesData?.data?.GetWarehouseProductBatches ||
     batchesData?.GetWarehouseProductBatches ||
     []
-  const batchOptions = availableBatches.map((b) => ({
+  // Batches don't carry a unique id from the API, and two records can share the
+  // same batchNo (different expiry/qty). Use a composite key as the option value
+  // so each row is independently selectable.
+  const batchKeyFor = (b, idx) => `${idx}::${b.batchNo}::${b.expiryDate}::${b.quantity}`
+  const batchOptions = availableBatches.map((b, idx) => ({
     label: `${b.batchNo} (Qty: ${b.quantity})`,
-    value: b.batchNo,
+    value: batchKeyFor(b, idx),
   }))
 
   const batchPlaceholder = !fromWarehouseId
@@ -164,7 +169,7 @@ const AddTransferStock = () => {
                             form.setFieldTouched('fromWarehouse', true, false)
                             setFromWarehouseId(val)
                             // Reset batch selection on warehouse change — batches are warehouse-scoped
-                            setCurrentItem((ci) => ({ ...ci, batchNo: '', expiryDate: '' }))
+                            setCurrentItem((ci) => ({ ...ci, batchNo: '', expiryDate: '', batchKey: '' }))
                           }}
                           placeholder="Select From Warehouse"
                         />
@@ -241,7 +246,7 @@ const AddTransferStock = () => {
                                   id="add-product"
                                   value={currentItem.product}
                                   options={productOptions}
-                                  onChange={(val) => setCurrentItem({ ...currentItem, product: val, variant: '', batchNo: '', expiryDate: '' })}
+                                  onChange={(val) => setCurrentItem({ ...currentItem, product: val, variant: '', batchNo: '', expiryDate: '', batchKey: '' })}
                                   placeholder="Select Product"
                                 />
                               </Col>
@@ -253,7 +258,7 @@ const AddTransferStock = () => {
                                     id="add-variant"
                                     value={currentItem.variant}
                                     options={variantOptions}
-                                    onChange={(val) => setCurrentItem({ ...currentItem, variant: val, batchNo: '', expiryDate: '' })}
+                                    onChange={(val) => setCurrentItem({ ...currentItem, variant: val, batchNo: '', expiryDate: '', batchKey: '' })}
                                     placeholder="Select Variant"
                                   />
                                 ) : (
@@ -277,13 +282,15 @@ const AddTransferStock = () => {
                                   key={`batch-${fromWarehouseId}-${currentItem.product}-${currentItem.variant}`}
                                   className="form-control"
                                   id="add-batch"
-                                  value={currentItem.batchNo}
+                                  value={currentItem.batchKey}
                                   options={batchOptions}
                                   onChange={(val) => {
-                                    const selected = availableBatches.find((b) => b.batchNo === val)
+                                    const idx = availableBatches.findIndex((b, i) => batchKeyFor(b, i) === val)
+                                    const selected = idx >= 0 ? availableBatches[idx] : null
                                     setCurrentItem({
                                       ...currentItem,
-                                      batchNo: val,
+                                      batchKey: val,
+                                      batchNo: selected?.batchNo || '',
                                       expiryDate: formatDateForInput(selected?.expiryDate),
                                     })
                                   }}
@@ -307,7 +314,7 @@ const AddTransferStock = () => {
                                     size="small"
                                     onClick={() => {
                                       setEditingIndex(null)
-                                      setCurrentItem({ product: '', variant: '', quantity: '', batchNo: '', expiryDate: '' })
+                                      setCurrentItem({ product: '', variant: '', quantity: '', batchNo: '', expiryDate: '', batchKey: '' })
                                       setShowAddItemForm(false)
                                     }}
                                     sx={{ mr: 1, color: '#5c7186', borderColor: '#5c7186', '&:hover': { borderColor: '#4a5b6d', backgroundColor: '#f0f0f0' } }}
@@ -330,7 +337,7 @@ const AddTransferStock = () => {
                                     } else {
                                       push(newItem)
                                     }
-                                    setCurrentItem({ product: '', variant: '', quantity: '', batchNo: '', expiryDate: '' })
+                                    setCurrentItem({ product: '', variant: '', quantity: '', batchNo: '', expiryDate: '', batchKey: '' })
                                     setShowAddItemForm(false)
                                   }}
                                   sx={{ backgroundColor: '#5c7186', '&:hover': { backgroundColor: '#4a5b6d' } }}

@@ -179,7 +179,7 @@ const StockTransferDetailPage = () => {
                     </Link>
                     {!isDraft && (
                       <Typography variant="body2" className={statusBadgeClass(transfer?.status)}>
-                        {transfer?.status || 'N/A'}
+                        {transfer?.status || '-'}
                       </Typography>
                     )}
                   </Box>
@@ -192,37 +192,37 @@ const StockTransferDetailPage = () => {
                 <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
                   <li>
                     <span className="fw-medium text-dark fw-bold">Transfer No:&nbsp;</span>
-                    {transfer?.transferNo || 'N/A'}
+                    {transfer?.transferNo || '-'}
                   </li>
                   <li>
                     <span className="fw-medium text-dark fw-bold">From Warehouse:&nbsp;</span>
-                    {warehouseMap[transfer?.fromWarehouse] || transfer?.fromWarehouse || 'N/A'}
+                    {warehouseMap[transfer?.fromWarehouse] || transfer?.fromWarehouse || '-'}
                   </li>
                   <li>
                     <span className="fw-medium text-dark fw-bold">To Warehouse:&nbsp;</span>
-                    {warehouseMap[transfer?.toWarehouse] || transfer?.toWarehouse || 'N/A'}
+                    {warehouseMap[transfer?.toWarehouse] || transfer?.toWarehouse || '-'}
                   </li>
                 </ul>
 
                 <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
                   <li>
                     <span className="fw-medium text-dark fw-bold">Status:&nbsp;</span>
-                    {transfer?.status || 'N/A'}
+                    {transfer?.status || '-'}
                   </li>
                   <li>
                     <span className="fw-medium text-dark fw-bold">Created At:&nbsp;</span>
-                    {transfer?.createdAt ? new Date(transfer.createdAt).toLocaleString() : 'N/A'}
+                    {transfer?.createdAt ? new Date(transfer.createdAt).toLocaleString() : '-'}
                   </li>
                   <li>
                     <span className="fw-medium text-dark fw-bold">Confirmed At:&nbsp;</span>
-                    {transfer?.confirmedAt ? new Date(transfer.confirmedAt).toLocaleString() : 'N/A'}
+                    {transfer?.confirmedAt ? new Date(transfer.confirmedAt).toLocaleString() : '-'}
                   </li>
                 </ul>
 
                 <ul className="d-flex flex-column gap-2 list-unstyled fs-14 text-muted mb-0">
                   <li>
                     <span className="fw-medium text-dark fw-bold">Note:&nbsp;</span>
-                    {transfer?.note || 'N/A'}
+                    {transfer?.note || '-'}
                   </li>
                 </ul>
               </div>
@@ -244,8 +244,8 @@ const StockTransferDetailPage = () => {
                       {transfer?.items && transfer.items.length > 0 ? (
                         transfer.items.map((item, index) => (
                           <tr key={index}>
-                            <td>{productMap[item.product] || item.product || 'N/A'}</td>
-                            <td>{item.variant || 'N/A'}</td>
+                            <td>{productMap[item.product] || item.product || '-'}</td>
+                            <td>{item.variant || '-'}</td>
                             <td>{item.batchNo || '-'}</td>
                             <td>{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : '-'}</td>
                             <td>{item.quantity}</td>

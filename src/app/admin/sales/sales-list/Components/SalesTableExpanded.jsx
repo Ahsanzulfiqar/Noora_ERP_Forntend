@@ -1,10 +1,11 @@
-import { Badge, Card, CardBody, CardHeader, Form, Spinner, Table } from 'react-bootstrap'
+import { Badge, Card, CardBody, CardHeader, Form, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'react-toastify'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import CustomTablePaginations from '@/components/table/CustomTablePaginations'
 import { useGetSalesQuery } from '@/services/authenticateendpoint/sales'
+import { useGetAllProjectsQuery } from '@/services/authenticateendpoint/project'
 import { useAuth } from '@/hooks/useAuth'
 import MarkPaidModal from './MarkPaidModal'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
@@ -70,6 +71,12 @@ const SalesTableExpanded = ({ filter }) => {
     { refetchOnMountOrArgChange: true }
   )
 
+  const { data: projects = [] } = useGetAllProjectsQuery()
+  const projectNameById = useMemo(
+    () => new Map(projects.map((p) => [p._id, p.name])),
+    [projects],
+  )
+
   useEffect(() => {
     if (error) toast.error(extractApiErrorMessage(error));
   }, [error]);
@@ -124,8 +131,8 @@ const SalesTableExpanded = ({ filter }) => {
               <tr>
                 <th className="ps-3 uppercase font-weight-bold">Invoice No</th>
                 <th className="uppercase font-weight-bold">Date</th>
-                <th className="uppercase font-weight-bold">Courier Name</th>
-                <th className="uppercase font-weight-bold">Tracking No</th>
+                <th className="uppercase font-weight-bold">Project</th>
+                <th className="uppercase font-weight-bold">Courier</th>
                 <th className="uppercase font-weight-bold">Status</th>
                 <th className="uppercase font-weight-bold">Total Amount</th>
                 <th className="uppercase font-weight-bold">Payment</th>
@@ -153,10 +160,27 @@ const SalesTableExpanded = ({ filter }) => {
               ) : (
                 rows.map((item) => (
                   <tr key={item._id}>
-                    <td className="ps-3 fw-bold text-dark">{item.invoiceNo || 'N/A'}</td>
-                    <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}</td>
-                    <td className="fw-semibold">{item.courier?.courierName || 'N/A'}</td>
-                    <td>{item.courier?.trackingNo || 'N/A'}</td>
+                    <td className="ps-3 fw-bold text-dark">{item.invoiceNo || '-'}</td>
+                    <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '-'}</td>
+                    <td>{projectNameById.get(item.project) || '-'}</td>
+                    <td className="fw-semibold">
+                      {item.courier?.courierName ? (
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id={`tracking-${item._id}`}>
+                              Tracking: {item.courier?.trackingNo || '-'}
+                            </Tooltip>
+                          }
+                        >
+                          <span style={{ cursor: 'help', textDecoration: 'underline dotted' }}>
+                            {item.courier.courierName}
+                          </span>
+                        </OverlayTrigger>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
                     <td>
                       <SaleStatusChip status={item.status || 'draft'} />
                     </td>
@@ -168,14 +192,14 @@ const SalesTableExpanded = ({ filter }) => {
                             bg={getPaymentStatusColor(item.payment.status)}
                             className="text-capitalize px-2 py-1"
                           >
-                            {item.payment.status || 'N/A'}
+                            {item.payment.status || '-'}
                           </Badge>
                           {item.payment.mode && (
                             <small className="text-muted">{item.payment.mode}</small>
                           )}
                         </div>
                       ) : (
-                        <span className="text-muted">N/A</span>
+                        <span className="text-muted">-</span>
                       )}
                     </td>
                     <td className="text-center">

@@ -218,7 +218,7 @@ const WarehouseStockTransfersPage = () => {
                         ) : (
                           paged.map((r) => (
                             <tr key={r._id}>
-                              <td className="ps-3 fw-semibold">{r.transferNo || 'N/A'}</td>
+                              <td className="ps-3 fw-semibold">{r.transferNo || '-'}</td>
                               <td>{r.fromWarehouseName || '—'}</td>
                               <td>{r.toWarehouseName || '—'}</td>
                               <td>{formatCount((r.items || []).length)}</td>

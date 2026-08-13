@@ -557,7 +557,7 @@ const SellerCustomersPage = () => {
                                 <tr key={o._id}>
                                   <td className="fw-semibold">
                                     <Link to={`/sales/sales-detail/${o._id}`} className="text-dark">
-                                      {o.invoiceNo || 'N/A'}
+                                      {o.invoiceNo || '-'}
                                     </Link>
                                   </td>
                                   <td>

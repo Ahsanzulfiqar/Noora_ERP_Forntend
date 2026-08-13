@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useGetProductByIdQuery } from '../../../../../services/authenticateendpoint/product';
-import { useFilterCategoriesQuery, useFilterSubCategoriesQuery } from '../../../../../services/authenticateendpoint/category';
+import { useFilterCategoriesQuery, useFilterSubCategoriesQuery, useGetSubCategoryByIdQuery } from '../../../../../services/authenticateendpoint/category';
 import IconifyIcon from '@/components/wrappers/IconifyIcon';
 import product1 from '@/assets/images/product/noimage.png';
 import { formatCurrency } from '@/helpers/currency';
@@ -61,15 +61,20 @@ const ProductDetails = () => {
   }, [allSubCategoryOptions, category]);
   const hasSubCategoryOptions = filteredSubCategoryOptions.length > 0;
 
-  const categoryName = categoryOptions.find((opt) => opt.value === category)?.label || category || 'N/A';
-  const selectedSubCategory = filteredSubCategoryOptions.find((opt) => opt.value === subCategory)
-    || allSubCategoryOptions.find((opt) => opt.value === subCategory);
+  const categoryName = categoryOptions.find((opt) => opt.value === category)?.label || category || '-';
+  // Fetch the specific sub-category by id — the paginated/active-filtered list
+  // won't include it if it's inactive or beyond the first 100.
+  const { data: subCategoryDetail } = useGetSubCategoryByIdQuery(subCategory, { skip: !subCategory });
+  const subCategoryName = subCategoryDetail?.name
+    || filteredSubCategoryOptions.find((opt) => opt.value === subCategory)?.label
+    || allSubCategoryOptions.find((opt) => opt.value === subCategory)?.label
+    || '-';
 
   const formatDateTime = (value) => {
-    if (!value) return 'N/A';
+    if (!value) return '-';
     const normalizedValue = /^\d+$/.test(String(value)) ? Number(value) : value;
     const date = new Date(normalizedValue);
-    return Number.isNaN(date.getTime()) ? 'N/A' : date.toLocaleString();
+    return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString();
   };
 
   useEffect(() => {
@@ -163,11 +168,11 @@ const ProductDetails = () => {
                     <div className="d-flex flex-wrap align-items-center gap-3">
                       <span className="badge bg-light text-dark border py-2 px-3 fs-13">
                         <IconifyIcon icon="solar:tag-horizontal-broken" className="me-1 text-primary" />
-                        Brand: <span className="fw-bold">{brand || 'N/A'}</span>
+                        Brand: <span className="fw-bold">{brand || '-'}</span>
                       </span>
                       <span className="badge bg-light text-dark border py-2 px-3 fs-13">
                         <IconifyIcon icon="solar:box-broken" className="me-1 text-primary" />
-                        SKU: <span className="fw-bold">{sku || 'N/A'}</span>
+                        SKU: <span className="fw-bold">{sku || '-'}</span>
                       </span>
                     </div>
                   </div>
@@ -175,12 +180,12 @@ const ProductDetails = () => {
                   <div className="p-3 rounded-3 bg-primary-subtle border border-primary-subtle mb-4">
                     <Row className="align-items-center">
                       <Col>
-                        <p className="text-primary-emphasis mb-1 fs-14">Selling Price</p>
-                        <h3 className="fw-bold text-primary mb-0">{formatCurrency(salePrice)}</h3>
-                      </Col>
-                      <Col className="border-start border-primary-subtle ps-4">
                         <p className="text-primary-emphasis mb-1 fs-14">Purchase Price</p>
                         <h4 className="fw-semibold text-muted mb-0">{formatCurrency(purchasePrice)}</h4>
+                      </Col>
+                      <Col className="border-start border-primary-subtle ps-4">
+                        <p className="text-primary-emphasis mb-1 fs-14">Selling Price</p>
+                        <h3 className="fw-bold text-primary mb-0">{formatCurrency(salePrice)}</h3>
                       </Col>
                     </Row>
                   </div>
@@ -202,35 +207,11 @@ const ProductDetails = () => {
                         </tr>
                         <tr>
                           <td className="ps-0 py-2 text-muted">Sub-Category</td>
-                          <td className="py-2 fw-semibold text-dark">
-                            <div style={{ minWidth: '240px', maxWidth: '320px' }}>
-                              <ChoicesSearchFormInput
-                                className="form-control"
-                                id="product-details-subcategory"
-                                options={hasSubCategoryOptions
-                                  ? filteredSubCategoryOptions
-                                  : [
-                                    {
-                                      value: '',
-                                      label: 'No sub category available',
-                                    },
-                                  ]}
-                                value={selectedSubCategory?.value || ''}
-                                onChange={() => { }}
-                                placeholder={hasSubCategoryOptions ? 'Select sub category' : 'No sub category available'}
-                                config={{ searchEnabled: false, removeItemButton: false }}
-                                disabled={!hasSubCategoryOptions}
-                              />
-                            </div>
-                          </td>
+                          <td className="py-2 fw-semibold text-dark">{subCategoryName}</td>
                         </tr>
                         <tr>
                           <td className="ps-0 py-2 text-muted">Barcode</td>
-                          <td className="py-2 fw-semibold text-dark font-monospace">{barcode || 'N/A'}</td>
-                        </tr>
-                        <tr>
-                          <td className="ps-0 py-2 text-muted">Created At</td>
-                          <td className="py-2 text-dark">{formatDateTime(createdAt)}</td>
+                          <td className="py-2 fw-semibold text-dark font-monospace">{barcode || '-'}</td>
                         </tr>
                         <tr>
                           <td className="ps-0 py-2 text-muted">Last Updated</td>

@@ -21,8 +21,8 @@ const ProductDetails = ({ variant, productvarientId }) => {
 
   const images = variant?.images || [];
   const generalInfo = [
-    { label: 'Net Weight', value: variant.netWeight || 'N/A' },
-    { label: 'Pack Size', value: variant.packSize || 'N/A' },
+    { label: 'Net Weight', value: variant.netWeight || '-' },
+    { label: 'Pack Size', value: variant.packSize || '-' },
   ];
 
   return (
@@ -82,11 +82,11 @@ const ProductDetails = ({ variant, productvarientId }) => {
                     <div className="d-flex flex-wrap align-items-center gap-3">
                       <span className="badge bg-light text-dark border py-2 px-3 fs-13">
                         <IconifyIcon icon="solar:box-broken" className="me-1 text-primary" />
-                        SKU: <span className="fw-bold">{variant.sku || 'N/A'}</span>
+                        SKU: <span className="fw-bold">{variant.sku || '-'}</span>
                       </span>
                       <span className="badge bg-light text-dark border py-2 px-3 fs-13">
                         <IconifyIcon icon="solar:barcode-broken" className="me-1 text-primary" />
-                        Barcode: <span className="fw-bold">{variant.barcode || 'N/A'}</span>
+                        Barcode: <span className="fw-bold">{variant.barcode || '-'}</span>
                       </span>
                     </div>
                   </div>
@@ -94,12 +94,12 @@ const ProductDetails = ({ variant, productvarientId }) => {
                   <div className="p-3 rounded-3 bg-primary-subtle border border-primary-subtle mb-4">
                     <Row className="align-items-center">
                       <Col>
-                        <p className="text-primary-emphasis mb-1 fs-14">Selling Price</p>
-                        <h3 className="fw-bold text-primary mb-0">{formatCurrency(variant.salePrice)}</h3>
-                      </Col>
-                      <Col className="border-start border-primary-subtle ps-4">
                         <p className="text-primary-emphasis mb-1 fs-14">Purchase Price</p>
                         <h4 className="fw-semibold text-muted mb-0">{formatCurrency(variant.purchasePrice)}</h4>
+                      </Col>
+                      <Col className="border-start border-primary-subtle ps-4">
+                        <p className="text-primary-emphasis mb-1 fs-14">Selling Price</p>
+                        <h3 className="fw-bold text-primary mb-0">{formatCurrency(variant.salePrice)}</h3>
                       </Col>
                     </Row>
                   </div>

@@ -59,7 +59,7 @@ const SellerDetails = ({ sellerData, isLoadingSeller }) => {
                     </div>
                     <div>
                       <h6 className="mb-1 text-muted fs-14">Address</h6>
-                      <p className="mb-0 fw-medium text-dark">{sellerData?.address || 'N/A'}</p>
+                      <p className="mb-0 fw-medium text-dark">{sellerData?.address || '-'}</p>
                     </div>
                   </div>
 
@@ -69,7 +69,7 @@ const SellerDetails = ({ sellerData, isLoadingSeller }) => {
                     </div>
                     <div>
                       <h6 className="mb-1 text-muted fs-14">Email Address</h6>
-                      <p className="mb-0 fw-medium text-dark">{sellerData?.email || 'N/A'}</p>
+                      <p className="mb-0 fw-medium text-dark">{sellerData?.email || '-'}</p>
                     </div>
                   </div>
 
@@ -79,7 +79,7 @@ const SellerDetails = ({ sellerData, isLoadingSeller }) => {
                     </div>
                     <div>
                       <h6 className="mb-1 text-muted fs-14">Phone Number</h6>
-                      <p className="mb-0 fw-medium text-dark">{sellerData?.phone || 'N/A'}</p>
+                      <p className="mb-0 fw-medium text-dark">{sellerData?.phone || '-'}</p>
                     </div>
                   </div>
 
@@ -142,7 +142,7 @@ const SellerDetails = ({ sellerData, isLoadingSeller }) => {
                       <div className="avatar-sm mx-auto mb-2 bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center">
                         <IconifyIcon icon="solar:pie-chart-2-bold-duotone" className="fs-20" />
                       </div>
-                      <h4 className="mb-1 fw-bold text-dark text-uppercase">{sellerData?.commissionType || 'N/A'}</h4>
+                      <h4 className="mb-1 fw-bold text-dark text-uppercase">{sellerData?.commissionType || '-'}</h4>
                       <p className="mb-0 text-muted fs-13">Commission Type</p>
                     </div>
                   </Col>

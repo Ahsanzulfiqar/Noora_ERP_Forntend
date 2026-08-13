@@ -9,7 +9,6 @@ import CustomTablePaginations from '@/components/table/CustomTablePaginations';
 import { useFilterCategoriesQuery, useDeleteCategoryMutation, useFilterSubCategoriesQuery } from '@/services/authenticateendpoint/category';
 import StatusAlert from '@/components/StatusAlert';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
-import ViewDetailModal from '../../components/ViewDetailModal';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
 import { FilterSelect, FilterSearch, FilterClearAll } from '@/components/Filters';
 
@@ -20,9 +19,7 @@ const CategoryList = () => {
     const [isActive, setIsActive] = useState(''); // '' for All, 'true' for Active, 'false' for Inactive
     const [search, setSearch] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [showViewModal, setShowViewModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
-    const [selectedItem, setSelectedItem] = useState(null);
 
     const { data, isLoading, error: categoriesError, refetch } = useFilterCategoriesQuery({
         page,
@@ -70,11 +67,6 @@ const CategoryList = () => {
         setPage(1);
     };
 
-    const handleViewClick = (item) => {
-        setSelectedItem(item);
-        setShowViewModal(true);
-    };
-
     const handleDeleteClick = (id) => {
         setSelectedId(id);
         setShowDeleteModal(true);
@@ -89,26 +81,6 @@ const CategoryList = () => {
         }
     };
 
-    const categoryFields = [
-        { label: 'Category Name', key: 'name', className: 'text-capitalize' },
-        { label: 'Slug', key: 'slug', className: 'text-capitalize' },
-        { label: 'Description', key: 'description', col: 12, className: 'text-capitalize' },
-        {
-            label: 'Sub Categories',
-            key: '_id',
-            render: (data) => subCountByCategory[data._id] || 0
-        },
-        {
-            label: 'Status',
-            key: 'isActive',
-            render: (data) => (
-                <span className={`badge ${data.isActive ? 'bg-success' : 'bg-danger'}`}>
-                    {data.isActive ? 'Active' : 'Inactive'}
-                </span>
-            )
-        },
-    ];
-
     return (
         <Row>
             <Col xl={12}>
@@ -118,13 +90,6 @@ const CategoryList = () => {
                     onConfirm={handleConfirmDelete}
                     onCancel={() => setShowDeleteModal(false)}
                     loading={isDeleting}
-                />
-                <ViewDetailModal
-                    show={showViewModal}
-                    onHide={() => setShowViewModal(false)}
-                    title="Category Details"
-                    data={selectedItem || {}}
-                    fields={categoryFields}
                 />
                 <Card>
                     <CardHeader className="d-flex justify-content-between align-items-center">
@@ -193,7 +158,7 @@ const CategoryList = () => {
                                             </td>
                                             <td className='text-capitalize'>{item.name}</td>
                                             <td className='text-capitalize'>{item.slug}</td>
-                                            <td className='text-capitalize'>{item.description || 'N/A'}</td>
+                                            <td className='text-capitalize'>{item.description || '-'}</td>
                                             <td>{subCountByCategory[item._id] || 0}</td>
                                             <td>
                                                 <span className={`badge ${item.isActive ? 'bg-success' : 'bg-danger'}`}>
@@ -203,7 +168,7 @@ const CategoryList = () => {
                                             <td>{new Date(item.createdAt).toLocaleDateString()}</td>
                                             <td className="text-end">
                                                 <div className="d-flex gap-2 justify-content-end">
-                                                    <Button variant="light" size="sm" onClick={() => handleViewClick(item)}>
+                                                    <Button variant="light" size="sm" onClick={() => navigate(`/admin/category/category-detail/${item._id}`)}>
                                                         <IconifyIcon icon="solar:eye-broken" className="fs-18" />
                                                     </Button>
                                                     <Button variant="light" size="sm" onClick={() => navigate(`/admin/category/category-edit/${item._id}`)}>

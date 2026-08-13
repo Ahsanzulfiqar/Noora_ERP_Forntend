@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import { useGetAccountsQuery } from '@/services/authenticateendpoint/account'
 import { currencyLabel, formatAmount } from '@/helpers/currency'
-import { FilterDateRange, FilterClearAll } from '@/components/Filters'
+import { FilterSelect, FilterDateRange, FilterClearAll } from '@/components/Filters'
 
 const SAMPLE_LEDGER_ROWS = [
     { id: 1, date: '2026-05-01', voucherNo: 'JV-000001', memo: 'Opening balance', debit: 10000, credit: 0, balance: 10000 },
@@ -63,14 +63,12 @@ const LedgerTable = () => {
                             <Form.Label>
                                 Account <span className="text-danger">*</span>
                             </Form.Label>
-                            <Form.Select value={accountId} onChange={(e) => setAccountId(e.target.value)}>
-                                <option value="">Select account…</option>
-                                {accounts.map((a) => (
-                                    <option key={a._id} value={a._id}>
-                                        {a.code} — {a.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                            <FilterSelect
+                                value={accountId}
+                                onChange={(v) => setAccountId(v)}
+                                placeholder="Select account…"
+                                options={accounts.map((a) => ({ value: a._id, label: `${a.code} — ${a.name}` }))}
+                            />
                         </Form.Group>
                     </Col>
                     <Col md={4}>

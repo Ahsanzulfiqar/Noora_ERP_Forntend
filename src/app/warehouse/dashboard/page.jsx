@@ -223,7 +223,7 @@ const WarehouseDashboardPage = () => {
                   <tbody>
                     {stats.pendingDispatch.slice(0, 5).map((s) => (
                       <tr key={s._id}>
-                        <td className="ps-3 fw-semibold">{s.invoiceNo || 'N/A'}</td>
+                        <td className="ps-3 fw-semibold">{s.invoiceNo || '-'}</td>
                         <td>{s.customerName || '—'}</td>
                         <td className="fw-semibold">{formatCurrencyRounded(s.totalAmount)}</td>
                         <td className="pe-3">
@@ -268,7 +268,7 @@ const WarehouseDashboardPage = () => {
                   <tbody>
                     {stats.incomingPurchases.slice(0, 5).map((p) => (
                       <tr key={p._id}>
-                        <td className="ps-3 fw-semibold">{p.invoiceNo || 'N/A'}</td>
+                        <td className="ps-3 fw-semibold">{p.invoiceNo || '-'}</td>
                         <td>{p.supplierName || '—'}</td>
                         <td>{formatCount((p.items || []).length)}</td>
                         <td className="pe-3 fw-semibold">{formatCurrencyRounded(p.totalAmount)}</td>
@@ -313,7 +313,7 @@ const WarehouseDashboardPage = () => {
                       return (
                         <tr key={t._id}>
                           <td className="ps-3 fw-semibold">
-                            {t.transferNo || 'N/A'}{' '}
+                            {t.transferNo || '-'}{' '}
                             <Badge
                               bg={direction === 'Out' ? 'warning-subtle' : 'success-subtle'}
                               className={`text-${direction === 'Out' ? 'warning' : 'success'} ms-1`}

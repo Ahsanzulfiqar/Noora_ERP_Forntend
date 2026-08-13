@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Card, CardBody, CardHeader, Col, Form, Row, Spinner } from 'react-bootstrap'
+import { FilterSelect } from '@/components/Filters'
 import { Link } from 'react-router-dom'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import PageTItle from '@/components/PageTItle'
@@ -113,19 +114,16 @@ const SellerDashboardPage = () => {
           </p>
         </Col>
         <Col md="auto">
-          <Form.Select
+          <FilterSelect
             size="sm"
+            style={{ minWidth: 200 }}
             value={projectId}
-            onChange={(e) => setProjectId(e.target.value)}
-            style={{ minWidth: 180, height: 40 }}
-          >
-            <option value="">All Projects</option>
-            {projects.map((p) => (
-              <option key={p._id} value={p._id}>
-                {p.name}
-              </option>
-            ))}
-          </Form.Select>
+            onChange={(v) => setProjectId(v)}
+            options={[
+              { value: '', label: 'All Projects' },
+              ...projects.map((p) => ({ value: p._id, label: p.name })),
+            ]}
+          />
         </Col>
       </Row>
 
