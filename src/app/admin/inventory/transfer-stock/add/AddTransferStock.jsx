@@ -4,14 +4,14 @@ import * as Yup from 'yup'
 import { Link } from 'react-router-dom'
 import { Box, Divider, IconButton } from '@mui/material'
 import { Trash2, Plus, X, Edit } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'react-toastify'
 import Button from '@mui/material/Button'
 import FormikTextArea from '@/components/formikfield/FormikTextArea'
 import ChoicesSearchFormInput from '@/components/formikfield/ChoicesSearchFormInput'
 import StatusAlert from '@/components/StatusAlert'
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
-import { useGetAllWarehousesQuery } from '@/services/authenticateendpoint/warehouse'
+import { useGetAllWarehousesQuery, useGetWarehouseStockQuery } from '@/services/authenticateendpoint/warehouse'
 import { useGetAllProductsQuery } from '@/services/authenticateendpoint/product'
 import { useGetVariantsByProductQuery } from '@/services/authenticateendpoint/productvariant'
 import { useCreateStockTransferMutation } from '@/services/authenticateendpoint/stockTransfer'
@@ -36,8 +36,43 @@ const AddTransferStock = () => {
   const productOptions = products?.map(p => ({ label: p.name, value: p._id })) || []
 
   const [showAddItemForm, setShowAddItemForm] = useState(false)
-  const [editingIndex, setEditingIndex] = useState(null)
   const [fromWarehouseId, setFromWarehouseId] = useState('')
+
+  // Only products actually stocked in the source warehouse can be transferred,
+  // so the product dropdown is driven by that warehouse's stock, not the catalog.
+  const { data: warehouseStock, isFetching: isFetchingWarehouseStock } = useGetWarehouseStockQuery(
+    { page: 1, limit: 1000, filter: { warehouseId: fromWarehouseId } },
+    { skip: !fromWarehouseId },
+  )
+
+  const warehouseProductOptions = useMemo(() => {
+    const rows = warehouseStock?.data || []
+    const byProduct = new Map()
+    rows.forEach((row) => {
+      if (!row?.product) return
+      // Rows are per product+variant; a product is transferable if any of them has stock.
+      if (row.quantity != null && Number(row.quantity) <= 0) return
+      if (byProduct.has(row.product)) return
+      byProduct.set(row.product, {
+        value: row.product,
+        label:
+          row.productName ||
+          products?.find(p => p._id === row.product)?.name ||
+          'Unknown',
+      })
+    })
+    return Array.from(byProduct.values())
+  }, [warehouseStock, products])
+
+  const productPlaceholder = !fromWarehouseId
+    ? 'Select From Warehouse first'
+    : isFetchingWarehouseStock
+      ? 'Loading products...'
+      : warehouseProductOptions.length === 0
+        ? 'No products in this warehouse'
+        : 'Select Product'
+
+  const [editingIndex, setEditingIndex] = useState(null)
   const [currentItem, setCurrentItem] = useState({
     product: '',
     variant: '',
@@ -168,8 +203,9 @@ const AddTransferStock = () => {
                             form.setFieldValue('fromWarehouse', val)
                             form.setFieldTouched('fromWarehouse', true, false)
                             setFromWarehouseId(val)
-                            // Reset batch selection on warehouse change — batches are warehouse-scoped
-                            setCurrentItem((ci) => ({ ...ci, batchNo: '', expiryDate: '', batchKey: '' }))
+                            // Products and batches are warehouse-scoped — the previous
+                            // selection may not exist in the new warehouse, so clear it.
+                            setCurrentItem((ci) => ({ ...ci, product: '', variant: '', batchNo: '', expiryDate: '', batchKey: '' }))
                           }}
                           placeholder="Select From Warehouse"
                         />
@@ -237,20 +273,23 @@ const AddTransferStock = () => {
                         </Box>
 
                         {showAddItemForm && (
-                          <Box sx={{ p: 2, backgroundColor: '#f9f9f9', borderBottom: '1px solid #dfdfdfff' }}>
+                          <Box className="transfer-item-form-sm" sx={{ p: 1.5, backgroundColor: '#f9f9f9', borderBottom: '1px solid #dfdfdfff' }}>
                             <Row className="g-2">
                               <Col lg={4}>
                                 <label className="form-label fw-bold">Product</label>
                                 <ChoicesSearchFormInput
+                                  key={`product-${fromWarehouseId}`}
                                   className="form-control"
                                   id="add-product"
                                   value={currentItem.product}
-                                  options={productOptions}
+                                  options={warehouseProductOptions}
                                   onChange={(val) => setCurrentItem({ ...currentItem, product: val, variant: '', batchNo: '', expiryDate: '', batchKey: '' })}
-                                  placeholder="Select Product"
+                                  placeholder={productPlaceholder}
                                 />
                               </Col>
-                              <Col lg={4}>
+                              {/* Variant is hidden from the UI but stays mounted so the
+                                  variant-scoped batch lookup and payload keep working. */}
+                              <Col lg={4} className="d-none">
                                 <label className="form-label fw-bold">Variant</label>
                                 {!currentItem.product || (productVariants && productVariants.length > 0) ? (
                                   <ChoicesSearchFormInput
@@ -265,7 +304,7 @@ const AddTransferStock = () => {
                                   <input type="text" className="form-control" value="No variant available" readOnly disabled />
                                 )}
                               </Col>
-                              <Col lg={4}>
+                              <Col lg={2}>
                                 <label className="form-label fw-bold">Quantity</label>
                                 <input
                                   type="number"
@@ -276,7 +315,7 @@ const AddTransferStock = () => {
                                   onChange={(e) => setCurrentItem({ ...currentItem, quantity: e.target.value })}
                                 />
                               </Col>
-                              <Col lg={6}>
+                              <Col lg={3}>
                                 <label className="form-label fw-bold">Batch No</label>
                                 <ChoicesSearchFormInput
                                   key={`batch-${fromWarehouseId}-${currentItem.product}-${currentItem.variant}`}
@@ -297,7 +336,7 @@ const AddTransferStock = () => {
                                   placeholder={batchPlaceholder}
                                 />
                               </Col>
-                              <Col lg={6}>
+                              <Col lg={3}>
                                 <label className="form-label fw-bold">Expiry Date</label>
                                 <input
                                   type="date"
@@ -346,6 +385,45 @@ const AddTransferStock = () => {
                                 </Button>
                               </Col>
                             </Row>
+                            <style>{`
+                              .transfer-item-form-sm .form-label {
+                                font-size: 0.75rem;
+                                margin-bottom: 0.15rem;
+                              }
+                              .transfer-item-form-sm .form-control {
+                                font-size: 0.8125rem;
+                                padding: 0.25rem 0.5rem;
+                                min-height: 32px;
+                                height: 32px;
+                              }
+                              .transfer-item-form-sm .choices {
+                                margin-bottom: 0;
+                                font-size: 0.8125rem;
+                              }
+                              .transfer-item-form-sm .choices__inner {
+                                min-height: 32px;
+                                padding: 0.25rem 28px 0.25rem 0.5rem !important;
+                                font-size: 0.8125rem;
+                              }
+                              .transfer-item-form-sm .choices__list--single {
+                                padding: 2px 0;
+                              }
+                              .transfer-item-form-sm .choices[data-type*="select-one"] .choices__input {
+                                padding: 0.25rem 0.5rem !important;
+                                font-size: 0.8125rem;
+                                margin-bottom: 6px;
+                              }
+                              .transfer-item-form-sm .choices__list--dropdown .choices__item {
+                                font-size: 0.8125rem;
+                                padding: 6px 10px;
+                              }
+                              .transfer-item-form-sm .custom-choices-icon-container {
+                                right: 8px;
+                              }
+                              .transfer-item-form-sm .custom-choices-icon-container svg {
+                                font-size: 16px;
+                              }
+                            `}</style>
                           </Box>
                         )}
 
@@ -354,8 +432,8 @@ const AddTransferStock = () => {
                           <table className="table table-borderless align-middle mb-0">
                             <thead>
                               <tr className="bg-light">
-                                <th style={{ width: '25%' }} className="ps-2 py-2">Product</th>
-                                <th style={{ width: '20%' }} className="px-1 py-2">Variant</th>
+                                <th style={{ width: '35%' }} className="ps-2 py-2">Product</th>
+                                <th className="px-1 py-2 d-none">Variant</th>
                                 <th style={{ width: '12%' }} className="px-1 py-2">Qty</th>
                                 <th style={{ width: '18%' }} className="px-1 py-2">Batch No</th>
                                 <th style={{ width: '15%' }} className="px-1 py-2">Expiry Date</th>
@@ -373,7 +451,7 @@ const AddTransferStock = () => {
                                   return (
                                     <tr key={index} style={{ borderBottom: '1px solid #f0f0f0' }}>
                                       <td className="ps-2 py-2">{productName}</td>
-                                      <td className="px-1 py-2">{item.variant ? item.variant : 'No variant'}</td>
+                                      <td className="px-1 py-2 d-none">{item.variant ? item.variant : 'No variant'}</td>
                                       <td className="px-1 py-2">{item.quantity}</td>
                                       <td className="px-1 py-2">{item.batchNo || '-'}</td>
                                       <td className="px-1 py-2">{item.expiryDate || '-'}</td>

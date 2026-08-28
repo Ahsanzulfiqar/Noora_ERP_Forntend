@@ -23,7 +23,7 @@ const AppRouter = props => {
   const { role } = useAuth();
   const renderAppElement = (route) => {
     if (!isAuthenticated) {
-      return <Navigate to={{
+      return <Navigate replace to={{
         pathname: '/auth/sign-in',
         search: 'redirectTo=' + route.path
       }} />;
