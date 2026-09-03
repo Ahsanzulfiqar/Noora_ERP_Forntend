@@ -117,6 +117,14 @@ const SaleAdd = () => {
   const { countryOptions, cityOptions, isLoadingCountries, isLoadingCities, countriesError, citiesError } = useLocationOptions(selectedCountry)
   const [showItemForm, setShowItemForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+
+  const setPhoneCodeIfEmpty = (countryName, currentPhone, setFieldValue) => {
+    const phoneCode = countryOptions.find((option) => option.value === countryName)?.phoneCode
+    if (!phoneCode || String(currentPhone || '').trim()) return
+
+    setFieldValue('customerPhone', phoneCode.startsWith('+') ? phoneCode : `+${phoneCode}`)
+  }
+
   useEffect(() => {
     if (countriesError) toast.error(extractApiErrorMessage(countriesError))
   }, [countriesError])
@@ -334,6 +342,7 @@ const SaleAdd = () => {
         {({ values, setFieldValue, errors, isValid }) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
           console.log('values', values)
+          console.log('countryOptions', countryOptions)
           console.log('errors', errors)
 
           useEffect(() => {
@@ -438,14 +447,6 @@ const SaleAdd = () => {
                       <FormikTextField label="Customer Name" name="customerName" placeholder="Enter Customer Name" disabled={disableCustomerName} />
                     </Col>
                     <Col lg={4}>
-                      <FormikTextField
-                        label="Customer Phone"
-                        name="customerPhone"
-                        placeholder="Enter Customer Phone"
-                        disabled={disableCustomerPhone}
-                      />
-                    </Col>
-                    <Col lg={4}>
                       <Field name="country">
                         {({ field }) => (
                           <ChoicesSearchFormInput
@@ -476,12 +477,23 @@ const SaleAdd = () => {
                             id="city"
                             {...field}
                             options={cityOptions}
-                            onChange={(value) => setFieldValue('city', value)}
+                            onChange={(value) => {
+                              setFieldValue('city', value)
+                              setPhoneCodeIfEmpty(values.country, values.customerPhone, setFieldValue)
+                            }}
                             placeholder={isLoadingCities ? 'Loading Cities...' : selectedCountry ? 'Select City' : 'Select Country First'}
                             disabled={disableCity || !selectedCountry || isLoadingCities}
                           />
                         )}
                       </Field>
+                    </Col>
+                    <Col lg={4}>
+                      <FormikTextField
+                        label="Customer Phone"
+                        name="customerPhone"
+                        placeholder="Enter Customer Phone"
+                        disabled={disableCustomerPhone}
+                      />
                     </Col>
 
                     {salesId && (role === 'Admin' || role === 'ADMIN') && (

@@ -11,10 +11,11 @@ const useLocationOptions = (countryName = '') => {
 
   const citiesQuery = useGetCitiesQuery({ countryId: selectedCountry?._id, isActive: true }, { skip: !selectedCountry?._id })
 
-  const countryOptions = useMemo(
-    () => (countriesQuery.data || []).map((country) => ({ value: country.name, label: country.name })),
-    [countriesQuery.data],
-  )
+  const countryOptions = useMemo(() => {
+    const options = (countriesQuery.data || []).map((country) => ({ value: country.name, label: country.name, phoneCode: country.phoneCode }))
+    console.log('countryOptions', options)
+    return options
+  }, [countriesQuery.data])
 
   const cityOptions = useMemo(() => (citiesQuery.data || []).map((city) => ({ value: city.name, label: city.name })), [citiesQuery.data])
 
