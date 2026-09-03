@@ -16,7 +16,7 @@ import { useGetAllWarehousesQuery, useGetWarehouseStockQuery } from '../../../..
 import { useGetAllProductsQuery } from '../../../../../services/authenticateendpoint/product';
 import { useGetVariantsByProductQuery } from '../../../../../services/authenticateendpoint/productvariant';
 import { useGetAllCouriersQuery } from '../../../../../services/authenticateendpoint/courier';
-import { Country, City } from 'country-state-city';
+import useLocationOptions from '@/hooks/useLocationOptions';
 
 // Reusable Components
 import FormikTextField from '@/components/formikfield/FormikTextField';
@@ -40,7 +40,7 @@ const SaleAdd = () => {
   const isAdmin = role === 'Admin' || role === 'ADMIN';
   const { data: saleData, isLoading: isLoadingSale, error: saleError } = useGetSaleByIdQuery(salesId, { skip: !salesId });
   const { data: usersData, error: usersError } = useGetAllUsersQuery(undefined, { skip: isSeller || isSales });
-  const [selectedSellerId, setSelectedSellerId] = useState(isSeller ? userId : (saleData?.seller || ''));
+  const [selectedSellerId, setSelectedSellerId] = useState(isSeller ? userId : saleData?.seller || '');
   const { data: projectsBySellerData, error: projectsBySellerError } = useGetProjectsBySellerQuery(selectedSellerId, { skip: !selectedSellerId || isSales });
   const { data: allProjectsData, error: allProjectsError } = useGetAllProjectsQuery(undefined, { skip: !isSales });
   const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
@@ -79,13 +79,13 @@ const SaleAdd = () => {
     if (allProjectsError) toast.error(extractApiErrorMessage(allProjectsError));
   }, [allProjectsError]);
   useEffect(() => {
-    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
+    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError))
   }, [warehousesError]);
   useEffect(() => {
-    if (productsError) toast.error(extractApiErrorMessage(productsError));
+    if (productsError) toast.error(extractApiErrorMessage(productsError))
   }, [productsError]);
   useEffect(() => {
-    if (couriersError) toast.error(extractApiErrorMessage(couriersError));
+    if (couriersError) toast.error(extractApiErrorMessage(couriersError))
   }, [couriersError]);
   useEffect(() => {
     if (createError) toast.error(extractApiErrorMessage(createError));
@@ -101,42 +101,40 @@ const SaleAdd = () => {
     { value: 'cancelled', label: 'Cancelled' },
   ];
 
-  const sellerOptions = usersData?.filter(u => u.role === 'SELLER')?.map(u => ({ value: u._id, label: u.name })) || [];
+  const sellerOptions = usersData?.filter((u) => u.role === 'SELLER')?.map((u) => ({ value: u._id, label: u.name })) || [];
   const projectsSource = isSales ? allProjectsData : projectsBySellerData;
-  const projectOptions = projectsSource?.map(p => ({ value: p._id, label: p.name })) || [];
-  const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
-  const warehouseProductIds = new Set((warehouseStockData?.data || []).map(s => s.product));
+  const projectOptions = projectsSource?.map((p) => ({ value: p._id, label: p.name })) || [];
+  const warehouseOptions = warehousesData?.map((w) => ({ value: w._id, label: w.name })) || [];
+  const warehouseProductIds = new Set((warehouseStockData?.data || []).map((s) => s.product));
   const productOptions = selectedWarehouseId
     ? (productsData || [])
-        .filter(p => warehouseProductIds.has(p._id))
-        .map(p => ({ value: p._id, label: p.sku ? `${p.name} (${p.sku})` : p.name, sku: p.sku, salePrice: p.salePrice }))
-    : [];
-  const courierOptions = couriersData?.map(c => ({ value: c._id, label: c.name })) || [];
-
-  // Get all countries from country-state-city package
-  const countryOptions = Country.getAllCountries().map(country => ({
-    value: country.name,
-    label: country.name,
-    isoCode: country.isoCode
-  }));
+        .filter((p) => warehouseProductIds.has(p._id))
+        .map((p) => ({ value: p._id, label: p.sku ? `${p.name} (${p.sku})` : p.name, sku: p.sku, salePrice: p.salePrice }))
+    : []
+  const courierOptions = couriersData?.map((c) => ({ value: c._id, label: c.name })) || []
 
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedCountryIsoCode, setSelectedCountryIsoCode] = useState('');
-  const [cityOptions, setCityOptions] = useState([]);
+  const { countryOptions, cityOptions, isLoadingCountries, isLoadingCities, countriesError, citiesError } = useLocationOptions(selectedCountry)
   const [showItemForm, setShowItemForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  useEffect(() => {
+    if (countriesError) toast.error(extractApiErrorMessage(countriesError))
+  }, [countriesError])
+  useEffect(() => {
+    if (citiesError) toast.error(extractApiErrorMessage(citiesError))
+  }, [citiesError])
 
   // Auto-set variant to null when product has no variants
   useEffect(() => {
     if (newItem.product && variantsData && variantsData.length === 0) {
       if (newItem.variant !== null) {
-        setNewItem(prev => ({ ...prev, variant: null, variantName: null }));
+        setNewItem((prev) => ({ ...prev, variant: null, variantName: null }));
       }
     }
   }, [variantsData, newItem.product, newItem.variant]);
 
   const initialValues = {
-    seller: isSeller ? userId : (saleData?.seller || ''),
+    seller: isSeller ? userId : saleData?.seller || '',
     project: saleData?.project || '',
     warehouse: saleData?.warehouse || '',
     invoiceNo: saleData?.invoiceNo || '',
@@ -152,7 +150,7 @@ const SaleAdd = () => {
     trackingUrl: saleData?.courier?.trackingUrl || '',
     deliveryNotes: saleData?.deliveryNotes || '',
     notes: saleData?.notes || '',
-    items: saleData?.items?.map(item => ({
+    items: saleData?.items?.map((item) => ({
       product: item.product || '',
       variant: item.variant || '',
       productName: item.productName || '',
@@ -176,92 +174,79 @@ const SaleAdd = () => {
   const isConfirmedEdit = isEdit && !isDraft;
   // Fields updatable by Mutation 1 (draft): items, discount, deliveryCharges
   // Fields updatable by Mutation 2 (confirmed): customerName, phone, city, address, discount, deliveryCharges, notes
-  const draftOnlyDisabled = isEdit && isDraft;         // draft: disable everything EXCEPT items/discount/deliveryCharges
-  const confirmedOnlyDisabled = isConfirmedEdit;       // confirmed: disable everything EXCEPT customer fields + discount/deliveryCharges + notes
-  const disableSeller = draftOnlyDisabled || confirmedOnlyDisabled;
-  const disableProject = draftOnlyDisabled || confirmedOnlyDisabled;
-  const disableWarehouse = draftOnlyDisabled || confirmedOnlyDisabled;
-  const disableInvoiceNo = draftOnlyDisabled || confirmedOnlyDisabled;
-  const disableCustomerName = draftOnlyDisabled;                    // enabled on confirmed
-  const disableCustomerPhone = draftOnlyDisabled;                   // enabled on confirmed
-  const disableCountry = draftOnlyDisabled || confirmedOnlyDisabled;
-  const disableCity = draftOnlyDisabled;                            // enabled on confirmed
-  const disableAddress = draftOnlyDisabled;                         // enabled on confirmed
-  const disableCourier = draftOnlyDisabled || confirmedOnlyDisabled;
-  const disableTax = draftOnlyDisabled || confirmedOnlyDisabled;
-  const disableNotes = draftOnlyDisabled;                           // enabled on confirmed
-  const disableDeliveryNotes = draftOnlyDisabled || confirmedOnlyDisabled;
-  const disableDiscount = false;                                    // editable in both mutations
-  const disableDeliveryCharges = false;                             // editable in both mutations
+  const draftOnlyDisabled = isEdit && isDraft // draft: disable everything EXCEPT items/discount/deliveryCharges
+  const confirmedOnlyDisabled = isConfirmedEdit // confirmed: disable everything EXCEPT customer fields + discount/deliveryCharges + notes
+  const disableSeller = draftOnlyDisabled || confirmedOnlyDisabled
+  const disableProject = draftOnlyDisabled || confirmedOnlyDisabled
+  const disableWarehouse = draftOnlyDisabled || confirmedOnlyDisabled
+  const disableInvoiceNo = draftOnlyDisabled || confirmedOnlyDisabled
+  const disableCustomerName = draftOnlyDisabled // enabled on confirmed
+  const disableCustomerPhone = draftOnlyDisabled // enabled on confirmed
+  const disableCountry = draftOnlyDisabled || confirmedOnlyDisabled
+  const disableCity = draftOnlyDisabled // enabled on confirmed
+  const disableAddress = draftOnlyDisabled // enabled on confirmed
+  const disableCourier = draftOnlyDisabled || confirmedOnlyDisabled
+  const disableTax = draftOnlyDisabled || confirmedOnlyDisabled
+  const disableNotes = draftOnlyDisabled // enabled on confirmed
+  const disableDeliveryNotes = draftOnlyDisabled || confirmedOnlyDisabled
+  const disableDiscount = false // editable in both mutations
+  const disableDeliveryCharges = false // editable in both mutations
 
   useEffect(() => {
     if (isSeller && userId) {
-      setSelectedSellerId(userId);
+      setSelectedSellerId(userId)
     } else if (saleData?.seller) {
-      setSelectedSellerId(saleData.seller);
+      setSelectedSellerId(saleData.seller)
     }
-  }, [saleData, isSeller, userId]);
+  }, [saleData, isSeller, userId])
 
   useEffect(() => {
     if (saleData?.warehouse) {
-      setSelectedWarehouseId(saleData.warehouse);
+      setSelectedWarehouseId(saleData.warehouse)
     }
-  }, [saleData]);
+  }, [saleData])
 
-  // Initialize cities when editing existing sale with country
   useEffect(() => {
     if (saleData?.country) {
-      setSelectedCountry(saleData.country);
-      // Find the country's ISO code
-      const allCountries = Country.getAllCountries();
-      const country = allCountries.find(c => c.name === saleData.country);
-      if (country) {
-        setSelectedCountryIsoCode(country.isoCode);
-        const cities = City.getCitiesOfCountry(country.isoCode);
-        setCityOptions(cities?.map(city => ({ value: city.name, label: city.name })) || []);
-      }
+      setSelectedCountry(saleData.country)
     }
-  }, [saleData]);
-
-
-
+  }, [saleData])
 
   const calculateTotals = (items, taxAmount, discount, deliveryCharges, setFieldValue) => {
-    const subTotal = items.reduce((sum, item) => sum + (item.quantity * item.salePrice), 0);
-    const totalAmount = subTotal + (Number(taxAmount) || 0) - (Number(discount) || 0) + (Number(deliveryCharges) || 0);
-    setFieldValue('subTotal', subTotal);
-    setFieldValue('totalAmount', totalAmount);
+    const subTotal = items.reduce((sum, item) => sum + item.quantity * item.salePrice, 0)
+    const totalAmount = subTotal + (Number(taxAmount) || 0) - (Number(discount) || 0) + (Number(deliveryCharges) || 0)
+    setFieldValue('subTotal', subTotal)
+    setFieldValue('totalAmount', totalAmount)
 
     items.forEach((item, index) => {
-      const lineTotal = item.quantity * item.salePrice;
+      const lineTotal = item.quantity * item.salePrice
       if (item.lineTotal !== lineTotal) {
-        setFieldValue(`items[${index}].lineTotal`, lineTotal);
+        setFieldValue(`items[${index}].lineTotal`, lineTotal)
       }
-    });
-  };
+    })
+  }
 
   const handleProductChange = (productId, index, setFieldValue) => {
-    const product = productOptions.find(p => p.value === productId);
+    const product = productOptions.find((p) => p.value === productId)
     if (product) {
-      setFieldValue(`items[${index}].product`, productId);
-      setFieldValue(`items[${index}].productName`, product.label);
-      setFieldValue(`items[${index}].variant`, ''); // Reset variant
-      setFieldValue(`items[${index}].variantName`, '');
-      setFieldValue(`items[${index}].sku`, product.sku || '');
-      setFieldValue(`items[${index}].salePrice`, product.salePrice || 0);
+      setFieldValue(`items[${index}].product`, productId)
+      setFieldValue(`items[${index}].productName`, product.label)
+      setFieldValue(`items[${index}].variant`, '') // Reset variant
+      setFieldValue(`items[${index}].variantName`, '')
+      setFieldValue(`items[${index}].sku`, product.sku || '')
+      setFieldValue(`items[${index}].salePrice`, product.salePrice || 0)
     }
-  };
+  }
 
   const handleVariantChange = (variantId, index, setFieldValue) => {
-    const variant = variantsData?.find(v => v._id === variantId);
+    const variant = variantsData?.find((v) => v._id === variantId)
     if (variant) {
-      setFieldValue(`items[${index}].variant`, variantId);
-      setFieldValue(`items[${index}].variantName`, variant.name);
-      setFieldValue(`items[${index}].sku`, variant.sku || '');
-      setFieldValue(`items[${index}].salePrice`, variant.salePrice || 0);
+      setFieldValue(`items[${index}].variant`, variantId)
+      setFieldValue(`items[${index}].variantName`, variant.name)
+      setFieldValue(`items[${index}].sku`, variant.sku || '')
+      setFieldValue(`items[${index}].salePrice`, variant.salePrice || 0)
     }
-  };
-
+  }
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
@@ -275,8 +260,8 @@ const SaleAdd = () => {
         country: values.country,
         city: values.city,
         address: values.address,
-        items: values.items.map(item => ({
-          productId: item.product,        // maps product field
+        items: values.items.map((item) => ({
+          productId: item.product, // maps product field
           variantId: item.variant || null,
           productName: item.productName,
           variantName: item.variantName || null,
@@ -286,15 +271,15 @@ const SaleAdd = () => {
         })),
         taxAmount: Number(values.taxAmount) || 0,
         notes: values.notes,
-      };
+      }
 
       if (salesId) {
-        const isDraft = (saleData?.status || 'draft') === 'draft';
-        let updatePayload;
+        const isDraft = (saleData?.status || 'draft') === 'draft'
+        let updatePayload
         if (isDraft) {
           // Draft: user can edit items, discount, deliveryCharges
           updatePayload = {
-            items: values.items.map(item => ({
+            items: values.items.map((item) => ({
               productId: item.product,
               variantId: item.variant || null,
               quantity: Number(item.quantity),
@@ -302,7 +287,7 @@ const SaleAdd = () => {
             })),
             discount: Number(values.discount) || 0,
             deliveryCharges: Number(values.deliveryCharges) || 0,
-          };
+          }
         } else {
           // Confirmed / non-draft: only customer info + charges/notes editable
           updatePayload = {
@@ -313,21 +298,21 @@ const SaleAdd = () => {
             discount: Number(values.discount) || 0,
             deliveryCharges: Number(values.deliveryCharges) || 0,
             notes: values.notes,
-          };
+          }
         }
-        await updateSale({ id: salesId, data: updatePayload }).unwrap();
+        await updateSale({ id: salesId, data: updatePayload }).unwrap()
       } else {
-        await createSale(createPayload).unwrap();
-        resetForm();
-        setShowItemForm(false);
+        await createSale(createPayload).unwrap()
+        resetForm()
+        setShowItemForm(false)
       }
     } catch (err) {
-      console.error('Failed to save sale:', err);
+      console.error('Failed to save sale:', err)
     }
-  };
+  }
 
   if (salesId && isLoadingSale) {
-    return <div>Loading sale details...</div>;
+    return <div>Loading sale details...</div>
   }
 
   return (
@@ -345,24 +330,21 @@ const SaleAdd = () => {
         validationSchema={SalesValidationSchema}
         onSubmit={handleSubmit}
         enableReinitialize={true}
-        validateOnMount={true}
-      >
+        validateOnMount={true}>
         {({ values, setFieldValue, errors, isValid }) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
-          console.log('values', values);
-          console.log('errors', errors);
+          console.log('values', values)
+          console.log('errors', errors)
 
           useEffect(() => {
-            calculateTotals(values.items, values.taxAmount, values.discount, values.deliveryCharges, setFieldValue);
-          }, [values.items, values.taxAmount, values.discount, values.deliveryCharges, setFieldValue]);
+            calculateTotals(values.items, values.taxAmount, values.discount, values.deliveryCharges, setFieldValue)
+          }, [values.items, values.taxAmount, values.discount, values.deliveryCharges, setFieldValue])
 
           return (
             <Form>
               <Card className="mb-4">
                 <CardHeader>
-                  <CardTitle as={'h4'}>
-                    {salesId ? 'Edit Sale' : 'Sale Information'}
-                  </CardTitle>
+                  <CardTitle as={'h4'}>{salesId ? 'Edit Sale' : 'Sale Information'}</CardTitle>
                 </CardHeader>
                 <CardBody>
                   <Row>
@@ -378,9 +360,9 @@ const SaleAdd = () => {
                               {...field}
                               options={sellerOptions}
                               onChange={(value) => {
-                                setFieldValue('seller', value);
-                                setFieldValue('project', '');
-                                setSelectedSellerId(value);
+                                setFieldValue('seller', value)
+                                setFieldValue('project', '')
+                                setSelectedSellerId(value)
                               }}
                               placeholder="Select Seller"
                               disabled={disableSeller}
@@ -401,10 +383,10 @@ const SaleAdd = () => {
                               {...field}
                               options={projectOptions}
                               onChange={(value) => {
-                                setFieldValue('project', value);
+                                setFieldValue('project', value)
                                 if (isSales) {
-                                  const proj = (allProjectsData || []).find(p => p._id === value);
-                                  if (proj?.seller) setFieldValue('seller', proj.seller);
+                                  const proj = (allProjectsData || []).find((p) => p._id === value)
+                                  if (proj?.seller) setFieldValue('seller', proj.seller)
                                 }
                               }}
                               placeholder="Select Project"
@@ -425,8 +407,8 @@ const SaleAdd = () => {
                             {...field}
                             options={warehouseOptions}
                             onChange={(value) => {
-                              setFieldValue('warehouse', value);
-                              setSelectedWarehouseId(value);
+                              setFieldValue('warehouse', value)
+                              setSelectedWarehouseId(value)
                               setNewItem({
                                 product: '',
                                 variant: '',
@@ -436,7 +418,7 @@ const SaleAdd = () => {
                                 quantity: 1,
                                 salePrice: 0,
                                 batchNo: '',
-                              });
+                              })
                             }}
                             placeholder="Select Warehouse"
                             disabled={disableWarehouse}
@@ -453,12 +435,7 @@ const SaleAdd = () => {
                       />
                     </Col>
                     <Col lg={4}>
-                      <FormikTextField
-                        label="Customer Name"
-                        name="customerName"
-                        placeholder="Enter Customer Name"
-                        disabled={disableCustomerName}
-                      />
+                      <FormikTextField label="Customer Name" name="customerName" placeholder="Enter Customer Name" disabled={disableCustomerName} />
                     </Col>
                     <Col lg={4}>
                       <FormikTextField
@@ -477,26 +454,14 @@ const SaleAdd = () => {
                             className="form-control"
                             id="country"
                             {...field}
-                            options={countryOptions}
-                            onChange={(value) => {
-                              setFieldValue('country', value);
-                              setFieldValue('city', ''); // Reset city in Formik
-                              setSelectedCountry(value);
-
-                              // Find the selected country's ISO code
-                              const country = countryOptions.find(c => c.value === value);
-                              if (country) {
-                                setSelectedCountryIsoCode(country.isoCode);
-                                // Get cities for this country using ISO code
-                                const cities = City.getCitiesOfCountry(country.isoCode);
-                                setCityOptions(cities?.map(city => ({ value: city.name, label: city.name })) || []);
-                              } else {
-                                setSelectedCountryIsoCode('');
-                                setCityOptions([]);
-                              }
-                            }}
-                            placeholder="Select Country"
-                            disabled={disableCountry}
+                              options={countryOptions}
+                              onChange={(value) => {
+                                setFieldValue('country', value)
+                                setFieldValue('city', '')
+                                setSelectedCountry(value)
+                              }}
+                            placeholder={isLoadingCountries ? 'Loading Countries...' : 'Select Country'}
+                            disabled={disableCountry || isLoadingCountries}
                           />
                         )}
                       </Field>
@@ -512,8 +477,8 @@ const SaleAdd = () => {
                             {...field}
                             options={cityOptions}
                             onChange={(value) => setFieldValue('city', value)}
-                            placeholder={selectedCountry ? "Select City" : "Select Country First"}
-                            disabled={disableCity || !selectedCountry}
+                            placeholder={isLoadingCities ? 'Loading Cities...' : selectedCountry ? 'Select City' : 'Select Country First'}
+                            disabled={disableCity || !selectedCountry || isLoadingCities}
                           />
                         )}
                       </Field>
@@ -539,31 +504,16 @@ const SaleAdd = () => {
                           </Field>
                         </Col>
                         <Col lg={4}>
-                          <FormikTextField
-                            label="Tracking No"
-                            name="trackingNo"
-                            placeholder="Enter Tracking Number"
-                            disabled={disableCourier}
-                          />
+                          <FormikTextField label="Tracking No" name="trackingNo" placeholder="Enter Tracking Number" disabled={disableCourier} />
                         </Col>
                         <Col lg={4}>
-                          <FormikTextField
-                            label="Tracking URL"
-                            name="trackingUrl"
-                            placeholder="Enter Tracking URL"
-                            disabled={disableCourier}
-                          />
+                          <FormikTextField label="Tracking URL" name="trackingUrl" placeholder="Enter Tracking URL" disabled={disableCourier} />
                         </Col>
                       </>
                     )}
 
                     <Col lg={12}>
-                      <FormikTextArea
-                        label="Address"
-                        name="address"
-                        placeholder="Enter Full Address"
-                        disabled={disableAddress}
-                      />
+                      <FormikTextArea label="Address" name="address" placeholder="Enter Full Address" disabled={disableAddress} />
                     </Col>
                   </Row>
                 </CardBody>
@@ -578,60 +528,59 @@ const SaleAdd = () => {
               <Card className="mb-4">
                 <FieldArray name="items">
                   {({ push, remove, replace }) => {
-                    const itemsLocked = Boolean(salesId && saleData?.status && saleData.status !== 'draft');
+                    const itemsLocked = Boolean(salesId && saleData?.status && saleData.status !== 'draft')
                     return (
-                    <>
-                      <CardHeader className="d-flex justify-content-between align-items-center">
-                        <CardTitle as={'h4'}>Items</CardTitle>
-                        {!itemsLocked && (
-                          <IconButton
-                            variant="outline-primary"
-                            size="sm"
-                            onClick={() => setShowItemForm(!showItemForm)}
-                            sx={{
-                              backgroundColor: showItemForm ? '#ff4d4d' : '#5c7186',
-                              borderRadius: '7px',
-                              '&:hover': {
-                                backgroundColor: showItemForm ? '#ff3333' : '#7b8792ff !important',
-                                '& svg': {
-                                  stroke: '#ffffffff !important'
-                                }
-                              }
-                            }}
-                          >
-                            {showItemForm ? <X color="white" size={20} strokeWidth={2} /> : <Plus color="white" size={20} strokeWidth={2} />}
-                          </IconButton>
-                        )}
-                      </CardHeader>
-                      <CardBody>
-                        {showItemForm && (
-                          <div className="p-3 border rounded mb-4 bg-light bg-opacity-10">
-                            <Row className="g-3">
-                              <Col md={4}>
-                                <div className="form-group">
-                                  <label className="form-label fw-bold">Product</label>
-                                  <ChoicesSearchFormInput
-                                    label=""
-                                    placeholder={selectedWarehouseId ? 'Select Product' : 'Select Warehouse first'}
-                                    options={productOptions}
-                                    value={newItem.product}
-                                    disabled={!selectedWarehouseId}
-                                    onChange={(val) => {
-                                      const product = productOptions.find(p => p.value === val);
-                                      setNewItem({
-                                        ...newItem,
-                                        product: val,
-                                        productName: product?.label || '',
-                                        variant: '',
-                                        variantName: '',
-                                        sku: product?.sku || '',
-                                        salePrice: product?.salePrice || 0,
-                                      });
-                                    }}
-                                  />
-                                </div>
-                              </Col>
-                              {/* Variant field hidden — logic retained for backend payload
+                      <>
+                        <CardHeader className="d-flex justify-content-between align-items-center">
+                          <CardTitle as={'h4'}>Items</CardTitle>
+                          {!itemsLocked && (
+                            <IconButton
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() => setShowItemForm(!showItemForm)}
+                              sx={{
+                                backgroundColor: showItemForm ? '#ff4d4d' : '#5c7186',
+                                borderRadius: '7px',
+                                '&:hover': {
+                                  backgroundColor: showItemForm ? '#ff3333' : '#7b8792ff !important',
+                                  '& svg': {
+                                    stroke: '#ffffffff !important',
+                                  },
+                                },
+                              }}>
+                              {showItemForm ? <X color="white" size={20} strokeWidth={2} /> : <Plus color="white" size={20} strokeWidth={2} />}
+                            </IconButton>
+                          )}
+                        </CardHeader>
+                        <CardBody>
+                          {showItemForm && (
+                            <div className="p-3 border rounded mb-4 bg-light bg-opacity-10">
+                              <Row className="g-3">
+                                <Col md={4}>
+                                  <div className="form-group">
+                                    <label className="form-label fw-bold">Product</label>
+                                    <ChoicesSearchFormInput
+                                      label=""
+                                      placeholder={selectedWarehouseId ? 'Select Product' : 'Select Warehouse first'}
+                                      options={productOptions}
+                                      value={newItem.product}
+                                      disabled={!selectedWarehouseId}
+                                      onChange={(val) => {
+                                        const product = productOptions.find((p) => p.value === val)
+                                        setNewItem({
+                                          ...newItem,
+                                          product: val,
+                                          productName: product?.label || '',
+                                          variant: '',
+                                          variantName: '',
+                                          sku: product?.sku || '',
+                                          salePrice: product?.salePrice || 0,
+                                        })
+                                      }}
+                                    />
+                                  </div>
+                                </Col>
+                                {/* Variant field hidden — logic retained for backend payload
                               <Col md={4}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Variant</label>
@@ -664,7 +613,7 @@ const SaleAdd = () => {
                                 </div>
                               </Col>
                               */}
-                              {/* SKU field hidden — logic retained for backend payload
+                                {/* SKU field hidden — logic retained for backend payload
                               <Col md={4}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">SKU</label>
@@ -678,44 +627,44 @@ const SaleAdd = () => {
                                 </div>
                               </Col>
                               */}
-                              <Col md={2}>
-                                <div className="form-group">
-                                  <label className="form-label fw-bold">Quantity</label>
-                                  <input
-                                    type="number"
-                                    className="form-control"
-                                    placeholder="Qty"
-                                    value={newItem.quantity}
-                                    onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
-                                  />
-                                </div>
-                              </Col>
-                              <Col md={3}>
-                                <div className="form-group">
-                                  <label className="form-label fw-bold">Price</label>
-                                  <input
-                                    type="number"
-                                    className="form-control"
-                                    placeholder="Price"
-                                    value={newItem.salePrice}
-                                    onChange={(e) => setNewItem({ ...newItem, salePrice: Number(e.target.value) })}
-                                  />
-                                </div>
-                              </Col>
-                              <Col md={3}>
-                                <div className="form-group">
-                                  <label className="form-label fw-bold">Line Cost</label>
-                                  <input
-                                    type="text"
-                                    className="form-control bg-light"
-                                    value={formatCurrency((Number(newItem.quantity) || 0) * (Number(newItem.salePrice) || 0))}
-                                    readOnly
-                                    disabled
-                                    tabIndex={-1}
-                                  />
-                                </div>
-                              </Col>
-                              {/* <Col md={3}>
+                                <Col md={2}>
+                                  <div className="form-group">
+                                    <label className="form-label fw-bold">Quantity</label>
+                                    <input
+                                      type="number"
+                                      className="form-control"
+                                      placeholder="Qty"
+                                      value={newItem.quantity}
+                                      onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
+                                    />
+                                  </div>
+                                </Col>
+                                <Col md={3}>
+                                  <div className="form-group">
+                                    <label className="form-label fw-bold">Price</label>
+                                    <input
+                                      type="number"
+                                      className="form-control"
+                                      placeholder="Price"
+                                      value={newItem.salePrice}
+                                      onChange={(e) => setNewItem({ ...newItem, salePrice: Number(e.target.value) })}
+                                    />
+                                  </div>
+                                </Col>
+                                <Col md={3}>
+                                  <div className="form-group">
+                                    <label className="form-label fw-bold">Line Cost</label>
+                                    <input
+                                      type="text"
+                                      className="form-control bg-light"
+                                      value={formatCurrency((Number(newItem.quantity) || 0) * (Number(newItem.salePrice) || 0))}
+                                      readOnly
+                                      disabled
+                                      tabIndex={-1}
+                                    />
+                                  </div>
+                                </Col>
+                                {/* <Col md={3}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Batch No</label>
                                   <input
@@ -727,7 +676,7 @@ const SaleAdd = () => {
                                   />
                                 </div>
                               </Col> */}
-                              {/* <Col md={3}>
+                                {/* <Col md={3}>
                                 <div className="form-group">
                                   <label className="form-label fw-bold">Expiry Date</label>
                                   <input
@@ -738,13 +687,41 @@ const SaleAdd = () => {
                                   />
                                 </div>
                               </Col> */}
-                              <Col md={12} className="d-flex justify-content-end gap-2">
-                                {editingIndex !== null && (
+                                <Col md={12} className="d-flex justify-content-end gap-2">
+                                  {editingIndex !== null && (
+                                    <Button
+                                      variant="outline-secondary"
+                                      className="mt-2"
+                                      onClick={() => {
+                                        setEditingIndex(null)
+                                        setNewItem({
+                                          product: '',
+                                          variant: '',
+                                          productName: '',
+                                          variantName: '',
+                                          sku: '',
+                                          quantity: 1,
+                                          salePrice: 0,
+                                          batchNo: '',
+                                        })
+                                        setShowItemForm(false)
+                                      }}>
+                                      Cancel
+                                    </Button>
+                                  )}
                                   <Button
-                                    variant="outline-secondary"
+                                    variant="primary"
                                     className="mt-2"
+                                    style={{ backgroundColor: '#5c7186', borderColor: '#5c7186' }}
+                                    disabled={!newItem.product}
                                     onClick={() => {
-                                      setEditingIndex(null);
+                                      const itemData = { ...newItem, lineTotal: newItem.quantity * newItem.salePrice }
+                                      if (editingIndex !== null) {
+                                        replace(editingIndex, itemData)
+                                        setEditingIndex(null)
+                                      } else {
+                                        push(itemData)
+                                      }
                                       setNewItem({
                                         product: '',
                                         variant: '',
@@ -754,109 +731,77 @@ const SaleAdd = () => {
                                         quantity: 1,
                                         salePrice: 0,
                                         batchNo: '',
-                                      });
-                                      setShowItemForm(false);
-                                    }}
-                                  >
-                                    Cancel
+                                        // expiryDate: '',
+                                      })
+                                      if (editingIndex !== null) setShowItemForm(false)
+                                    }}>
+                                    {editingIndex !== null ? 'UPDATE ITEM' : 'ADD ITEM'}
                                   </Button>
-                                )}
-                                <Button
-                                  variant="primary"
-                                  className="mt-2"
-                                  style={{ backgroundColor: '#5c7186', borderColor: '#5c7186' }}
-                                  disabled={!newItem.product}
-                                  onClick={() => {
-                                    const itemData = { ...newItem, lineTotal: newItem.quantity * newItem.salePrice };
-                                    if (editingIndex !== null) {
-                                      replace(editingIndex, itemData);
-                                      setEditingIndex(null);
-                                    } else {
-                                      push(itemData);
-                                    }
-                                    setNewItem({
-                                      product: '',
-                                      variant: '',
-                                      productName: '',
-                                      variantName: '',
-                                      sku: '',
-                                      quantity: 1,
-                                      salePrice: 0,
-                                      batchNo: '',
-                                      // expiryDate: '',
-                                    });
-                                    if (editingIndex !== null) setShowItemForm(false);
-                                  }}
-                                >
-                                  {editingIndex !== null ? 'UPDATE ITEM' : 'ADD ITEM'}
-                                </Button>
-                              </Col>
-                            </Row>
-                          </div>
-                        )}
+                                </Col>
+                              </Row>
+                            </div>
+                          )}
 
-                        <div className="table-responsive">
-                          <Table bordered hover>
-                            <thead className="bg-light">
-                              <tr>
-                                <th>Product</th>
-                                {/* <th>Variant</th> */}
-                                {/* <th>SKU</th> */}
-                                <th>Qty</th>
-                                <th>Price</th>
-                                {/* <th>Batch No</th> */}
-                                {/* <th>Expiry date</th> */}
-                                <th style={{ width: '50px' }}>Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {values.items.length > 0 ? (
-                                values.items.map((item, index) => (
-                                  <tr key={index}>
-                                    <td>{item.productName}</td>
-                                    {/* <td>{item.variantName || 'No variant'}</td> */}
-                                    {/* <td>{item.sku}</td> */}
-                                    <td>{item.quantity}</td>
-                                    <td>{formatCurrency(item.salePrice)}</td>
-                                    {/* <td>{item.batchNo || '-'}</td> */}
-                                    {/* <td>{item.expiryDate || '-'}</td> */}
-                                    <td className="text-center d-flex">
-                                      <IconButton
-                                        type="button"
-                                        disabled={itemsLocked}
-                                        onClick={() => {
-                                          setNewItem(item);
-                                          setEditingIndex(index);
-                                          setShowItemForm(true);
-                                        }}
-                                        sx={{ backgroundColor: '#eef2f6', mr: 1 }}
-                                      >
-                                        <Edit size={17} color="#5c7186" strokeWidth={2} />
-                                      </IconButton>
-                                      <IconButton
-                                        type="button"
-                                        disabled={itemsLocked}
-                                        onClick={() => remove(index)}
-                                        sx={{ backgroundColor: '#ffdcdcff' }}
-                                      >
-                                        <Trash2 size={17} color="#ff3939ff" strokeWidth={2} />
-                                      </IconButton>
+                          <div className="table-responsive">
+                            <Table bordered hover>
+                              <thead className="bg-light">
+                                <tr>
+                                  <th>Product</th>
+                                  {/* <th>Variant</th> */}
+                                  {/* <th>SKU</th> */}
+                                  <th>Qty</th>
+                                  <th>Price</th>
+                                  {/* <th>Batch No</th> */}
+                                  {/* <th>Expiry date</th> */}
+                                  <th style={{ width: '50px' }}>Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {values.items.length > 0 ? (
+                                  values.items.map((item, index) => (
+                                    <tr key={index}>
+                                      <td>{item.productName}</td>
+                                      {/* <td>{item.variantName || 'No variant'}</td> */}
+                                      {/* <td>{item.sku}</td> */}
+                                      <td>{item.quantity}</td>
+                                      <td>{formatCurrency(item.salePrice)}</td>
+                                      {/* <td>{item.batchNo || '-'}</td> */}
+                                      {/* <td>{item.expiryDate || '-'}</td> */}
+                                      <td className="text-center d-flex">
+                                        <IconButton
+                                          type="button"
+                                          disabled={itemsLocked}
+                                          onClick={() => {
+                                            setNewItem(item)
+                                            setEditingIndex(index)
+                                            setShowItemForm(true)
+                                          }}
+                                          sx={{ backgroundColor: '#eef2f6', mr: 1 }}>
+                                          <Edit size={17} color="#5c7186" strokeWidth={2} />
+                                        </IconButton>
+                                        <IconButton
+                                          type="button"
+                                          disabled={itemsLocked}
+                                          onClick={() => remove(index)}
+                                          sx={{ backgroundColor: '#ffdcdcff' }}>
+                                          <Trash2 size={17} color="#ff3939ff" strokeWidth={2} />
+                                        </IconButton>
+                                      </td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan="8" className="text-center py-4 text-muted">
+                                      No items added yet.
                                     </td>
                                   </tr>
-                                ))
-                              ) : (
-                                <tr>
-                                  <td colSpan="8" className="text-center py-4 text-muted">
-                                    No items added yet.
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </Table>
-                        </div>
-                      </CardBody>
-                    </>
-                    );
+                                )}
+                              </tbody>
+                            </Table>
+                          </div>
+                        </CardBody>
+                      </>
+                    )
                   }}
                 </FieldArray>
               </Card>
@@ -869,12 +814,7 @@ const SaleAdd = () => {
                         <CardTitle as={'h4'}>Delivery Notes</CardTitle>
                       </CardHeader>
                       <CardBody>
-                        <FormikTextArea
-                          name="deliveryNotes"
-                          placeholder="Enter Delivery Notes"
-                          rows={4}
-                          disabled={disableDeliveryNotes}
-                        />
+                        <FormikTextArea name="deliveryNotes" placeholder="Enter Delivery Notes" rows={4} disabled={disableDeliveryNotes} />
                       </CardBody>
                     </Card>
                   )}
@@ -890,13 +830,7 @@ const SaleAdd = () => {
                         <span className="fw-bold">{formatCurrency(values.subTotal)}</span>
                       </div>
                       <div className="mb-3">
-                        <FormikTextField
-                          label="Tax Amount"
-                          name="taxAmount"
-                          type="number"
-                          placeholder="0.00"
-                          disabled={disableTax}
-                        />
+                        <FormikTextField label="Tax Amount" name="taxAmount" type="number" placeholder="0.00" disabled={disableTax} />
                       </div>
                       <div className="mb-3">
                         <FormikTextField
@@ -927,12 +861,7 @@ const SaleAdd = () => {
               </Row>
 
               <div className="p-3 bg-light mt-4 mb-3 rounded d-flex justify-content-end gap-2">
-                <Button
-                  variant="primary"
-
-                  onClick={() => navigate(-1)}
-                  style={{ width: '150px' }}
-                >
+                <Button variant="primary" onClick={() => navigate(-1)} style={{ width: '150px' }}>
                   Cancel
                 </Button>
                 <Button
@@ -940,11 +869,8 @@ const SaleAdd = () => {
 
                   type="submit"
                   disabled={isCreating || isUpdating || !isValid || values.items.length === 0}
-                  style={{ width: '150px' }}
-                >
-                  {isCreating || isUpdating
-                    ? (salesId ? 'Updating...' : 'Creating...')
-                    : (salesId ? 'Update Sale' : 'Create Sale')}
+                  style={{ width: '150px' }}>
+                  {isCreating || isUpdating ? (salesId ? 'Updating...' : 'Creating...') : salesId ? 'Update Sale' : 'Create Sale'}
                 </Button>
               </div>
             </Form>

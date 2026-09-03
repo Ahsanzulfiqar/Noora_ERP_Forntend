@@ -1,23 +1,24 @@
-import IconifyIcon from '@/components/wrappers/IconifyIcon';
-import { ROLES } from '@/assets/data/roles';
-import useUserRole from '@/hooks/useUserRole';
-import { formatCurrency } from '@/helpers/currency';
-import { Card, CardBody, Col, Row, Dropdown } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { useState, useMemo, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import ConfirmSaleModal from './modals/ConfirmSaleModal';
-import OutForDeliveryModal from './modals/OutForDeliveryModal';
-import DeliveredModal from './modals/DeliveredModal';
-import ReturnSaleModal from './modals/ReturnSaleModal';
-import CancelSaleModal from './modals/CancelSaleModal';
-import DraftSaleModal from './modals/DraftSaleModal';
-import MarkPaidModal from '../../sales-list/Components/MarkPaidModal';
-import { useGetSellerByIdQuery } from '@/services/authenticateendpoint/sellers';
-import { useGetWarehouseByIdQuery } from '@/services/authenticateendpoint/warehouse';
-import { useGetProjectByIdQuery } from '@/services/authenticateendpoint/project';
-import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
-import SaleStatusChip from '@/components/SaleStatusChip';
+import IconifyIcon from '@/components/wrappers/IconifyIcon'
+import { ROLES } from '@/assets/data/roles'
+import useUserRole from '@/hooks/useUserRole'
+import { formatCurrency } from '@/helpers/currency'
+import { Card, CardBody, Col, Row, Dropdown } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
+import { useState, useMemo, useEffect } from 'react'
+import { toast } from 'react-toastify'
+import ConfirmSaleModal from './modals/ConfirmSaleModal'
+import OutForDeliveryModal from './modals/OutForDeliveryModal'
+import DeliveredModal from './modals/DeliveredModal'
+import ReturnSaleModal from './modals/ReturnSaleModal'
+import CancelSaleModal from './modals/CancelSaleModal'
+import DraftSaleModal from './modals/DraftSaleModal'
+import MarkPaidModal from '../../sales-list/Components/MarkPaidModal'
+import { useGetSellerByIdQuery } from '@/services/authenticateendpoint/sellers'
+import { useGetWarehouseByIdQuery } from '@/services/authenticateendpoint/warehouse'
+import { useGetProjectByIdQuery } from '@/services/authenticateendpoint/project'
+import { extractApiErrorMessage } from '@/components/ApiErrorAlert'
+import SaleStatusChip from '@/components/SaleStatusChip'
+import EditCourierChargesModal from './modals/EditCourierChargesModal'
 
 const STATUS_BADGE = {
   DRAFT: { bg: '#e2e8f0', color: '#475569', label: 'DRAFT' },
@@ -26,30 +27,30 @@ const STATUS_BADGE = {
   DELIVERED: { bg: '#d1fae5', color: '#047857', label: 'DELIVERED' },
   CANCELLED: { bg: '#fee2e2', color: '#b91c1c', label: 'CANCELLED' },
   RETURNED: { bg: '#fde68a', color: '#92400e', label: 'RETURNED' },
-};
+}
 
 const PAYMENT_BADGE = {
   PAID: { bg: '#d1fae5', color: '#047857' },
   PENDING: { bg: '#fef3c7', color: '#b45309' },
   PARTIAL: { bg: '#dbeafe', color: '#1d4ed8' },
   UNPAID: { bg: '#fee2e2', color: '#b91c1c' },
-};
+}
 
 const formatDate = (value, withTime = true) => {
-  if (!value) return '—';
-  const d = new Date(isNaN(Number(value)) ? value : Number(value));
-  if (isNaN(d.getTime())) return '—';
-  const datePart = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  if (!withTime) return datePart;
-  const timePart = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
-  return `${datePart}, ${timePart}`;
-};
+  if (!value) return '—'
+  const d = new Date(isNaN(Number(value)) ? value : Number(value))
+  if (isNaN(d.getTime())) return '—'
+  const datePart = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  if (!withTime) return datePart
+  const timePart = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false })
+  return `${datePart}, ${timePart}`
+}
 
-const currency = (n) => formatCurrency(n);
+const currency = (n) => formatCurrency(n)
 
 const StatusBadge = ({ status }) => {
-  const key = (status || '').toUpperCase();
-  const cfg = STATUS_BADGE[key] || { bg: '#e2e8f0', color: '#475569', label: key || '-' };
+  const key = (status || '').toUpperCase()
+  const cfg = STATUS_BADGE[key] || { bg: '#e2e8f0', color: '#475569', label: key || '-' }
   return (
     <span
       className="text-uppercase fw-semibold"
@@ -60,16 +61,15 @@ const StatusBadge = ({ status }) => {
         borderRadius: 999,
         fontSize: 11,
         letterSpacing: 0.5,
-      }}
-    >
+      }}>
       {cfg.label}
     </span>
-  );
-};
+  )
+}
 
 const PaymentBadge = ({ status }) => {
-  const key = (status || 'PENDING').toUpperCase();
-  const cfg = PAYMENT_BADGE[key] || PAYMENT_BADGE.PENDING;
+  const key = (status || 'PENDING').toUpperCase()
+  const cfg = PAYMENT_BADGE[key] || PAYMENT_BADGE.PENDING
   return (
     <span
       className="text-uppercase fw-semibold"
@@ -80,12 +80,11 @@ const PaymentBadge = ({ status }) => {
         borderRadius: 999,
         fontSize: 11,
         letterSpacing: 0.5,
-      }}
-    >
+      }}>
       {key}
     </span>
-  );
-};
+  )
+}
 
 const InfoRow = ({ icon, label, value, valueClass = 'text-dark fw-medium' }) => (
   <div className="d-flex justify-content-between align-items-center py-2">
@@ -93,44 +92,51 @@ const InfoRow = ({ icon, label, value, valueClass = 'text-dark fw-medium' }) => 
       <IconifyIcon icon={icon} className="fs-16" />
       <span>{label}</span>
     </div>
-    <div className={valueClass} style={{ fontSize: 14 }}>{value}</div>
+    <div className={valueClass} style={{ fontSize: 14 }}>
+      {value}
+    </div>
   </div>
-);
+)
 
-const SectionCard = ({ icon, title, children, className = '' }) => (
+const SectionCard = ({ icon, title, action, children, className = '' }) => (
   <Card className={`border-0 shadow-sm ${className}`} style={{ borderRadius: 12 }}>
     <CardBody className="p-4">
-      <div className="d-flex align-items-center gap-2 mb-3">
-        {icon && <IconifyIcon icon={icon} className="fs-20 text-primary" />}
-        <h5 className="mb-0 text-dark fw-bold" style={{ fontSize: 16 }}>{title}</h5>
+      <div className="d-flex align-items-center justify-content-between gap-2 mb-3">
+        <div className="d-flex align-items-center gap-2">
+          {icon && <IconifyIcon icon={icon} className="fs-20 text-primary" />}
+          <h5 className="mb-0 text-dark fw-bold" style={{ fontSize: 16 }}>
+            {title}
+          </h5>
+        </div>
+        {action}
       </div>
       {children}
     </CardBody>
   </Card>
-);
+)
 
 const KpiTile = ({ icon, iconBg, iconColor, label, value, valueColor = '#0f172a' }) => (
-  <div
-    className="d-flex align-items-center gap-3 p-3 h-100"
-    style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}
-  >
+  <div className="d-flex align-items-center gap-3 p-3 h-100" style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12 }}>
     <div
       className="d-flex align-items-center justify-content-center flex-shrink-0"
-      style={{ width: 42, height: 42, borderRadius: 10, background: iconBg, color: iconColor }}
-    >
+      style={{ width: 42, height: 42, borderRadius: 10, background: iconBg, color: iconColor }}>
       <IconifyIcon icon={icon} className="fs-22" />
     </div>
     <div>
-      <div className="text-muted" style={{ fontSize: 12 }}>{label}</div>
-      <div className="fw-bold" style={{ fontSize: 18, color: valueColor }}>{value}</div>
+      <div className="text-muted" style={{ fontSize: 12 }}>
+        {label}
+      </div>
+      <div className="fw-bold" style={{ fontSize: 18, color: valueColor }}>
+        {value}
+      </div>
     </div>
   </div>
-);
+)
 
-const STATUS_STEP_ORDER = ['DRAFT', 'CONFIRMED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'RETURNED', 'CANCELLED'];
+const STATUS_STEP_ORDER = ['DRAFT', 'CONFIRMED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'RETURNED', 'CANCELLED']
 
 const SalesDetail = ({ saleData, isLoadingSale }) => {
-  const [activeModal, setActiveModal] = useState(null);
+  const [activeModal, setActiveModal] = useState(null)
 
   const statusOptions = [
     { value: 'DRAFT', label: 'Draft', modal: 'DRAFT' },
@@ -139,73 +145,74 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
     { value: 'DELIVERED', label: 'Delivered', modal: 'DELIVERED' },
     { value: 'CANCELLED', label: 'Cancelled', modal: 'CANCEL' },
     { value: 'RETURNED', label: 'Returned', modal: 'RETURN' },
-  ];
+  ]
 
-  const handleActionClick = (modalType) => setActiveModal(modalType);
-  const closeModals = () => setActiveModal(null);
+  const handleActionClick = (modalType) => setActiveModal(modalType)
+  const closeModals = () => setActiveModal(null)
 
-  const role = useUserRole();
+  const role = useUserRole()
 
-  const { data: sellerData, error: sellerError } = useGetSellerByIdQuery(saleData?.seller, { skip: !saleData?.seller });
-  const { data: warehouseData, error: warehouseError } = useGetWarehouseByIdQuery(saleData?.warehouse, { skip: !saleData?.warehouse });
-  const { data: projectData, error: projectError } = useGetProjectByIdQuery(saleData?.project, { skip: !saleData?.project });
+  const { data: sellerData, error: sellerError } = useGetSellerByIdQuery(saleData?.seller, { skip: !saleData?.seller })
+  const { data: warehouseData, error: warehouseError } = useGetWarehouseByIdQuery(saleData?.warehouse, { skip: !saleData?.warehouse })
+  const { data: projectData, error: projectError } = useGetProjectByIdQuery(saleData?.project, { skip: !saleData?.project })
 
   useEffect(() => {
-    if (sellerError) toast.error(extractApiErrorMessage(sellerError));
-  }, [sellerError]);
+    if (sellerError) toast.error(extractApiErrorMessage(sellerError))
+  }, [sellerError])
   useEffect(() => {
-    if (warehouseError) toast.error(extractApiErrorMessage(warehouseError));
-  }, [warehouseError]);
+    if (warehouseError) toast.error(extractApiErrorMessage(warehouseError))
+  }, [warehouseError])
   useEffect(() => {
-    if (projectError) toast.error(extractApiErrorMessage(projectError));
-  }, [projectError]);
+    if (projectError) toast.error(extractApiErrorMessage(projectError))
+  }, [projectError])
 
-  const items = saleData?.items || [];
+  const items = saleData?.items || []
 
   const enrichedItems = useMemo(() => {
     return items.map((it) => {
-      const qty = Number(it.quantity || 0);
-      const price = Number(it.salePrice || 0);
-      const cost = Number(it.cost || 0);
-      const lineTotal = Number(it.lineTotal || price * qty);
-      const lineCost = cost * qty;
-      const lineProfit = lineTotal - lineCost;
-      return { ...it, cost, lineTotal, lineCost, lineProfit, qty, price };
-    });
-  }, [items]);
+      const qty = Number(it.quantity || 0)
+      const price = Number(it.salePrice || 0)
+      const cost = Number(it.cost || 0)
+      const lineTotal = Number(it.lineTotal || price * qty)
+      const lineCost = cost * qty
+      const lineProfit = lineTotal - lineCost
+      return { ...it, cost, lineTotal, lineCost, lineProfit, qty, price }
+    })
+  }, [items])
 
   const totals = useMemo(() => {
-    const subTotal = Number(saleData?.subTotal ?? enrichedItems.reduce((s, i) => s + i.lineTotal, 0));
-    const totalCost = Number(saleData?.totalCost ?? enrichedItems.reduce((s, i) => s + i.lineCost, 0));
-    const taxAmount = Number(saleData?.taxAmount || 0);
-    const totalAmount = Number(saleData?.totalAmount ?? subTotal + taxAmount);
-    const grossProfit = totalAmount - totalCost;
-    const profitMargin = totalAmount > 0 ? (grossProfit / totalAmount) * 100 : 0;
-    return { subTotal, totalCost, taxAmount, totalAmount, grossProfit, profitMargin };
-  }, [enrichedItems, saleData]);
+    const subTotal = Number(saleData?.subTotal ?? enrichedItems.reduce((s, i) => s + i.lineTotal, 0))
+    const totalCost = Number(saleData?.totalCost ?? enrichedItems.reduce((s, i) => s + i.lineCost, 0))
+    const taxAmount = Number(saleData?.taxAmount || 0)
+    const totalAmount = Number(saleData?.totalAmount ?? subTotal + taxAmount)
+    const grossProfit = totalAmount - totalCost
+    const profitMargin = totalAmount > 0 ? (grossProfit / totalAmount) * 100 : 0
+    return { subTotal, totalCost, taxAmount, totalAmount, grossProfit, profitMargin }
+  }, [enrichedItems, saleData])
 
   const statusHistory = useMemo(() => {
-    const raw = saleData?.statusHistory || [];
+    const raw = saleData?.statusHistory || []
     return [...raw].sort((a, b) => {
-      const ai = STATUS_STEP_ORDER.indexOf((a.status || '').toUpperCase());
-      const bi = STATUS_STEP_ORDER.indexOf((b.status || '').toUpperCase());
-      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-    });
-  }, [saleData?.statusHistory]);
+      const ai = STATUS_STEP_ORDER.indexOf((a.status || '').toUpperCase())
+      const bi = STATUS_STEP_ORDER.indexOf((b.status || '').toUpperCase())
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
+    })
+  }, [saleData?.statusHistory])
 
-  const findHistoryAt = (status) =>
-    statusHistory.find((h) => (h.status || '').toUpperCase() === status)?.at;
+  const findHistoryAt = (status) => statusHistory.find((h) => (h.status || '').toUpperCase() === status)?.at
 
   if (isLoadingSale) {
     return (
       <Row>
         <Col lg={12}>
           <Card>
-            <CardBody><p>Loading...</p></CardBody>
+            <CardBody>
+              <p>Loading...</p>
+            </CardBody>
           </Card>
         </Col>
       </Row>
-    );
+    )
   }
 
   const customer = {
@@ -213,18 +220,19 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
     phone: saleData?.customerPhone || '—',
     location: [saleData?.country, saleData?.city].filter(Boolean).join(', ') || '—',
     address: saleData?.address || '—',
-  };
+  }
 
-  const projectName = projectData?.name || '—';
-  const sellerName = sellerData?.name || '—';
-  const warehouseName = warehouseData?.name || '—';
-  const createdBy = saleData?.createdBy || '—';
-  const createdAt = saleData?.createdAt;
-  const shippedAt = saleData?.shippedAt || findHistoryAt('OUT_FOR_DELIVERY');
-  const deliveredAt = findHistoryAt('DELIVERED');
+  const projectName = projectData?.name || '—'
+  const sellerName = sellerData?.name || '—'
+  const warehouseName = warehouseData?.name || '—'
+  const createdBy = saleData?.createdBy || '—'
+  const createdAt = saleData?.createdAt
+  const deliveredAt = findHistoryAt('DELIVERED')
+  const courierChargeTotal = saleData?.courier?.charges?.totalCourierCharge
+  const canEditCourierCharges = [ROLES.ADMIN, ROLES.MANAGER, ROLES.WAREHOUSE].includes(role)
 
-  const paymentStatus = saleData?.payment?.status || '—';
-  const paymentMode = saleData?.payment?.mode || '—';
+  const paymentStatus = saleData?.payment?.status || '—'
+  const paymentMode = saleData?.payment?.mode || '—'
 
   return (
     <>
@@ -235,8 +243,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
             <div className="d-flex align-items-center gap-3">
               <div
                 className="d-flex align-items-center justify-content-center"
-                style={{ width: 56, height: 56, borderRadius: 12, background: '#d1fae5', color: '#059669' }}
-              >
+                style={{ width: 56, height: 56, borderRadius: 12, background: '#d1fae5', color: '#059669' }}>
                 <IconifyIcon icon="solar:document-text-bold-duotone" className="fs-28" />
               </div>
               <div>
@@ -248,8 +255,8 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
             </div>
 
             <div className="d-flex align-items-center gap-2">
-              {role !== ROLES.WAREHOUSE && (
-                ['draft', 'DRAFT', 'confirmed', 'CONFIRMED'].includes(saleData?.status) ? (
+              {role !== ROLES.WAREHOUSE &&
+                (['draft', 'DRAFT', 'confirmed', 'CONFIRMED'].includes(saleData?.status) ? (
                   <Link to={`/sales/sales-edit/${saleData?._id}`} className="btn btn-light btn-sm d-flex align-items-center gap-1">
                     <IconifyIcon icon="solar:pen-2-broken" className="fs-16" /> Edit
                   </Link>
@@ -257,36 +264,36 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                   <button className="btn btn-light btn-sm d-flex align-items-center gap-1" disabled style={{ cursor: 'not-allowed', opacity: 0.6 }}>
                     <IconifyIcon icon="solar:pen-2-broken" className="fs-16" /> Edit
                   </button>
-                )
-              )}
+                ))}
 
-              {(role === ROLES.ADMIN || role === ROLES.MANAGER || role === ROLES.SALES || role === ROLES.WAREHOUSE) && (() => {
-                const SALES_ACTIONS = ['CONFIRMED', 'CANCELLED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
-                const MANAGER_ACTIONS = ['CONFIRMED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
-                const WAREHOUSE_ACTIONS = ['OUT_FOR_DELIVERY', 'DELIVERED'];
-                const dispatchedStatuses = ['OUT_FOR_DELIVERY', 'DELIVERED', 'RETURNED', 'CANCELLED'];
-                const currentStatus = saleData?.status?.toUpperCase();
-                const availableActions = statusOptions
-                  .filter((option) => !saleData?.statusHistory?.some((h) => h.status?.toUpperCase() === option.value))
-                  .filter((option) => role === ROLES.SALES ? SALES_ACTIONS.includes(option.value) : true)
-                  .filter((option) => role === ROLES.MANAGER ? MANAGER_ACTIONS.includes(option.value) : true)
-                  .filter((option) => role === ROLES.WAREHOUSE ? WAREHOUSE_ACTIONS.includes(option.value) : true)
-                  .filter((option) => option.value === 'CANCELLED' ? !dispatchedStatuses.includes(currentStatus) : true);
-                return (
-                  <Dropdown>
-                    <Dropdown.Toggle variant="light" id="dropdown-basic" className="btn-sm d-flex align-items-center gap-1 arrow-none">
-                      <IconifyIcon icon="solar:menu-dots-bold" className="fs-14" /> Actions <IconifyIcon icon="solar:alt-arrow-down-bold" />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      {availableActions.map((option) => (
-                        <Dropdown.Item key={option.value} onClick={() => handleActionClick(option.modal)}>
-                          {option.label}
-                        </Dropdown.Item>
-                      ))}
-                    </Dropdown.Menu>
-                  </Dropdown>
-                );
-              })()}
+              {(role === ROLES.ADMIN || role === ROLES.MANAGER || role === ROLES.SALES || role === ROLES.WAREHOUSE) &&
+                (() => {
+                  const SALES_ACTIONS = ['CONFIRMED', 'CANCELLED', 'OUT_FOR_DELIVERY', 'DELIVERED']
+                  const MANAGER_ACTIONS = ['CONFIRMED', 'OUT_FOR_DELIVERY', 'DELIVERED']
+                  const WAREHOUSE_ACTIONS = ['OUT_FOR_DELIVERY', 'DELIVERED']
+                  const dispatchedStatuses = ['OUT_FOR_DELIVERY', 'DELIVERED', 'RETURNED', 'CANCELLED']
+                  const currentStatus = saleData?.status?.toUpperCase()
+                  const availableActions = statusOptions
+                    .filter((option) => !saleData?.statusHistory?.some((h) => h.status?.toUpperCase() === option.value))
+                    .filter((option) => (role === ROLES.SALES ? SALES_ACTIONS.includes(option.value) : true))
+                    .filter((option) => (role === ROLES.MANAGER ? MANAGER_ACTIONS.includes(option.value) : true))
+                    .filter((option) => (role === ROLES.WAREHOUSE ? WAREHOUSE_ACTIONS.includes(option.value) : true))
+                    .filter((option) => (option.value === 'CANCELLED' ? !dispatchedStatuses.includes(currentStatus) : true))
+                  return (
+                    <Dropdown>
+                      <Dropdown.Toggle variant="light" id="dropdown-basic" className="btn-sm d-flex align-items-center gap-1 arrow-none">
+                        <IconifyIcon icon="solar:menu-dots-bold" className="fs-14" /> Actions <IconifyIcon icon="solar:alt-arrow-down-bold" />
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        {availableActions.map((option) => (
+                          <Dropdown.Item key={option.value} onClick={() => handleActionClick(option.modal)}>
+                            {option.label}
+                          </Dropdown.Item>
+                        ))}
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  )
+                })()}
 
               {saleData?.status?.toLowerCase() === 'delivered' && saleData?.payment?.status?.toLowerCase() !== 'paid' && (
                 <SaleStatusChip status="mark_paid" onClick={() => setActiveModal('MARK_PAID')} />
@@ -305,7 +312,9 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
             <Col xl={2} lg={4} md={4} sm={6} xs={12}>
               <div className="d-flex align-items-center gap-2 text-primary" style={{ fontSize: 13 }}>
                 <IconifyIcon icon="solar:user-bold-duotone" className="fs-16 flex-shrink-0" />
-                <span className="text-truncate" title={customer.name}>{customer.name}</span>
+                <span className="text-truncate" title={customer.name}>
+                  {customer.name}
+                </span>
               </div>
               <div className="text-muted small mt-1">Customer</div>
             </Col>
@@ -317,15 +326,21 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
               <div className="text-muted small mt-1">Payment Mode</div>
             </Col>
             <Col xl={2} lg={4} md={4} sm={6} xs={12}>
-              <div className="fw-bold" style={{ fontSize: 20, color: '#10b981' }}>{currency(totals.totalAmount)}</div>
+              <div className="fw-bold" style={{ fontSize: 20, color: '#10b981' }}>
+                {currency(totals.totalAmount)}
+              </div>
               <div className="text-muted small mt-1">Total Amount</div>
             </Col>
             <Col xl={2} lg={4} md={4} sm={6} xs={12}>
-              <div className="fw-bold" style={{ fontSize: 20, color: '#8b5cf6' }}>{currency(totals.grossProfit)}</div>
+              <div className="fw-bold" style={{ fontSize: 20, color: '#8b5cf6' }}>
+                {currency(totals.grossProfit)}
+              </div>
               <div className="text-muted small mt-1">Total Profit</div>
             </Col>
             <Col xl={2} lg={4} md={4} sm={6} xs={12}>
-              <div><PaymentBadge status={paymentStatus} /></div>
+              <div>
+                <PaymentBadge status={paymentStatus} />
+              </div>
               <div className="text-muted small mt-1">Payment Status</div>
             </Col>
           </Row>
@@ -338,21 +353,41 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
           <Card className="border-0 shadow-sm h-100" style={{ borderRadius: 12 }}>
             <CardBody className="p-0">
               <div className="p-4 pb-3">
-                <h5 className="mb-0 text-dark fw-bold" style={{ fontSize: 16 }}>Order Items</h5>
+                <h5 className="mb-0 text-dark fw-bold" style={{ fontSize: 16 }}>
+                  Order Items
+                </h5>
               </div>
               <div className="table-responsive">
                 <table className="table align-middle mb-0">
                   <thead style={{ background: '#f8fafc' }}>
                     <tr>
-                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>#</th>
-                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>Product</th>
-                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>SKU</th>
-                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>Variant</th>
-                      <th className="text-muted text-uppercase text-center" style={{ fontSize: 11, letterSpacing: 0.5 }}>Qty</th>
-                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>Cost</th>
-                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>Price</th>
-                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>Profit</th>
-                      <th className="text-muted text-uppercase text-end" style={{ fontSize: 11, letterSpacing: 0.5 }}>Total</th>
+                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        #
+                      </th>
+                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        Product
+                      </th>
+                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        SKU
+                      </th>
+                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        Variant
+                      </th>
+                      <th className="text-muted text-uppercase text-center" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        Qty
+                      </th>
+                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        Cost
+                      </th>
+                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        Price
+                      </th>
+                      <th className="text-muted text-uppercase" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        Profit
+                      </th>
+                      <th className="text-muted text-uppercase text-end" style={{ fontSize: 11, letterSpacing: 0.5 }}>
+                        Total
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -363,8 +398,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                           <div className="d-flex align-items-center gap-2">
                             <div
                               className="d-flex align-items-center justify-content-center"
-                              style={{ width: 36, height: 36, borderRadius: 8, background: '#f1f5f9' }}
-                            >
+                              style={{ width: 36, height: 36, borderRadius: 8, background: '#f1f5f9' }}>
                               <IconifyIcon icon="solar:box-minimalistic-bold-duotone" className="fs-20 text-dark" />
                             </div>
                             <span className="text-dark fw-medium">{item.productName}</span>
@@ -375,13 +409,17 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                         <td className="text-center">{item.qty}</td>
                         <td>{currency(item.cost)}</td>
                         <td>{currency(item.price)}</td>
-                        <td style={{ color: '#10b981' }} className="fw-medium">{currency(item.lineProfit)}</td>
+                        <td style={{ color: '#10b981' }} className="fw-medium">
+                          {currency(item.lineProfit)}
+                        </td>
                         <td className="text-end fw-bold text-dark">{currency(item.lineTotal)}</td>
                       </tr>
                     ))}
                     {enrichedItems.length === 0 && (
                       <tr>
-                        <td colSpan={9} className="text-center text-muted py-4">No items</td>
+                        <td colSpan={9} className="text-center text-muted py-4">
+                          No items
+                        </td>
                       </tr>
                     )}
                   </tbody>
@@ -394,7 +432,9 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
         <Col lg={4}>
           <Card className="border-0 shadow-sm h-100" style={{ borderRadius: 12 }}>
             <CardBody className="p-4">
-              <h5 className="mb-3 text-dark fw-bold" style={{ fontSize: 16 }}>Order Summary</h5>
+              <h5 className="mb-3 text-dark fw-bold" style={{ fontSize: 16 }}>
+                Order Summary
+              </h5>
               <div className="d-flex justify-content-between py-2 text-muted" style={{ fontSize: 14 }}>
                 <span>Total Items</span>
                 <span className="text-dark fw-medium">{enrichedItems.length}</span>
@@ -408,8 +448,12 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                 <span className="text-dark fw-medium">{currency(totals.taxAmount)}</span>
               </div>
               <div className="d-flex justify-content-between align-items-center pt-3">
-                <span className="fw-bold text-dark" style={{ fontSize: 16 }}>Total Amount</span>
-                <span className="fw-bold" style={{ fontSize: 20, color: '#f97316' }}>{currency(totals.totalAmount)}</span>
+                <span className="fw-bold text-dark" style={{ fontSize: 16 }}>
+                  Total Amount
+                </span>
+                <span className="fw-bold" style={{ fontSize: 20, color: '#f97316' }}>
+                  {currency(totals.totalAmount)}
+                </span>
               </div>
             </CardBody>
           </Card>
@@ -421,11 +465,13 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
         <Col lg={4}>
           <Card className="border-0 shadow-sm h-100" style={{ borderRadius: 12 }}>
             <CardBody className="p-4">
-              <h5 className="mb-4 text-dark fw-bold" style={{ fontSize: 16 }}>Status History</h5>
+              <h5 className="mb-4 text-dark fw-bold" style={{ fontSize: 16 }}>
+                Status History
+              </h5>
               <div className="position-relative">
                 {statusHistory.map((history, index) => {
-                  const isLast = index === statusHistory.length - 1;
-                  const label = (history.status || '').replace(/_/g, ' ').toLowerCase();
+                  const isLast = index === statusHistory.length - 1
+                  const label = (history.status || '').replace(/_/g, ' ').toLowerCase()
                   return (
                     <div key={index} className="d-flex gap-3 position-relative" style={{ paddingBottom: isLast ? 0 : 24 }}>
                       {!isLast && (
@@ -449,28 +495,26 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                           borderRadius: '50%',
                           background: '#10b981',
                           color: '#fff',
-                        }}
-                      >
+                        }}>
                         <IconifyIcon icon="solar:check-circle-bold" className="fs-16" />
                       </div>
                       <div className="flex-grow-1">
-                        <h6 className="mb-1 text-dark fw-bold text-capitalize" style={{ fontSize: 14 }}>{label}</h6>
-                        <p className="mb-2 text-muted" style={{ fontSize: 12 }}>{formatDate(history.at)}</p>
+                        <h6 className="mb-1 text-dark fw-bold text-capitalize" style={{ fontSize: 14 }}>
+                          {label}
+                        </h6>
+                        <p className="mb-2 text-muted" style={{ fontSize: 12 }}>
+                          {formatDate(history.at)}
+                        </p>
                         {history.note && (
-                          <div
-                            className="px-3 py-2 text-dark"
-                            style={{ background: '#ecfdf5', borderRadius: 6, fontSize: 12 }}
-                          >
+                          <div className="px-3 py-2 text-dark" style={{ background: '#ecfdf5', borderRadius: 6, fontSize: 12 }}>
                             {history.note}
                           </div>
                         )}
                       </div>
                     </div>
-                  );
+                  )
                 })}
-                {statusHistory.length === 0 && (
-                  <p className="text-muted mb-0">No history yet</p>
-                )}
+                {statusHistory.length === 0 && <p className="text-muted mb-0">No history yet</p>}
               </div>
             </CardBody>
           </Card>
@@ -478,10 +522,28 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
 
         <Col lg={4}>
           <div className="d-flex flex-column gap-4 h-100">
-            <SectionCard icon="solar:delivery-bold-duotone" title="Delivery Information">
+            <SectionCard
+              icon="solar:delivery-bold-duotone"
+              title="Delivery Information"
+              action={
+                canEditCourierCharges && (
+                  <button
+                    type="button"
+                    className="btn btn-soft-primary btn-sm d-flex align-items-center gap-1"
+                    onClick={() => setActiveModal('COURIER_CHARGES')}
+                    disabled={!saleData?.courier?.courierId}
+                    title={saleData?.courier?.courierId ? 'Edit courier charges' : 'Assign a courier before editing charges'}>
+                    <IconifyIcon icon="solar:pen-2-broken" className="fs-14" /> Edit
+                  </button>
+                )
+              }>
               <InfoRow icon="solar:scooter-bold-duotone" label="Courier Service" value={saleData?.courier?.courierName || '—'} />
               <InfoRow icon="solar:map-point-bold-duotone" label="Tracking Number" value={saleData?.courier?.trackingNo || '—'} />
-              <InfoRow icon="solar:calendar-bold-duotone" label="Shipped At" value={formatDate(shippedAt)} />
+              <InfoRow
+                icon="solar:wallet-money-bold-duotone"
+                label="Courier Charges"
+                value={courierChargeTotal == null ? '—' : currency(courierChargeTotal)}
+              />
               <InfoRow icon="solar:calendar-mark-bold-duotone" label="Delivered At" value={formatDate(deliveredAt)} />
             </SectionCard>
 
@@ -513,12 +575,7 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
                 <PaymentBadge status={paymentStatus} />
               </div>
               <InfoRow icon="solar:wallet-bold-duotone" label="Payment Mode" value={paymentMode} />
-              <InfoRow
-                icon="solar:dollar-bold-duotone"
-                label="Paid Amount"
-                value={currency(saleData?.payment?.paidAmount)}
-                valueClass="fw-bold"
-              />
+              <InfoRow icon="solar:dollar-bold-duotone" label="Paid Amount" value={currency(saleData?.payment?.paidAmount)} valueClass="fw-bold" />
               <InfoRow icon="solar:scale-bold-duotone" label="Balance Amount" value={currency(saleData?.payment?.balanceAmount)} />
               <InfoRow icon="solar:calendar-bold-duotone" label="Paid At" value={formatDate(saleData?.payment?.paidAt)} />
               <InfoRow icon="solar:bank-bold-duotone" label="Bank Account" value={saleData?.payment?.bankAccount || '—'} />
@@ -530,49 +587,57 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
       {/* Financial Summary */}
       <Card className="border-0 shadow-sm mb-4" style={{ borderRadius: 12 }}>
         <CardBody className="p-4">
-          <h5 className="mb-3 text-dark fw-bold" style={{ fontSize: 16 }}>Financial Summary</h5>
+          <h5 className="mb-3 text-dark fw-bold" style={{ fontSize: 16 }}>
+            Financial Summary
+          </h5>
           <Row className="g-3">
             <Col md={2} sm={6} xs={12}>
               <KpiTile
                 icon="solar:chart-square-bold-duotone"
-                iconBg="#e0e7ff" iconColor="#4f46e5"
-                label="Subtotal" value={currency(totals.subTotal)}
+                iconBg="#e0e7ff"
+                iconColor="#4f46e5"
+                label="Subtotal"
+                value={currency(totals.subTotal)}
               />
             </Col>
             <Col md={2} sm={6} xs={12}>
               <KpiTile
                 icon="solar:tag-price-bold-duotone"
-                iconBg="#d1fae5" iconColor="#059669"
-                label="Tax Amount" value={currency(totals.taxAmount)}
+                iconBg="#d1fae5"
+                iconColor="#059669"
+                label="Tax Amount"
+                value={currency(totals.taxAmount)}
               />
             </Col>
             <Col md={2} sm={6} xs={12}>
               <KpiTile
                 icon="solar:dollar-minimalistic-bold-duotone"
-                iconBg="#dbeafe" iconColor="#1d4ed8"
-                label="Total Amount" value={currency(totals.totalAmount)}
+                iconBg="#dbeafe"
+                iconColor="#1d4ed8"
+                label="Total Amount"
+                value={currency(totals.totalAmount)}
               />
             </Col>
             <Col md={2} sm={6} xs={12}>
-              <KpiTile
-                icon="solar:fire-bold-duotone"
-                iconBg="#ffedd5" iconColor="#ea580c"
-                label="Total Cost" value={currency(totals.totalCost)}
-              />
+              <KpiTile icon="solar:fire-bold-duotone" iconBg="#ffedd5" iconColor="#ea580c" label="Total Cost" value={currency(totals.totalCost)} />
             </Col>
             <Col md={2} sm={6} xs={12}>
               <KpiTile
                 icon="solar:graph-up-bold-duotone"
-                iconBg="#dcfce7" iconColor="#16a34a"
-                label="Gross Profit" value={currency(totals.grossProfit)}
+                iconBg="#dcfce7"
+                iconColor="#16a34a"
+                label="Gross Profit"
+                value={currency(totals.grossProfit)}
                 valueColor="#16a34a"
               />
             </Col>
             <Col md={2} sm={6} xs={12}>
               <KpiTile
                 icon="solar:pie-chart-bold-duotone"
-                iconBg="#e0f2fe" iconColor="#0284c7"
-                label="Profit Margin" value={`${totals.profitMargin.toFixed(2)}%`}
+                iconBg="#e0f2fe"
+                iconColor="#0284c7"
+                label="Profit Margin"
+                value={`${totals.profitMargin.toFixed(2)}%`}
                 valueColor="#0284c7"
               />
             </Col>
@@ -590,10 +655,11 @@ const SalesDetail = ({ saleData, isLoadingSale }) => {
           <CancelSaleModal show={activeModal === 'CANCEL'} onHide={closeModals} saleId={saleData._id} />
           <DraftSaleModal show={activeModal === 'DRAFT'} onHide={closeModals} saleId={saleData._id} />
           <MarkPaidModal show={activeModal === 'MARK_PAID'} onHide={closeModals} sale={saleData} />
+          <EditCourierChargesModal show={activeModal === 'COURIER_CHARGES'} onHide={closeModals} sale={saleData} />
         </>
       )}
     </>
-  );
-};
+  )
+}
 
-export default SalesDetail;
+export default SalesDetail

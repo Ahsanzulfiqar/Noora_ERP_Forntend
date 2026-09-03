@@ -685,6 +685,12 @@ export const MENU_ITEMS = [
       },
     ],
   },
+  {
+    key: 'locations',
+    label: 'Locations',
+    icon: 'solar:map-point-wave-bold-duotone',
+    url: '/admin/locations',
+  },
   // {
   //   key: 'permissions',
   //   label: 'Permissions',

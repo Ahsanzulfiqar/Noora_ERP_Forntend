@@ -21,7 +21,11 @@ baseUrl: import.meta.env.VITE_GRAPHQL_URL ?? import.meta.env.VITE_API_URL,
 
         if (token) {
           // Remove "Bearer " prefix if it exists and trim quotes/spaces
-          const cleanToken = token.toString().replace(/^Bearer\s+/i, '').replace(/^"(.*)"$/, '$1').trim();
+          const cleanToken = token
+            .toString()
+            .replace(/^Bearer\s+/i, '')
+            .replace(/^"(.*)"$/, '$1')
+            .trim();
           headers.set('Authorization', cleanToken);
         }
       } catch (e) {
@@ -65,7 +69,11 @@ let isLoggingOut = false;
 const forceLogout = () => {
   if (isLoggingOut) return;
   isLoggingOut = true;
-  try { deleteCookie(authSessionKey); } catch (_) { /* cookie may already be gone */ }
+  try {
+    deleteCookie(authSessionKey)
+  } catch (_) {
+    /* cookie may already be gone */
+  }
   if (typeof window === 'undefined') return;
   const onSignInPage = window.location.pathname.startsWith('/auth/sign-in');
   if (onSignInPage) return;
@@ -97,7 +105,25 @@ export const api = createApi({
   reducerPath: 'authapi',
   baseQuery: baseQueryWithReauth,
 
-  tagTypes: ['User', 'Project', 'Sales', 'Category', 'SubCategory', 'Courier', 'Products', 'Variants', 'Purchases', 'Sellers', 'Warehouses', 'WarehouseStock', 'Stock', 'StockTransfer', 'Account'],
+  tagTypes: [
+    'User',
+    'Project',
+    'Sales',
+    'Category',
+    'SubCategory',
+    'Courier',
+    'Products',
+    'Variants',
+    'Purchases',
+    'Sellers',
+    'Warehouses',
+    'WarehouseStock',
+    'Stock',
+    'StockTransfer',
+    'Account',
+    'Country',
+    'City',
+  ],
 
   endpoints: () => ({}), // empty, others will inject
 })

@@ -143,7 +143,20 @@ export const salesAPI = api.injectEndpoints({
                 totalAmount
                 totalCost
                 courier {
+                  courierId
                   courierName
+                  remoteAreaStatus
+                  chargeStatus
+                  charges {
+                    baseCharge
+                    codCharge
+                    remoteCharge
+                    totalCourierCharge
+                    returnCharge
+                  }
+                  chargeUpdatedAt
+                  chargeUpdatedBy
+                  chargeNote
                   trackingNo
                   trackingUrl
                 }
@@ -182,6 +195,47 @@ export const salesAPI = api.injectEndpoints({
       }),
       transformResponse: (response) => response?.data?.GetSaleById || null,
       providesTags: (result, error, id) => [{ type: 'Sales', id }],
+    }),
+
+    // UPDATE COURIER CHARGES
+    updateCourierCharges: build.mutation({
+      query: ({ saleId, data }) => ({
+        method: 'POST',
+        auth: true,
+        body: {
+          query: `
+            mutation UpdateCourierCharges($saleId: ID!, $data: UpdateCourierChargesInput!) {
+              UpdateCourierCharges(saleId: $saleId, data: $data) {
+                _id
+                invoiceNo
+                status
+                courier {
+                  courierId
+                  courierName
+                  remoteAreaStatus
+                  chargeStatus
+                  charges {
+                    baseCharge
+                    codCharge
+                    remoteCharge
+                    totalCourierCharge
+                    returnCharge
+                  }
+                  chargeUpdatedAt
+                  chargeUpdatedBy
+                  chargeNote
+                  trackingNo
+                  trackingUrl
+                }
+                statusHistory { status at note }
+              }
+            }
+          `,
+          variables: { saleId, data },
+        },
+      }),
+      transformResponse: (response) => response?.data?.UpdateCourierCharges,
+      invalidatesTags: (result, error, { saleId }) => ['Sales', { type: 'Sales', id: saleId }],
     }),
 
     // CREATE SALE
@@ -280,10 +334,7 @@ export const salesAPI = api.injectEndpoints({
           },
         },
       }),
-      invalidatesTags: (result, error, saleId) => [
-        'Sales',
-        { type: 'Sales', id: saleId },
-      ],
+      invalidatesTags: (result, error, saleId) => ['Sales', { type: 'Sales', id: saleId }],
     }),
 
     // MARK OUT FOR DELIVERY
@@ -320,10 +371,7 @@ export const salesAPI = api.injectEndpoints({
           },
         },
       }),
-      invalidatesTags: (result, error, { saleId }) => [
-        'Sales',
-        { type: 'Sales', id: saleId },
-      ],
+      invalidatesTags: (result, error, { saleId }) => ['Sales', { type: 'Sales', id: saleId }],
     }),
 
     // MARK DELIVERED
@@ -348,10 +396,7 @@ export const salesAPI = api.injectEndpoints({
           },
         },
       }),
-      invalidatesTags: (result, error, saleId) => [
-        'Sales',
-        { type: 'Sales', id: saleId },
-      ],
+      invalidatesTags: (result, error, saleId) => ['Sales', { type: 'Sales', id: saleId }],
     }),
 
     // RETURN SALE
@@ -377,10 +422,7 @@ export const salesAPI = api.injectEndpoints({
           },
         },
       }),
-      invalidatesTags: (result, error, { saleId }) => [
-        'Sales',
-        { type: 'Sales', id: saleId },
-      ],
+      invalidatesTags: (result, error, { saleId }) => ['Sales', { type: 'Sales', id: saleId }],
     }),
 
     // MARK SALE PAID
@@ -413,10 +455,7 @@ export const salesAPI = api.injectEndpoints({
           },
         },
       }),
-      invalidatesTags: (result, error, { saleId }) => [
-        'Sales',
-        { type: 'Sales', id: saleId },
-      ],
+      invalidatesTags: (result, error, { saleId }) => ['Sales', { type: 'Sales', id: saleId }],
     }),
 
     // CANCEL SALE
@@ -436,10 +475,7 @@ export const salesAPI = api.injectEndpoints({
           },
         },
       }),
-      invalidatesTags: (result, error, { saleId }) => [
-        'Sales',
-        { type: 'Sales', id: saleId },
-      ],
+      invalidatesTags: (result, error, { saleId }) => ['Sales', { type: 'Sales', id: saleId }],
     }),
   }),
 })
@@ -456,4 +492,5 @@ export const {
   useReturnSaleMutation,
   useCancelSaleMutation,
   useMarkSalePaidMutation,
+  useUpdateCourierChargesMutation,
 } = salesAPI
