@@ -125,5 +125,5 @@ export const api = createApi({
     'City',
   ],
 
-  endpoints: () => ({}), // empty, others will inject
+  endpoints: () => ({}), // empty, others will be inject
 })
