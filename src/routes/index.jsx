@@ -79,6 +79,7 @@ const Profile = lazy(() => import('../app/admin/profile/page'))
 const RoleList = lazy(() => import('../app/admin/role/role-list/page'))
 const RoleAdd = lazy(() => import('../app/admin/role/role-add/page'))
 const RoleView = lazy(() => import('../app/admin/role/role-view/page'))
+const Locations = lazy(() => import('../app/admin/locations/page'))
 // Permissions Routes
 const Permissions = lazy(() => import('../app/admin/permissions/page'))
 
@@ -525,6 +526,13 @@ const RoleRoutes = [
     element: <RoleAdd />,
   },
 ]
+const LocationRoutes = [
+  {
+    name: 'Locations',
+    path: '/admin/locations',
+    element: <Locations />,
+  },
+]
 const WarehouseRoutes = [
   {
     name: 'Warehouse Dashboard',
@@ -713,6 +721,7 @@ export const appRoutes = [
   ...InventoryRoutes,
   ...PurchaseRoutes,
   ...RoleRoutes,
+  ...LocationRoutes,
   ...SellerRoutes,
   ...SalesAgentRoutes,
   ...WarehouseRoutes,
