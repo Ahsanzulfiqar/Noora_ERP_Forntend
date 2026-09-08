@@ -6,7 +6,7 @@ import { Link, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import FormikTextField from '@/components/formikfield/FormikTextField'
 import { useCreateProjectMutation, useGetProjectByIdQuery, useUpdateProjectMutation } from '../../../../../services/authenticateendpoint/project'
-import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse'
+import { useGetCountriesQuery } from '../../../../../services/authenticateendpoint/locations'
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users'
 import Button from '@mui/material/Button'
 import StatusAlert from '../../../../../components/StatusAlert'
@@ -22,9 +22,8 @@ const AddEditproject = () => {
   const [createProject, { isLoading: isCreating, error: createError, isSuccess: createSuccess }] = useCreateProjectMutation()
   const [updateProject, { isLoading: isUpdating, error: updateError, isSuccess: updateSuccess }] = useUpdateProjectMutation()
 
-  // Fetch Warehouses
-  const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
-  const warehouseOptions = warehousesData?.map(w => ({ value: w._id, label: w.name })) || [];
+  const { data: countriesData, error: countriesError } = useGetCountriesQuery(true)
+  const countryOptions = countriesData?.map((country) => ({ value: country._id, label: country.name })) || []
 
   const { data: usersData, error: usersError } = useGetAllUsersQuery(undefined, { skip: !isAdmin });
   const sellerOptions = usersData
@@ -36,8 +35,8 @@ const AddEditproject = () => {
   const { data, error: projectError } = useGetProjectByIdQuery(projectId, { skip: !projectId })
 
   useEffect(() => {
-    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
-  }, [warehousesError]);
+    if (countriesError) toast.error(extractApiErrorMessage(countriesError))
+  }, [countriesError])
   useEffect(() => {
     if (usersError) toast.error(extractApiErrorMessage(usersError));
   }, [usersError]);
@@ -71,14 +70,14 @@ const AddEditproject = () => {
             initialValues={{
               name: data?.name || '',
               channel: data?.channel || '',
-              warehouse: data?.warehouses?.[0] || '',
+              countryIds: data?.countries || [],
               sellerId: isAdmin ? (data?.seller || '') : currentUserId,
               isActive: data?.isActive !== undefined ? data.isActive : true,
             }}
             validationSchema={Yup.object({
               name: Yup.string().required('Required'),
               channel: Yup.string().required('Required'),
-              warehouse: Yup.string().required('Required'),
+              countryIds: Yup.array().of(Yup.string()).min(1, 'Select at least one country').required('Required'),
               sellerId: Yup.string().required('Required'),
               isActive: Yup.boolean(),
             })}
@@ -89,7 +88,7 @@ const AddEditproject = () => {
                 const payload = {
                   name: values.name,
                   channel: values.channel,
-                  warehouseIds: values.warehouse ? [values.warehouse] : [],
+                  countryIds: values.countryIds,
                   sellerId: values.sellerId,
                   isActive: values.isActive,
                 }
@@ -97,7 +96,7 @@ const AddEditproject = () => {
                 if (projectId) {
                   await updateProject({ id: projectId, data: payload }).unwrap()
                 } else {
-                  await createProject(payload).unwrap()
+                  await createProject({ ...payload, warehouseIds: [] }).unwrap()
                   resetForm()
                 }
               } catch (err) {
@@ -117,15 +116,17 @@ const AddEditproject = () => {
                     </Col>
 
                     <Col lg={6}>
-                      <Field name="warehouse">
+                      <Field name="countryIds">
                         {({ field }) => (
                           <ChoicesSearchFormInput
                             {...field}
-                            label="Warehouse"
-                            options={warehouseOptions}
-                            placeholder="Select Warehouse"
-                            onChange={(val) => setFieldValue('warehouse', val)}
-                            value={values.warehouse}
+                            id="countryIds"
+                            label="Countries"
+                            multiple
+                            options={countryOptions}
+                            placeholder="Select Countries"
+                            onChange={(val) => setFieldValue('countryIds', val)}
+                            value={values.countryIds}
                           />
                         )}
                       </Field>

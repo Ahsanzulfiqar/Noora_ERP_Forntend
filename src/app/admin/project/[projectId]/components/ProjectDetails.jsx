@@ -4,7 +4,7 @@ import { Card, CardBody, CardHeader, CardTitle, Col, Row, Badge, Table } from 'r
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useGetProjectByIdQuery } from '../../../../../services/authenticateendpoint/project';
-import { useGetAllWarehousesQuery } from '../../../../../services/authenticateendpoint/warehouse';
+import { useGetCountriesQuery } from '../../../../../services/authenticateendpoint/locations';
 import { useGetAllUsersQuery } from '../../../../../services/authenticateendpoint/users';
 import LoaderSpinner from '@/components/loaders/LoaderSpinner';
 import { extractApiErrorMessage } from '@/components/ApiErrorAlert';
@@ -13,15 +13,15 @@ const ProjectDetails = () => {
   const { projectId } = useParams();
 
   const { data, isLoading, error, refetch } = useGetProjectByIdQuery(projectId, { skip: !projectId });
-  const { data: warehousesData, error: warehousesError } = useGetAllWarehousesQuery();
+  const { data: countriesData, error: countriesError } = useGetCountriesQuery(true);
   const { data: usersData, error: usersError } = useGetAllUsersQuery();
 
   useEffect(() => {
     if (error) toast.error(extractApiErrorMessage(error));
   }, [error]);
   useEffect(() => {
-    if (warehousesError) toast.error(extractApiErrorMessage(warehousesError));
-  }, [warehousesError]);
+    if (countriesError) toast.error(extractApiErrorMessage(countriesError));
+  }, [countriesError]);
   useEffect(() => {
     if (usersError) toast.error(extractApiErrorMessage(usersError));
   }, [usersError]);
@@ -29,9 +29,9 @@ const ProjectDetails = () => {
   if (isLoading) return <LoaderSpinner />;
   if (error) return null;
 
-  const getWarehouseName = (id) => {
-    const warehouse = warehousesData?.find(w => w._id === id);
-    return warehouse ? warehouse.name : id;
+  const getCountryName = (id) => {
+    const country = countriesData?.find((item) => item._id === id);
+    return country ? country.name : id;
   };
 
   const getSellerName = (id) => {
@@ -67,14 +67,14 @@ const ProjectDetails = () => {
       </Col>
 
       <Col lg={8}>
-        {/* Warehouses Section */}
+        {/* Countries Section */}
         <Card className="border-0 shadow-sm mb-4">
           <CardHeader className="bg-transparent border-bottom">
             <div className="d-flex align-items-center gap-2">
               <div className="avatar-sm bg-primary-subtle text-primary rounded d-flex align-items-center justify-content-center">
                 <IconifyIcon icon="solar:buildings-2-bold-duotone" className="fs-20" />
               </div>
-              <h5 className="mb-0 text-dark fw-bold">Associated Warehouses</h5>
+              <h5 className="mb-0 text-dark fw-bold">Associated Countries</h5>
             </div>
           </CardHeader>
           <CardBody>
@@ -83,20 +83,20 @@ const ProjectDetails = () => {
                 <thead className="bg-light">
                   <tr>
                     <th className="text-muted text-uppercase fs-12" style={{ width: '50px' }}>#</th>
-                    <th className="text-muted text-uppercase fs-12">Warehouse Name</th>
+                    <th className="text-muted text-uppercase fs-12">Country Name</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.warehouses?.length > 0 ? (
-                    data.warehouses.map((id, idx) => (
+                  {data?.countries?.length > 0 ? (
+                    data.countries.map((id, idx) => (
                       <tr key={idx}>
                         <td>{idx + 1}</td>
-                        <td className="fw-medium text-dark">{getWarehouseName(id)}</td>
+                        <td className="fw-medium text-dark">{getCountryName(id)}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="2" className="text-center py-4 text-muted">No warehouses associated</td>
+                      <td colSpan="2" className="text-center py-4 text-muted">No countries associated</td>
                     </tr>
                   )}
                 </tbody>
@@ -105,14 +105,14 @@ const ProjectDetails = () => {
           </CardBody>
         </Card>
 
-        {/* Sellers Section */}
+        {/* Seller Section */}
         <Card className="border-0 shadow-sm">
           <CardHeader className="bg-transparent border-bottom">
             <div className="d-flex align-items-center gap-2">
               <div className="avatar-sm bg-info-subtle text-info rounded d-flex align-items-center justify-content-center">
                 <IconifyIcon icon="solar:users-group-two-rounded-bold-duotone" className="fs-20" />
               </div>
-              <h5 className="mb-0 text-dark fw-bold">Assigned Sellers</h5>
+              <h5 className="mb-0 text-dark fw-bold">Assigned Seller</h5>
             </div>
           </CardHeader>
           <CardBody>
@@ -125,16 +125,14 @@ const ProjectDetails = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.sellers?.length > 0 ? (
-                    data.sellers.map((id, idx) => (
-                      <tr key={idx}>
-                        <td>{idx + 1}</td>
-                        <td className="fw-medium text-dark">{getSellerName(id)}</td>
-                      </tr>
-                    ))
+                  {data?.seller ? (
+                    <tr>
+                      <td>1</td>
+                      <td className="fw-medium text-dark">{getSellerName(data.seller)}</td>
+                    </tr>
                   ) : (
                     <tr>
-                      <td colSpan="2" className="text-center py-4 text-muted">No sellers assigned</td>
+                      <td colSpan="2" className="text-center py-4 text-muted">No seller assigned</td>
                     </tr>
                   )}
                 </tbody>
@@ -179,10 +177,10 @@ const ProjectDetails = () => {
                 <div>
                   <h6 className="mb-1 text-muted fs-13 text-uppercase">Statistics</h6>
                   <p className="mb-0 fs-14 fw-medium text-dark">
-                    <span className="text-primary">{data?.warehouses?.length || 0}</span> Warehouses
+                    <span className="text-primary">{data?.countries?.length || 0}</span> Countries
                   </p>
                   <p className="mb-0 fs-14 fw-medium text-dark">
-                    <span className="text-primary">{data?.sellers?.length || 0}</span> Sellers
+                    <span className="text-primary">{data?.seller ? 1 : 0}</span> Seller
                   </p>
                 </div>
               </div>
