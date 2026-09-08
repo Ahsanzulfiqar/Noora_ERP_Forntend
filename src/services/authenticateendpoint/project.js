@@ -8,15 +8,17 @@ export const projectsAPI = api.injectEndpoints({
         method: 'POST',
         body: {
           query: `
-            query {
+            query GetAllProjects {
               GetAllProjects {
                 _id
                 name
                 channel
+                countries
                 warehouses
                 seller
                 isActive
                 createdAt
+                updatedAt
               }
             }
           `,
@@ -37,6 +39,7 @@ export const projectsAPI = api.injectEndpoints({
                 _id
                 name
                 channel
+                countries
                 warehouses
                 seller
                 isActive
@@ -61,8 +64,9 @@ export const projectsAPI = api.injectEndpoints({
                 _id
                 name
                 channel
-                seller
+                countries
                 warehouses
+                seller
                 isActive
               }
             }
@@ -79,18 +83,18 @@ export const projectsAPI = api.injectEndpoints({
         method: 'POST',
         body: {
           query: `
-            mutation UpdateProject($id: ID!, $data: UpdateProjectInput!) {
-              UpdateProject(_id: $id, data: $data) {
+            mutation UpdateProject($_id: ID!, $data: UpdateProjectInput!) {
+              UpdateProject(_id: $_id, data: $data) {
                 _id
                 name
                 channel
-                warehouses
+                countries
                 seller
                 isActive
               }
             }
           `,
-          variables: { id, data },
+          variables: { _id: id, data },
         },
       }),
       invalidatesTags: (result, error, { id }) => ['Project', { type: 'Project', id }],
@@ -107,6 +111,7 @@ export const projectsAPI = api.injectEndpoints({
                 _id
                 name
                 channel
+                countries
                 warehouses
                 seller
                 isActive

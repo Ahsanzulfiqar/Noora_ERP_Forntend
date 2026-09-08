@@ -89,8 +89,8 @@ const ProjectList = () => {
                 </th>
                 <th>Name</th>
                 <th>Channel</th>
-                <th>Warehouses</th>
-                <th>Sellers</th>
+                <th>Countries</th>
+                <th>Seller</th>
                 <th>Status</th>
                 <th style={{ textAlign: 'center' }}>Actions</th>
               </tr>
@@ -107,7 +107,7 @@ const ProjectList = () => {
                   </td>
                   <td>{item?.name}</td>
                   <td>{item?.channel}</td>
-                  <td>{item?.warehouses?.length || 0}</td>
+                  <td>{item?.countries?.length || 0}</td>
                   <td>{sellerMap[item?.seller] || (item?.seller === currentUserId ? currentUserName : item?.seller) || '-'}</td>
                   <td>
                     {item?.isActive ? (
